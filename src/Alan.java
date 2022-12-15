@@ -64,25 +64,19 @@ public class Alan {
     }
 
     public void move(boolean[] keys) {
-        if (!hitWall()) {
-            if (keys[a] || keys[d]) {
-                if (keys[a]) {
-                    x -= speed;
-                }
-                if (keys[d]) {
-                    x += speed;
-                }
-                state = WALK;
-            } else {
-                state = IDLE;
+        if (keys[a] || keys[d]) {
+            if (keys[a]) {
+                x -= speed;
+                x = Math.max(x, Background.getWallLeftPos());
             }
+            if (keys[d]) {
+                x += speed;
+                x = Math.min(x, Background.getWallRightPos());
+            }
+            state = WALK;
+        } else {
+            state = IDLE;
         }
-    }
-
-    public boolean hitWall() {
-        if (x > Background.getWallRightPos()) {
-            return true;
-        } else return x < Background.getWallLeftPos();
     }
 
     public void draw(Graphics g, boolean[] keys) {
