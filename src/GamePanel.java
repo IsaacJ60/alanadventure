@@ -31,7 +31,7 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener, Mo
         mgunAnim.add(new ImageIcon("src/tiles/middle.png").getImage());
         mgun = new Blaster("Machine Gun", 10,32,10, mgunAnim);
 
-        alan = new Alan(WIDTH/2, 100, 5, 10, mgun);
+        alan = new Alan(WIDTH/2, HEIGHT/2-50, 5, 10, mgun);
         timer = new Timer(20, this); // manages frames
         timer.start();
     }

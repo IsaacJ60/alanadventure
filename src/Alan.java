@@ -1,12 +1,14 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.awt.image.ImageObserver;
 import java.util.ArrayList;
 
 public class Alan {
     public static final int a = KeyEvent.VK_A, d = KeyEvent.VK_D;
 
     int x, y;
+    int width, height;
     int health, speed;
     Blaster weapon;
 
@@ -29,6 +31,8 @@ public class Alan {
         for (int i = 0; i < 1; i++) {
             idle.add(new ImageIcon("src/assets/alan/idle/idle" + i + ".png").getImage().getScaledInstance(33, 50,Image.SCALE_SMOOTH));
         }
+        this.width = 33;
+        this.height = 50;
     }
 
     public int getX() {
@@ -67,11 +71,11 @@ public class Alan {
         if (keys[a] || keys[d]) {
             if (keys[a]) {
                 x -= speed;
-                x = Math.max(x, Background.getWallLeftPos());
+                x = Math.max(x, Background.getWallLeftPos()+Background.getWallWidth());
             }
             if (keys[d]) {
                 x += speed;
-                x = Math.min(x, Background.getWallRightPos());
+                x = Math.min(x, Background.getWallRightPos()-width);
             }
             state = WALK;
         } else {

@@ -6,6 +6,7 @@ public class Background {
     Tile wallTile;
     Image wallImgLeft;
     Image wallImgRight;
+    private static int wallWidth;
 
     private static int wallLeftPos, wallRightPos;
 
@@ -17,6 +18,7 @@ public class Background {
 
         wallLeftPos = GamePanel.getWIDTH()/2-GamePanel.getWIDTH()/5;
         wallRightPos = GamePanel.getWIDTH()/2+GamePanel.getWIDTH()/5-walls.tile.getWidth();
+        wallWidth = walls.tile.getWidth();
     }
 
     public void draw(Graphics g) {
@@ -24,6 +26,10 @@ public class Background {
         g.fillRect(0,0,GamePanel.getWIDTH(),GamePanel.getHEIGHT());
         walls.drawVerticalLine(g, wallLeftPos, 0, GamePanel.getHEIGHT(), true);
         walls.drawVerticalLine(g, wallRightPos, 0, GamePanel.getHEIGHT(), false);
+    }
+
+    public static int getWallWidth() {
+        return wallWidth;
     }
 
     public static int getWallLeftPos() {
