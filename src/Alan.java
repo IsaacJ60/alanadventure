@@ -1,16 +1,18 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.awt.image.ImageObserver;
 import java.util.ArrayList;
 
 public class Alan {
     public static final int a = KeyEvent.VK_A, d = KeyEvent.VK_D;
 
     int x, y;
+    int width, height;
     int health, speed;
     Blaster weapon;
 
-    int animFrame;
+    double animFrame;
 
     int state = 0;
     public static final int IDLE = 0, WALK = 1, JUMP = 2, FALL = 3;
@@ -26,8 +28,13 @@ public class Alan {
         this.speed = speed;
         this.weapon = weapon;
         animFrame = 0;
-        for (int i = 0; i < 1; i++) {
-            idle.add(new ImageIcon("src/assets/alan/idle/idle" + i + ".png").getImage().getScaledInstance(33, 50,Image.SCALE_SMOOTH));
+        this.width = 20;
+        this.height = 30;
+        for (int i = 0; i < 7; i++) {
+            idle.add(new ImageIcon("src/assets/alan/idle/idle" + i + ".png").getImage().getScaledInstance(width, height,Image.SCALE_DEFAULT));
+        }
+        for (int i = 1; i < 8; i++) {
+            walk.add(new ImageIcon("src/assets/alan/walk/walk" + i + ".png").getImage().getScaledInstance(30, 30,Image.SCALE_DEFAULT));
         }
     }
 
@@ -67,26 +74,42 @@ public class Alan {
         if (keys[a] || keys[d]) {
             if (keys[a]) {
                 x -= speed;
-                x = Math.max(x, Background.getWallLeftPos());
+                x = Math.max(x, Background.getWallLeftPos()+Background.getWallWidth());
             }
             if (keys[d]) {
                 x += speed;
-                x = Math.min(x, Background.getWallRightPos());
+                x = Math.min(x, Background.getWallRightPos()-width);
             }
-            state = WALK;
+            changeState(WALK);
         } else {
-            state = IDLE;
+            changeState(IDLE);
         }
+    }
+
+    public void changeState(int MODE) {
+        if (state != MODE) {
+            animFrame = 0;
+        }
+        state = MODE;
     }
 
     public void draw(Graphics g, boolean[] keys) {
         move(keys);
-        if (animFrame == idle.size()-1) {
-            animFrame = 0;
-        } else {
-            animFrame++;
+        if (state == IDLE) {
+            if ((int)animFrame == idle.size()-1) {
+                animFrame = 0;
+            } else {
+                animFrame+=0.2;
+            }
+            g.drawImage(idle.get((int)animFrame),x,y,null);
+        } else if (state == WALK) {
+            if ((int)animFrame == walk.size()-1) {
+                animFrame = 0;
+            } else {
+                animFrame+=0.4;
+            }
+            g.drawImage(walk.get((int)animFrame),x,y,null);
         }
-        g.drawImage(idle.get(animFrame),x,y,null);
     }
 }
 

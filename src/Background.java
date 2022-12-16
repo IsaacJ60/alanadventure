@@ -2,10 +2,13 @@ import javax.swing.*;
 import java.awt.*;
 
 public class Background {
+    MapList maplist;
+
     TileGroup walls;
     Tile wallTile;
     Image wallImgLeft;
     Image wallImgRight;
+    private static int wallWidth;
 
     private static int wallLeftPos, wallRightPos;
 
@@ -15,15 +18,34 @@ public class Background {
         wallTile = new Tile("wall", wallImgLeft, wallImgRight);
         walls = new TileGroup("walls", wallTile);
 
-        wallLeftPos = GamePanel.getWIDTH()/2-GamePanel.getWIDTH()/5;
+        wallLeftPos = GamePanel.getWIDTH()/2-GamePanel.getWIDTH()/5+1;
         wallRightPos = GamePanel.getWIDTH()/2+GamePanel.getWIDTH()/5-walls.tile.getWidth();
+        wallWidth = walls.tile.getWidth();
+
+        maplist = new MapList();
+
+        // making default level
+        maplist.addMap(new Map(100));
     }
 
     public void draw(Graphics g) {
-        g.setColor(Color.BLACK);
+        setBackground(g, Color.BLACK);
+        maplist.drawBlocks(g, GamePanel.getLevel());
+        drawWalls(g);
+    }
+
+    public void setBackground(Graphics g, Color col) {
+        g.setColor(col);
         g.fillRect(0,0,GamePanel.getWIDTH(),GamePanel.getHEIGHT());
-        walls.drawVerticalLine(g, wallLeftPos, 0, GamePanel.getHEIGHT(), true);
-        walls.drawVerticalLine(g, wallRightPos, 0, GamePanel.getHEIGHT(), false);
+    }
+
+    public void drawWalls(Graphics g) {
+        walls.drawWall(g, wallLeftPos, 0, GamePanel.getHEIGHT(), true);
+        walls.drawWall(g, wallRightPos, 0, GamePanel.getHEIGHT(), false);
+    }
+
+    public static int getWallWidth() {
+        return wallWidth;
     }
 
     public static int getWallLeftPos() {
@@ -52,7 +74,7 @@ class TileGroup {
         this.tile = tile;
     }
 
-    public void drawVerticalLine(Graphics g, int x1, int y1, int y2, boolean flipped) {
+    public void drawWall(Graphics g, int x1, int y1, int y2, boolean flipped) {
         if (flipped) {
             for (int i = y1; i < y2; i+=tile.getWidth()) {
                 g.drawImage(tile.getRimg(),x1,i,null);

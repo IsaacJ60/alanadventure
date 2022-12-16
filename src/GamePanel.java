@@ -6,10 +6,11 @@ import java.util.ArrayList;
 public class GamePanel extends JPanel implements KeyListener, ActionListener, MouseListener {
     Timer timer;
 
-    private boolean[] keys;
+    private final boolean[] keys;
 
-    static int WIDTH = 900, HEIGHT = 700;
-    static int tarX, tarY;
+    private static int WIDTH = 900, HEIGHT = 700;
+    private static int tarX, tarY;
+    private static int level = 0;
 
     Background bg;
     Alan alan;
@@ -24,14 +25,17 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener, Mo
         // adding listener for events
         addMouseListener(this);
         addKeyListener(this);
+
         bg = new Background();
+
 
         //TODO: create bullet manager class
         mgunAnim = new ArrayList<>();
         mgunAnim.add(new ImageIcon("src/tiles/middle.png").getImage());
         mgun = new Blaster("Machine Gun", 10,32,10, mgunAnim);
 
-        alan = new Alan(WIDTH/2, 100, 5, 10, mgun);
+        alan = new Alan(WIDTH/2, HEIGHT/2-50, 5, 10, mgun);
+
         timer = new Timer(20, this); // manages frames
         timer.start();
     }
@@ -43,6 +47,8 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener, Mo
     public static void setWIDTH(int w) {WIDTH = w;}
     public static int getHEIGHT() {return HEIGHT;}
     public static void setHEIGHT(int h) {HEIGHT = h;}
+    public static int getLevel() {return level;}
+    public static void setLevel(int l) {level = l;}
 
     // MouseListener
     @Override
