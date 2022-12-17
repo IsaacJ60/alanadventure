@@ -1,6 +1,10 @@
 import javax.swing.*;
 import java.awt.*;
 
+//TODO: UI ELEMENTS
+// PRIORITY - LOW
+// - health, powerups, etc.
+
 public class Background {
     MapList maplist;
 
@@ -25,7 +29,7 @@ public class Background {
         maplist = new MapList();
 
         // making default level
-        maplist.addMap(new Map(100));
+        maplist.addMap(new Map(20));
     }
 
     public void draw(Graphics g) {

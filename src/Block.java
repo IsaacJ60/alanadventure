@@ -1,9 +1,15 @@
+
+//TODO: COLLISION DETECTION AND TILE LINKING SO THAT RENDERING A BLOCK RENDERS THE TILE IT IS PAIRED WITH
+// PRIORITY - MEDIUM
+// - detect collision based on type of block (they have different dimensions)
+// - pair a tile object with it or figure out alternative (dumb-brained way also works, not too much of hassle)
+
 public class Block {
     private int x;
     private int y;
     private int width;
     private int height;
-    public static int AIR = 0, BOX = 1, PLAT = 2, SPIKE = 3;
+    public static int AIR = 0, BOX = 1, PLAT = 2, SPIKE = 3, WALL = 4;
     private int type;
     public Block(int x, int y, int type) {
         this.x = x;
