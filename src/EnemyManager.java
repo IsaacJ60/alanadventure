@@ -9,7 +9,25 @@ import java.util.ArrayList;
 // - damage method and method of movement
 // - ENSURE ENEMIES BOUNCE OFF EACH OTHER
 
-public class Enemy {
+public class EnemyManager{
+    private ArrayList<Enemy> enemies = new ArrayList<Enemy>();
+
+    public void addEnemy(int x, int y){
+        enemies.add(new Enemy(x,y,30));
+    }
+    public void drawEnemies(Graphics g, Alan alan){
+        for(Enemy e:enemies){
+            e.draw(g,alan);
+        }
+    }
+    public void moveEnemiesY(int d){
+        for(Enemy e:enemies){
+            e.moveY(d);
+        }
+    }
+}
+
+class Enemy {
     private int width, height,  health;
     private int xFrames, yFrames; // amount of frames moving in a positive/negative x/y
     private double x, y;
@@ -67,6 +85,10 @@ public class Enemy {
         velY = ((-1/distance)*distY)*speed + yFrames*accel; // frames*accel so the enemy speeds up/down for a more "natural" look, instead of perfectly tracking alan
         x += velX;
         y += velY;
+    }
+
+    public void moveY(int d){
+        y-=d;
     }
 
     public void draw(Graphics g, Alan alan) {
