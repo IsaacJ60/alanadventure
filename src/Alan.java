@@ -4,8 +4,16 @@ import java.awt.event.KeyEvent;
 import java.awt.image.ImageObserver;
 import java.util.ArrayList;
 
+//TODO: MOVEMENT AND OFFSET
+// PRIORITY - LOW-MEDIUM
+// - calculate background position based on player offset
+// - acceleration
+// > GRAPHICS:
+//   - flip animation for opposite direction
+//   - finish other animations
+
 public class Alan {
-    public static final int a = KeyEvent.VK_A, d = KeyEvent.VK_D, space = KeyEvent.VK_SPACE;
+    public static final int a = KeyEvent.VK_A, d = KeyEvent.VK_D;
 
     int x, y;
     int width, height;
@@ -28,16 +36,13 @@ public class Alan {
         this.speed = speed;
         this.weapon = weapon;
         animFrame = 0;
-        this.width = 20;
-        this.height = 30;
-        // TODO: resolve flickering and distortion from scaling
+        this.width = 35;
+        this.height = 35;
         for (int i = 0; i < 7; i++) {
-            idle.add(new ImageIcon("src/assets/alan/idle/idle" + i + ".png").getImage().getScaledInstance(30, 30,Image.SCALE_DEFAULT));
-//            idle.add(new ImageIcon("src/assets/alan/idle/idle" + i + ".png").getImage());
+            idle.add(new ImageIcon("src/assets/alan/idle/idle" + i + ".png").getImage().getScaledInstance(width, height,Image.SCALE_DEFAULT));
         }
         for (int i = 1; i < 8; i++) {
-            walk.add(new ImageIcon("src/assets/alan/walk/walk" + i + ".png").getImage().getScaledInstance(30, 30,Image.SCALE_DEFAULT));
-//            walk.add(new ImageIcon("src/assets/alan/walk/walk" + i + ".png").getImage());
+            walk.add(new ImageIcon("src/assets/alan/walk/walk" + i + ".png").getImage().getScaledInstance(width, height,Image.SCALE_DEFAULT));
         }
     }
 
@@ -169,3 +174,4 @@ class Blaster {
         this.shootAnim = shootAnim;
     }
 }
+
