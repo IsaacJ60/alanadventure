@@ -53,9 +53,6 @@ class Map {
     int columns = 9, rows; // AMOUNT OF COLUMNS AND ROWS IN THE GAME WINDOW
     public static int MAXCHUNKSIZE = 3;
     public static int BLOCKLENGTH = 35; // LENGTH OF ONE BLOCK
-    public static int LASTCOLUMN = 9;
-    public static int FIRSTCOLUMN = 0;
-    public static int ONE = 0, GROUP = 1, ROW = 2;
     public static int INDEX = 3, COORDS = 4;
     public static int LEFT = 5, RIGHT = 6, TOP = 7, BOTTOM = 8;
 
