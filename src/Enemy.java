@@ -7,6 +7,7 @@ import java.util.ArrayList;
 // uniqueness:
 // - animations
 // - damage method and method of movement
+// - ENSURE ENEMIES BOUNCE OFF EACH OTHER
 
 public class Enemy {
     private int x, y, health, speed, animFrame;

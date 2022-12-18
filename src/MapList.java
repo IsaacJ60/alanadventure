@@ -27,13 +27,21 @@ public class MapList {
         Map m = maps.get(level);
         Block[][] blocks = m.getMap();
         for (int i = 0; i < blocks.length; i++) {
+
+            // TMP CODE TO DISPLAY ROW NUMBERS
+            g.setColor(Color.WHITE);
+            g.drawString(String.valueOf(i), 250, blocks[i][0].getY()+20);
+
             for (int j = 0; j < blocks[i].length; j++) {
                 if (blocks[i][j].getType() == Block.WALL) {
+                    g.setColor(Color.DARK_GRAY);
+                    g.fillRect(blocks[i][j].getX()+Background.getWallLeftPos()+Background.getWallWidth(), blocks[i][j].getY(), Map.BLOCKLENGTH, Map.BLOCKLENGTH);
+                } else if (blocks[i][j].getType() == Block.BOX) {
                     g.setColor(Color.RED);
                     g.fillRect(blocks[i][j].getX()+Background.getWallLeftPos()+Background.getWallWidth(), blocks[i][j].getY(), Map.BLOCKLENGTH, Map.BLOCKLENGTH);
                 } else if (blocks[i][j].getType() == Block.PLAT) {
-                    g.setColor(Color.WHITE);
-                    g.fillRect(blocks[i][j].getX()+Background.getWallLeftPos()+Background.getWallWidth(), blocks[i][j].getY(), Map.BLOCKLENGTH, Map.BLOCKLENGTH/2);
+                    g.setColor(Color.YELLOW);
+                    g.fillRect(blocks[i][j].getX()+Background.getWallLeftPos()+Background.getWallWidth(), blocks[i][j].getY(), Map.BLOCKLENGTH, Map.BLOCKLENGTH/4);
                 }
             }
         }
@@ -49,6 +57,7 @@ class Map {
     public static int FIRSTCOLUMN = 0;
     public static int ONE = 0, GROUP = 1, ROW = 2;
     public static int INDEX = 3, COORDS = 4;
+    public static int LEFT = 5, RIGHT = 6, TOP = 7, BOTTOM = 8;
 
     Random rand = new Random();
 
@@ -84,67 +93,134 @@ class Map {
     }
 
     public void placeBlock(int x, int y, int r, int c, int blockType) {
-                map[r][c] = new Block(x, y, blockType);
+        map[r][c] = new Block(x, y, blockType);
+    }
+
+    public Block getBlock(int a, int b) {
+        return map[a][b];
     }
 
     public void placeBlock(int a, int b, int blockType, int given) {
-        if (given == COORDS) {
-            map[a/BLOCKLENGTH][b/BLOCKLENGTH] = new Block(a, b, blockType);
-        } else {
-            map[a][b] = new Block(BLOCKLENGTH*b, BLOCKLENGTH*a, blockType);
+        if (a < rows && b < columns) {
+            if (given == COORDS) {
+                map[a/BLOCKLENGTH][b/BLOCKLENGTH] = new Block(a, b, blockType);
+            } else {
+                map[a][b] = new Block(BLOCKLENGTH*b, BLOCKLENGTH*a, blockType);
+            }
         }
     }
 
     public void generateBlocks() {
-        generateWallBlocks();
+        generateWallBlocks(); // BOX BLOCKS GENERATED WITHIN WALL BLOCKS
     }
 
-    public void generateWallBlocks() {
-        for (int i = 0; i < rows-3; i+=MAXCHUNKSIZE) {
-            int wallChance = rand.nextInt(0,2); // approx one wall group every 9 blocks
-            if (wallChance == 0) {
-                int wallShape = rand.nextInt(0,2);
-                if (wallShape == 0) {
-                    generateBigSideGroup(i,Block.WALL);
-                    System.out.println("big group wall spawn");
-                } else if (wallShape == 1) {
-                    generateSmallHorizontalGroup(i+rand.nextInt(0,4),Block.WALL);
+    public void generateBoxBlocks(int r, int base, int side, int otherside) {
+        int row = r;
+        int length = rand.nextInt(1,base);
+        if (side == TOP) {
+            if (otherside == LEFT) {
+                for (int j = 0; j < rand.nextInt(1,4); j++) {
+                    for (int i = 0; i < length; i++) {
+                        if (getBlock(row, i).getType() == Block.AIR) {
+                            placeBlock(row, i, Block.BOX, INDEX);
+                        }
+                    }
+                    row--;
+                }
+            } else if (otherside == RIGHT) {
+                for (int j = 0; j < rand.nextInt(1,4); j++) {
+                    for (int i = columns-length; i < columns; i++) {
+                        if (getBlock(row, i).getType() == Block.AIR && getBlock(row-1, i).getType() == Block.AIR) {
+                            placeBlock(row, i, Block.BOX, INDEX);
+                        }
+                    }
+                    row--;
                 }
             }
         }
     }
 
-    public void generateBigSideGroup(int r, int type) {
-        if (type == Block.WALL) {
-            int row = r;
-            int longest = rand.nextInt(1,5);
-            for (int j = longest; j >= 0; j-=rand.nextInt(0,3)) {
+    public void generateWallBlocks() {
+        //TODO: arbitrarily starting generating wall blocks at row 3, change to something that makes sense
+        for (int i = 3; i < rows-5; i+=MAXCHUNKSIZE) {
+            int wallChance = rand.nextInt(0,7); // approx one wall group every 9 blocks
+            //NOTE - 3 PATTERNS ARE:
+            // - PILLAR (3x3 to 1x3 to 1x1)
+            // - FUNNEL (2 sides funnel into centre)
+            // - CLIFF (1 side forms cliff structure)
+            switch (wallChance) {
+                case 0 -> {
+                    System.out.println("ROW: " + i + ", PILLAR");
+                    generatePillar(i, rand.nextInt(LEFT, RIGHT + 1), Block.WALL);
+                }
+                case 1 -> {
+                    System.out.println("ROW: " + i + ", FUNNEL");
+                    generateFunnel(i);
+                }
+                case 2 -> {
+                    System.out.println("ROW: " + i + ", CLIFF");
+                    // create cliff at row i on random side with wall blocks
+                    generateCliff(i, rand.nextInt(LEFT, RIGHT + 1), Block.WALL);
+                }
+            }
+        }
+    }
+
+    public void generateFunnel(int i) {
+        generateCliff(i, LEFT, Block.WALL);
+        generateCliff(i, RIGHT, Block.WALL);
+    }
+
+    public void generateCliff(int r, int side, int type) {
+        int row = r;
+        int longest = rand.nextInt(2,5);
+        if (rand.nextInt(0,1) == 0) {
+            System.out.println("ROW: " + (r-1) + ", BOX BLOCKS");
+            generateBoxBlocks(r-1, longest, TOP, side); // GENERATE BOXES ON FUNNEL!
+        }
+        if (side == LEFT) {
+            for (int j = longest; j >= 0; j-=rand.nextInt(0,2)) {
                 for (int i = 0; i < j; i++) {
-                    placeBlock(row,i,Block.WALL,INDEX);
+                    placeBlock(row,i,type,INDEX);
+                }
+                row++;
+            }
+        } else if (side == RIGHT) {
+            for (int j = longest; j >= 0; j-=rand.nextInt(0,2)) {
+                for (int i = columns-j; i < columns; i++) {
+                    placeBlock(row,i,type,INDEX);
                 }
                 row++;
             }
         }
     }
 
-    public void generateSmallHorizontalGroup(int r, int type) {
-        if (type == Block.WALL) {
-            int columnEnd = rand.nextInt(0, 3);
-            for (int i = 0; i < columnEnd; i++) {
-                placeBlock(r,i,Block.WALL,INDEX);
+    public void generatePillar(int r, int side, int type) {
+        int x = rand.nextInt(0,3), y = rand.nextInt(1,4);
+        if (side == LEFT) {
+            for (int i = r; i < r+y; i++) {
+                for (int j = 0; j < x; j++) {
+                    placeBlock(i,j,type,INDEX);
+                }
+            }
+        } else if (side == RIGHT) {
+            for (int i = r; i < r+y; i++) {
+                for (int j = columns-x; j < columns; j++) {
+                    placeBlock(i,j,type,INDEX);
+                }
             }
         }
     }
 
-    public void generateSmallRowGroup(int r, int type) {
-        if (type == Block.BOX) {
-            int columnStart = rand.nextInt(0,columns);
-            int columnEnd = rand.nextInt(columnStart, columns+1);
-            for (int i = columnStart; i < columnEnd; i++) {
-                placeBlock(r,i,Block.BOX,INDEX);
-            }
-        }
-    }
+//    public void generateSmallRowGroup(int r, int type) {
+//        if (type == Block.BOX) {
+//            int columnStart = rand.nextInt(0,columns);
+//            int columnEnd = rand.nextInt(columnStart, columns+1);
+//            for (int i = columnStart; i < columnEnd; i++) {
+//                placeBlock(r,i,Block.BOX,INDEX);
+//            }
+//        }
+//    }
 
 //    public void generateBlocks() {
 //        int randBlockType, randBlockPattern;
