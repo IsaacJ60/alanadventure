@@ -4,17 +4,40 @@
 // - detect collision based on type of block (they have different dimensions)
 // - pair a tile object with it or figure out alternative (dumb-brained way also works, not too much of hassle)
 
+import java.awt.*;
+
 public class Block {
     private int x;
     private int y;
     private int width;
     private int height;
-    public static int AIR = 0, BOX = 1, PLAT = 2, SPIKE = 3, WALL = 4;
+    public static final int AIR = 0, BOX = 1, PLAT = 2, SPIKE = 3, WALL = 4;
     private int type;
-    public Block(int x, int y, int type) {
+    private int side;
+    private Rectangle rect;
+
+    public Block(int x, int y, int type, int side) {
         this.x = x;
         this.y = y;
         this.type = type;
+        this.side = side;
+        rect = new Rectangle(x,y,Util.BLOCKLENGTH,Util.BLOCKLENGTH);
+    }
+
+    public boolean collide(Rectangle otherRect) {
+        return rect.intersects(otherRect);
+    }
+
+    public boolean collide(int x, int y, int width, int height) {
+        return rect.intersects(new Rectangle(x,y,width,height));
+    }
+
+    public int getSide() {
+        return side;
+    }
+
+    public void setSide(int side) {
+        this.side = side;
     }
 
     public int getX() {
@@ -57,3 +80,4 @@ public class Block {
         return type;
     }
 }
+

@@ -14,7 +14,7 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener, Mo
 
     Background bg;
     Alan alan;
-    EnemyManager enemyManager;
+    Enemy enemy;
     Blaster mgun;
     ArrayList<Image> mgunAnim;
 
@@ -35,11 +35,8 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener, Mo
         mgunAnim.add(new ImageIcon("src/tiles/middle.png").getImage());
         mgun = new Blaster("Machine Gun", 10,32,10, mgunAnim);
 
-        alan = new Alan(WIDTH/2, HEIGHT/2-50, 5, 10, mgun);
-        enemyManager = new EnemyManager();
-        enemyManager.addEnemy(200,200);
-        enemyManager.addEnemy(450,600);
-        enemyManager.addEnemy(600,100);
+        alan = new Alan(150, HEIGHT/2-50, 5, 10, 5, mgun);
+        enemy = new Enemy(400,600, 30);
 
         timer = new Timer(20, this); // manages frames
         timer.start();
@@ -104,7 +101,7 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener, Mo
     public void paint(Graphics g) {
         bg.draw(g);
         alan.draw(g, keys);
-        enemyManager.drawEnemies(g, alan);
+        enemy.draw(g, alan);
     }
 }
 

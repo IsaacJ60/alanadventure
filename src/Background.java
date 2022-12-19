@@ -29,7 +29,7 @@ public class Background {
         maplist = new MapList();
 
         // making default level
-        maplist.addMap(new Map(20));
+        maplist.addMap(new Map(100));
     }
 
     public void draw(Graphics g) {
@@ -100,6 +100,14 @@ class Tile {
         this.name = name;
         this.img = img;
         this.rimg = rimg;
+        this.width = img.getWidth(null);
+        this.height = img.getHeight(null);
+    }
+
+    Tile(String name, String file) {
+        this.name = name;
+        this.img = new ImageIcon(file).getImage().getScaledInstance(35,35,Image.SCALE_DEFAULT);
+        this.rimg = img;
         this.width = img.getWidth(null);
         this.height = img.getHeight(null);
     }

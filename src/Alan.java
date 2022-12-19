@@ -17,33 +17,61 @@ public class Alan {
 
     int x, y;
     int width, height;
-    int health, speed;
+    int health, speed, velocity;
+    static int offset;
     Blaster weapon;
 
     double animFrame;
 
     int state = 0;
+    private final int LEFT = 0, RIGHT = 1;
+    int dir = LEFT;
     public static final int IDLE = 0, WALK = 1, JUMP = 2, FALL = 3;
 
     ArrayList<Image> walk = new ArrayList<>();
+    ArrayList<Image> rwalk = new ArrayList<>();
     ArrayList<Image> idle = new ArrayList<>();
+    ArrayList<Image> ridle = new ArrayList<>();
     ArrayList<Image> fall = new ArrayList<>();
+    ArrayList<ArrayList<Image>> allAnims = new ArrayList<>();
 
-    public Alan(int x, int y, int health, int speed, Blaster weapon) {
+    private Rectangle alanRect;
+
+    public Alan(int x, int y, int health, int speed, int velocity, Blaster weapon) {
         this.x = x;
         this.y = y;
         this.health = health;
         this.speed = speed;
+        this.velocity = velocity;
         this.weapon = weapon;
         animFrame = 0;
-        this.width = 35;
-        this.height = 35;
+        this.width = 30;
+        this.height = 30;
+
+        offset = 0;
+
+        alanRect = new Rectangle(x,y,width-10,height);
+
         for (int i = 0; i < 7; i++) {
             idle.add(new ImageIcon("src/assets/alan/idle/idle" + i + ".png").getImage().getScaledInstance(width, height,Image.SCALE_DEFAULT));
         }
-        for (int i = 1; i < 8; i++) {
+        for (int i = 0; i < 7; i++) {
+            ridle.add(new ImageIcon("src/assets/alan/idle/m_idle" + i + ".png").getImage().getScaledInstance(width, height,Image.SCALE_DEFAULT));
+        }
+        for (int i = 0; i < 7; i++) {
             walk.add(new ImageIcon("src/assets/alan/walk/walk" + i + ".png").getImage().getScaledInstance(width, height,Image.SCALE_DEFAULT));
         }
+        for (int i = 0; i < 7; i++) {
+            rwalk.add(new ImageIcon("src/assets/alan/walk/m_walk" + i + ".png").getImage().getScaledInstance(width, height,Image.SCALE_DEFAULT));
+        }
+        allAnims.add(idle);
+        allAnims.add(ridle);
+        allAnims.add(walk);
+        allAnims.add(rwalk);
+    }
+
+    public static int getOffset() {
+        return offset;
     }
 
     public int getX() {
@@ -78,63 +106,81 @@ public class Alan {
         this.weapon = weapon;
     }
 
-    public void move(boolean[] keys) {
+    public void move(boolean[] keys, Graphics g) {
+        getCollision(MapList.getBlocks(),g);
         if (keys[a] || keys[d]) {
             if (keys[a]) {
+                dir = LEFT;
                 x -= speed;
-                x = Math.max(x, Background.getWallLeftPos()+Background.getWallWidth());
+                x = Math.max(x, 0);
             }
             if (keys[d]) {
+                dir = RIGHT;
                 x += speed;
-                x = Math.min(x, Background.getWallRightPos()-width);
+                x = Math.min(x, Background.getWallRightPos()-Background.getWallLeftPos()-Background.getWallWidth());
             }
-            changeState(WALK);
+            changeState(WALK, dir);
         } else {
-            changeState(IDLE);
+            changeState(IDLE, dir);
         }
-//        if (keys[a] || keys[d] || keys[KeyEvent.VK_W] || keys[KeyEvent.VK_S]) {
-//            if (keys[a]) {
-//                x -= speed;
-//            }
-//            if (keys[d]) {
-//                x += speed;
-//            }
-//            if (keys[KeyEvent.VK_W]) {
-//                y -= speed;
-//            }
-//            if (keys[KeyEvent.VK_S]) {
-//                y += speed;
-//            }
-//            changeState(WALK);
-//        } else {
-//            changeState(IDLE);
-//        }
+        y+=velocity;
+        offset+=velocity;
+        alanRect.setLocation(x+5,y);
     }
 
-    public void changeState(int MODE) {
-        if (state != MODE) {
+    public void changeState(int MODE, int d) {
+        if (state != MODE || d != dir) {
             animFrame = 0;
         }
         state = MODE;
     }
 
+    public void getCollision(Block[][] blocks, Graphics g) {
+        for (int i = 0; i < blocks.length; i++) {
+            for (int j = 0; j < blocks[i].length; j++) {
+                if (blocks[i][j].collide(alanRect)) {
+                    if (blocks[i][j].getType() == Block.AIR) {
+                        speed = 10;
+                        velocity = 5;
+                    } else {
+                        //TODO: BRUH COLLISION SO ANNOYING
+                        if (alanRect.intersectsLine(blocks[i][j].getX(),blocks[i][j].getY(),blocks[i][j].getX()+Util.BLOCKLENGTH,blocks[i][j].getY())) {
+                            velocity = 0;
+                            g.setColor(Color.RED);
+                            g.drawLine(blocks[i][j].getX()+Background.getWallLeftPos(),blocks[i][j].getY()-offset,blocks[i][j].getX()+Background.getWallLeftPos()+Util.BLOCKLENGTH,blocks[i][j].getY()-offset);
+                        } else if (alanRect.intersectsLine(blocks[i][j].getX(),blocks[i][j].getY(),blocks[i][j].getX(),blocks[i][j].getY()+Util.BLOCKLENGTH)) {
+                            x = Math.min(x-Util.BLOCKLENGTH,blocks[i][j].getX()-Util.BLOCKLENGTH-1);
+                        } else if (alanRect.intersectsLine(blocks[i][j].getX()+Util.BLOCKLENGTH,blocks[i][j].getY(),blocks[i][j].getX()+Util.BLOCKLENGTH,blocks[i][j].getY()+Util.BLOCKLENGTH)) {
+                            x = Math.max(x,blocks[i][j].getX()+Util.BLOCKLENGTH+1);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     public void draw(Graphics g, boolean[] keys) {
-        move(keys);
+        move(keys, g);
         if (state == IDLE) {
-            if ((int)animFrame == idle.size()-1) {
+            if ((int) animFrame == idle.size()-1) {
                 animFrame = 0;
             } else {
                 animFrame+=0.2;
             }
-            g.drawImage(idle.get((int)animFrame),x,y,null);
         } else if (state == WALK) {
-            if ((int)animFrame == walk.size()-1) {
+            if ((int) animFrame == walk.size()-1) {
                 animFrame = 0;
             } else {
-                animFrame+=0.4;
+                animFrame += 0.4;
             }
-            g.drawImage(walk.get((int)animFrame),x,y,null);
         }
+        if (dir == LEFT) {
+            g.drawImage(allAnims.get(state*2+1).get((int)animFrame),x+Background.getWallLeftPos(),y-offset,null);
+        } else {
+            g.drawImage(allAnims.get(state*2).get((int)animFrame),x+Background.getWallLeftPos(),y-offset,null);
+        }
+        g.setColor(Color.RED);
+        g.drawRect((int) alanRect.getX()+Background.getWallLeftPos(), (int) alanRect.getY()-offset, alanRect.width, alanRect.height);
     }
 }
 
