@@ -11,19 +11,14 @@ import java.util.ArrayList;
 // - ENSURE ENEMIES BOUNCE OFF EACH OTHER
 
 public class EnemyManager{
-    private ArrayList<Enemy> enemies = new ArrayList<Enemy>();
+    private ArrayList<Enemy> enemies = new ArrayList<>();
 
     public void addEnemy(int x, int y){
         enemies.add(new Enemy(x,y,30));
     }
     public void drawEnemies(Graphics g, Alan alan){
-        for(Enemy e:enemies){
-            e.draw(g,alan);
-        }
-    }
-    public void moveEnemiesY(int d){
-        for(Enemy e:enemies){
-            e.moveY(d);
+        for(Enemy e : enemies){
+            e.draw(g, alan);
         }
     }
 }
@@ -110,8 +105,6 @@ class Enemy {
 
     public void draw(Graphics g, Alan alan) {
         move(alan);
-        g.setColor(Color.MAGENTA);
-        g.drawRect((int) x, (int) y, width, height);
 
         if (state == FLY) {
             if ((int) animFrame == idle.size() - 1) {
@@ -119,7 +112,7 @@ class Enemy {
             } else {
                 animFrame += 0.33;
             }
-            g.drawImage(idle.get((int) animFrame), (int) x, (int) y, null);
+            g.drawImage(idle.get((int) animFrame), (int) x+Background.getWallLeftPos(), (int) y-Alan.getOffset(), null);
         }
     }
 }
