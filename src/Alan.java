@@ -92,6 +92,23 @@ public class Alan {
         } else {
             changeState(IDLE);
         }
+//        if (keys[a] || keys[d] || keys[KeyEvent.VK_W] || keys[KeyEvent.VK_S]) {
+//            if (keys[a]) {
+//                x -= speed;
+//            }
+//            if (keys[d]) {
+//                x += speed;
+//            }
+//            if (keys[KeyEvent.VK_W]) {
+//                y -= speed;
+//            }
+//            if (keys[KeyEvent.VK_S]) {
+//                y += speed;
+//            }
+//            changeState(WALK);
+//        } else {
+//            changeState(IDLE);
+//        }
     }
 
     public void changeState(int MODE) {
