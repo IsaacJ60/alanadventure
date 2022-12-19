@@ -29,7 +29,8 @@ public class Background {
         maplist = new MapList();
 
         // making default level
-        maplist.addMap(new Map(100));
+        Map lvl1 = new Map(100);
+        maplist.addMap(lvl1);
     }
 
     public void draw(Graphics g) {
@@ -100,6 +101,14 @@ class Tile {
         this.name = name;
         this.img = img;
         this.rimg = rimg;
+        this.width = img.getWidth(null);
+        this.height = img.getHeight(null);
+    }
+
+    Tile(String name, Image img) {
+        this.name = name;
+        this.img = img;
+        this.rimg = img;
         this.width = img.getWidth(null);
         this.height = img.getHeight(null);
     }

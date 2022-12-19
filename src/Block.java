@@ -1,4 +1,3 @@
-
 //TODO: COLLISION DETECTION AND TILE LINKING SO THAT RENDERING A BLOCK RENDERS THE TILE IT IS PAIRED WITH
 // PRIORITY - MEDIUM
 // - detect collision based on type of block (they have different dimensions)
@@ -14,6 +13,7 @@ public class Block {
     public static final int AIR = 0, BOX = 1, PLAT = 2, SPIKE = 3, WALL = 4;
     private int type;
     private int side;
+    private Tile tile;
     private Rectangle rect;
 
     public Block(int x, int y, int type, int side) {
@@ -22,6 +22,14 @@ public class Block {
         this.type = type;
         this.side = side;
         rect = new Rectangle(x,y,Util.BLOCKLENGTH,Util.BLOCKLENGTH);
+    }
+
+    public Tile getTile() {
+        return tile;
+    }
+
+    public void setTile(Tile tile) {
+        this.tile = tile;
     }
 
     public boolean collide(Rectangle otherRect) {

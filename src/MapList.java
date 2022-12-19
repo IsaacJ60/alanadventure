@@ -1,4 +1,3 @@
-import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Random;
@@ -12,9 +11,9 @@ import java.util.Random;
 
 public class MapList {
     private static ArrayList<Map> maps;
-    Tile boxTile,wallTopLeft,wallTopRight,wallBottomLeft,wallBottomRight,
+    public static Tile boxTile,wallTopLeft,wallTopRight,wallBottomLeft,wallBottomRight,
             wallFullLeft,wallFullRight,wallSideLeft,wallSideRight,wallTopBottom,
-            wallTop, wallBottom;
+            wallTop, wallBottom, platTile;
     public MapList() {
         maps = new ArrayList<>();
         boxTile = new Tile("BOX", "src/tiles/box.png");
@@ -29,6 +28,7 @@ public class MapList {
         wallTopBottom = new Tile("BOX", "src/tiles/walltopbottom.png");
         wallTop = new Tile("BOX", "src/tiles/walltop.png");
         wallBottom = new Tile("BOX", "src/tiles/wallbottom.png");
+        platTile = new Tile("PLAT", "src/tiles/plat.png");
     }
 
     public void addMap(Map map) {
@@ -40,12 +40,12 @@ public class MapList {
     }
 
     public static Block[][] getBlocks() {
-        return maps.get(GamePanel.getLevel()).getMap();
+        return maps.get(GamePanel.getLevel()).getMapWithWallImages();
     }
 
     public void drawBlocks(Graphics g, int level) {
         Map m = maps.get(level);
-        Block[][] blocks = m.getMap();
+        Block[][] blocks = m.getMapWithWallImages();
         int x, y;
         for (int i = 0; i < blocks.length; i++) {
 
@@ -60,73 +60,15 @@ public class MapList {
 
                 switch (blocks[i][j].getType()) {
                     case (Block.WALL) -> {
-//                        g.setColor(Color.DARK_GRAY);
-//                        g.fillRect(x, blocks[i][j].getY(), Util.BLOCKLENGTH, Util.BLOCKLENGTH);
-                        if (i>0 && i<m.rows-1) { // making sure checks are in bounds
-                            //HINT: CHECKING IF BLOCK IS ALONE (NO VERTICAL CONNECTIONS)
-                            if (blocks[i-1][j].getType() == Block.AIR && blocks[i+1][j].getType() == Block.AIR) {
-                                // CHECKING SIDE
-                                if (blocks[i][j].getSide() == Util.LEFT) {
-                                    if (blocks[i][j+1].getType() != Block.WALL) { // FULL SIDE
-                                        g.drawImage(wallFullRight.getImg(), x, y,null);
-                                    } else { // ONLY TOP BOTTOM - STILL MORE WALL SEGMENTS AHEAD
-                                        g.drawImage(wallTopBottom.getImg(), x, y,null);
-                                    }
-                                    // RIGHT SIDE LOGIC SIMILAR
-                                } else if (blocks[i][j].getSide() == Util.RIGHT) {
-                                    if (blocks[i][j-1].getType() != Block.WALL) {
-                                        g.drawImage(wallFullLeft.getImg(), x, y, null);
-                                    } else {
-                                        g.drawImage(wallTopBottom.getImg(), x, y,null);
-                                    }
-                                }
-                                //HINT: CHECKING IF PART OF STRAIGHT WALL SEQUENCE
-                            } else if (blocks[i-1][j].getType() == Block.WALL && blocks[i+1][j].getType() == Block.WALL) {
-                                if (blocks[i][j].getSide() == Util.LEFT) {
-                                    if (blocks[i][j+1].getType() == Block.AIR) {
-                                        g.drawImage(wallSideRight.getImg(), x, y,null);
-                                    }
-                                } else if (blocks[i][j].getSide() == Util.RIGHT) {
-                                    if (blocks[i][j-1].getType() == Block.AIR) {
-                                        g.drawImage(wallSideLeft.getImg(), x, y,null);
-                                    }
-                                }
-                                //HINT: CHECKING IF CORNER OR IF TOP/BOTTOM BLOCK
-                                // - SAME LOGIC EXCEPT CORNER HAS 2 SIDES OCCUPIED
-                                // - TOP/BOTTOM HAS 3 SIDES OCCUPIED AND ONE HORIZONTAL EDGE IS REMAINING
-                            } else if (blocks[i][j].getSide() == Util.LEFT) {
-                                if (blocks[i+1][j].getType() == Block.AIR && blocks[i][j+1].getType() == Block.AIR) {
-                                    g.drawImage(wallBottomRight.getImg(), x, y, null);
-                                } else if (blocks[i-1][j].getType() == Block.AIR && blocks[i][j+1].getType() == Block.AIR) {
-                                    g.drawImage(wallTopRight.getImg(), x, y, null);
-                                } else { // IF TOP RIGHT AND BOTTOM RIGHT HAVE ONE OCCUPIED SPACE
-                                    if (blocks[i-1][j].getType() == Block.WALL) {
-                                        g.drawImage(wallBottom.getImg(), x, y, null);
-                                    } else if (blocks[i+1][j].getType() == Block.WALL) {
-                                        g.drawImage(wallTop.getImg(), x, y, null);
-                                    }
-                                }
-                            } else if (blocks[i][j].getSide() == Util.RIGHT) {
-                                if (blocks[i+1][j].getType() == Block.AIR && blocks[i][j-1].getType() == Block.AIR) {
-                                    g.drawImage(wallBottomLeft.getImg(), x, y, null);
-                                } else if (blocks[i-1][j].getType() == Block.AIR && blocks[i][j-1].getType() == Block.AIR) {
-                                    g.drawImage(wallTopLeft.getImg(), x, y, null);
-                                } else {
-                                    if (blocks[i-1][j].getType() == Block.WALL) {
-                                        g.drawImage(wallBottom.getImg(), x, y, null);
-                                    } else if (blocks[i+1][j].getType() == Block.WALL) {
-                                        g.drawImage(wallTop.getImg(), x, y, null);
-                                    }
-                                }
-                            }
+                        if (i>0 && i<m.rows-1 && blocks[i][j].getTile() != null) { // making sure checks are in bounds
+                            g.drawImage(blocks[i][j].getTile().getImg(), x, y, null);
                         }
                     }
                     case (Block.BOX) -> {
                         g.drawImage(boxTile.getImg(), x, y, null);
                     }
                     case (Block.PLAT) -> {
-                        g.setColor(Color.YELLOW);
-                        g.fillRect(x, y, Util.BLOCKLENGTH, Util.BLOCKLENGTH/4);
+                        g.drawImage(platTile.getImg(), x, y, null);
                     }
                 }
             }
@@ -153,7 +95,71 @@ class Map {
         this.columns = map[0].length;
     }
 
-    public Block[][] getMap() {
+    public Block[][] getMapWithWallImages() {
+        for (int i = 0; i < map.length; i++) {
+            for (int j = 0; j < map[i].length; j++) {
+                if (map[i][j].getType() == Block.WALL) {
+                    if (i>0 && i<rows-1) { // making sure checks are in bounds
+                        //HINT: CHECKING IF BLOCK IS ALONE (NO VERTICAL CONNECTIONS)
+                        if (map[i-1][j].getType() == Block.AIR && map[i + 1][j].getType() == Block.AIR) {
+                            // CHECKING SIDE
+                            if (map[i][j].getSide() == Util.LEFT) {
+                                if (map[i][j+1].getType() != Block.WALL) { // FULL SIDE
+                                    map[i][j].setTile(MapList.wallFullRight);
+                                } else { // ONLY TOP BOTTOM - STILL MORE WALL SEGMENTS AHEAD
+                                    map[i][j].setTile(MapList.wallTopBottom);
+                                }
+                                // RIGHT SIDE LOGIC SIMILAR
+                            } else if (map[i][j].getSide() == Util.RIGHT) {
+                                if (map[i][j-1].getType() != Block.WALL) {
+                                    map[i][j].setTile(MapList.wallFullLeft);
+                                } else {
+                                    map[i][j].setTile(MapList.wallTopBottom);
+                                }
+                            }
+                            //HINT: CHECKING IF PART OF STRAIGHT WALL SEQUENCE
+                        } else if (map[i - 1][j].getType() == Block.WALL && map[i + 1][j].getType() == Block.WALL) {
+                            if (map[i][j].getSide() == Util.LEFT) {
+                                if (map[i][j + 1].getType() == Block.AIR) {
+                                    map[i][j].setTile(MapList.wallSideRight);
+                                }
+                            } else if (map[i][j].getSide() == Util.RIGHT) {
+                                if (map[i][j - 1].getType() == Block.AIR) {
+                                    map[i][j].setTile(MapList.wallSideLeft);
+                                }
+                            }
+                            //HINT: CHECKING IF CORNER OR IF TOP/BOTTOM BLOCK
+                            // - SAME LOGIC EXCEPT CORNER HAS 2 SIDES OCCUPIED
+                            // - TOP/BOTTOM HAS 3 SIDES OCCUPIED AND ONE HORIZONTAL EDGE IS REMAINING
+                        } else if (map[i][j].getSide() == Util.LEFT) {
+                            if (map[i + 1][j].getType() == Block.AIR && map[i][j + 1].getType() == Block.AIR) {
+                                map[i][j].setTile(MapList.wallBottomRight);
+                            } else if (map[i - 1][j].getType() == Block.AIR && map[i][j + 1].getType() == Block.AIR) {
+                                map[i][j].setTile(MapList.wallTopRight);
+                            } else { // IF TOP RIGHT AND BOTTOM RIGHT HAVE ONE OCCUPIED SPACE
+                                if (map[i - 1][j].getType() == Block.WALL) {
+                                    map[i][j].setTile(MapList.wallBottom);
+                                } else if (map[i + 1][j].getType() == Block.WALL) {
+                                    map[i][j].setTile(MapList.wallTop);
+                                }
+                            }
+                        } else if (map[i][j].getSide() == Util.RIGHT) {
+                            if (map[i + 1][j].getType() == Block.AIR && map[i][j - 1].getType() == Block.AIR) {
+                                map[i][j].setTile(MapList.wallBottomLeft);
+                            } else if (map[i - 1][j].getType() == Block.AIR && map[i][j - 1].getType() == Block.AIR) {
+                                map[i][j].setTile(MapList.wallTopLeft);
+                            } else {
+                                if (map[i - 1][j].getType() == Block.WALL) {
+                                    map[i][j].setTile(MapList.wallBottom);
+                                } else if (map[i + 1][j].getType() == Block.WALL) {
+                                    map[i][j].setTile(MapList.wallTop);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
         return map;
     }
 
@@ -170,7 +176,6 @@ class Map {
 
     // GET BLOCK AT COORD (a,b)
     public Block getBlock(int a, int b) {
-        System.out.println("hmm: " + a + " " + b);
         return map[a][b];
     }
 
@@ -191,7 +196,41 @@ class Map {
 
     // GENERATE ALL BLOCKS FOR LEVEL
     public void generateBlocks() {
+        generatePlatBlocks();
         generateWallBlocks(); // BOX BLOCKS GENERATED WITHIN WALL BLOCKS
+    }
+
+    public void generatePlatBlocks() {
+        for (int i = 3; i < rows-5; i+=Util.MAXCHUNKSIZE) {
+            //HINT: getting type of wall, if doesn't match any types then don't spawn
+            // - increasing bound decreases wall spawns
+            int platType = rand.nextInt(0,7);
+            //NOTE - 3 PATTERNS ARE:
+            // - PILLAR (3x3 to 1x3 to 1x1)
+            // - FUNNEL (2 sides funnel into centre)
+            // - CLIFF (1 side forms cliff structure)
+            switch (platType) {
+                case 0 -> {
+                    System.out.println("ROW: " + i + ", 1FLAT");
+                    generateFlat(i,1);
+                }
+                case 1 -> {
+                    System.out.println("ROW: " + i + ", 2FLAT");
+                    generateFlat(i,2);
+                }
+                case 2 -> {
+                    System.out.println("ROW: " + i + ", 3FLAT");
+                    generateFlat(i,3);
+                }
+            }
+        }
+    }
+
+    public void generateFlat(int row, int length) {
+        int start = rand.nextInt(0,columns-length);
+        for (int i = start; i < length; i++) {
+            placeBlock(row, i, Block.PLAT, Util.INDEX, Util.NEUTRAL);
+        }
     }
 
     // GENERATING BOX BLOCKS
