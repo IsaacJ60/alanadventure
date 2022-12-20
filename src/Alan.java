@@ -15,15 +15,15 @@ import java.util.ArrayList;
 //   DONE - flip animation for opposite direction
 
 public class Alan {
-    public static final int a = KeyEvent.VK_A, d = KeyEvent.VK_D;
+    public static final int a = KeyEvent.VK_A, d = KeyEvent.VK_D, space = KeyEvent.VK_SPACE;
 
     private boolean moveLeft = true, moveRight = true;
 
     int x, y;
     int width, height;
     int health, speed;
-    double velocity, accel = 0.0981;
-    static int offset;
+    double velocity, accel = 0.1, jerk = 0.1;
+    static int offset, screenoffset;
     Blaster weapon;
 
     double animFrame;
@@ -91,17 +91,13 @@ public class Alan {
         this.x = x;
     }
 
-    public int getY() {
-        return y;
-    }
-
     public void setY(int y) {
         this.y = y;
     }
 
     public int getY(boolean adjusted) {
         if (adjusted) {
-            return y-offset;
+            return y-offset+screenoffset;
         } else {
             return y;
         }
@@ -125,8 +121,13 @@ public class Alan {
 
     //TODO: JUMP
     public void move(boolean[] keys, Graphics g) {
+//        System.out.println(jerk);
         getCollision(MapList.getBlocks(),g);
         alanRect.setLocation(x+5,y);
+        //HINT: make sure to check states if they are giving bugs
+        if (keys[space] && state != JUMP) {
+            changeState(JUMP, dir);
+        }
         if (keys[a] || keys[d]) {
             if (speed < 10) {
                 speed += 1;
@@ -147,13 +148,21 @@ public class Alan {
                 x += speed;
                 x = Math.min(x, Background.getWallRightPos()-Background.getWallLeftPos()-Background.getWallWidth()-width);
             }
-            changeState(WALK, dir);
-        } else {
+            if (state != JUMP) {
+                changeState(WALK, dir);
+            }
+        } else { // TODO: change to else if and put conditions
             changeState(IDLE, dir);
             speed = 0;
         }
         y+=(int)velocity;
         offset+=(int)velocity;
+        if (screenoffset < 50 && velocity != 0) {
+            if (jerk < 3) {
+                jerk += 0.1;
+            }
+            screenoffset+=(int)jerk;
+        }
         alanRect.setLocation(x+5,y);
     }
 
@@ -164,8 +173,8 @@ public class Alan {
         state = MODE;
     }
 
-    public void snapY(int y) {
-        this.y = y;
+    public void jump() {
+        System.out.println("JUMP!");
     }
 
     public void getCollision(Block[][] blocks, Graphics g) {
@@ -187,6 +196,12 @@ public class Alan {
             }
         }
         if (mostY <= 10) {
+            if (screenoffset > 0) {
+                if (jerk > 0) {
+                    jerk -= 0.1;
+                }
+                screenoffset -= (int)jerk;
+            }
             velocity = 0;
         } else {
             if (velocity == 0) {
@@ -256,12 +271,13 @@ public class Alan {
             }
         }
         if (dir == LEFT) {
+            //FIXME: not yet added jump animation so index out of bounds (DON'T JUMP!)
             g.drawImage(allAnims.get(state*2+1).get((int)animFrame),getX(true),getY(true),null);
         } else {
             g.drawImage(allAnims.get(state*2).get((int)animFrame),getX(true),getY(true),null);
         }
         g.setColor(Color.RED);
-        g.drawRect((int) alanRect.getX()+Background.getWallLeftPos()+Background.getWallWidth(), (int) alanRect.getY()-offset, alanRect.width, alanRect.height);
+        g.drawRect((int) alanRect.getX()+Background.getWallLeftPos()+Background.getWallWidth(), (int) alanRect.getY()-offset+screenoffset, alanRect.width, alanRect.height);
     }
 }
 
