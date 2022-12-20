@@ -1,7 +1,6 @@
 //TODO: COLLISION DETECTION AND TILE LINKING SO THAT RENDERING A BLOCK RENDERS THE TILE IT IS PAIRED WITH
 // PRIORITY - MEDIUM
-// - detect collision based on type of block (they have different dimensions)
-// - pair a tile object with it or figure out alternative (dumb-brained way also works, not too much of hassle)
+// DONE - pair a tile object with it or figure out alternative (dumb-brained way also works, not too much of hassle)
 
 import java.awt.*;
 
@@ -48,16 +47,24 @@ public class Block {
         this.side = side;
     }
 
-    public int getX() {
-        return x;
+    public int getX(boolean adjusted) {
+        if (adjusted) {
+            return x+Background.getWallLeftPos()+Background.getWallWidth();
+        } else {
+            return x;
+        }
     }
 
     public void setX(int x) {
         this.x = x;
     }
 
-    public int getY() {
-        return y;
+    public int getY(boolean adjusted) {
+        if (adjusted) {
+            return y-Alan.getOffset()+Background.getWallWidth();
+        } else {
+            return y;
+        }
     }
 
     public void setY(int y) {

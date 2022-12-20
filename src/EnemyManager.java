@@ -78,8 +78,8 @@ class Enemy {
 
     public void move(Alan alan) {
         // distance calculations
-        distX = x - alan.getX();
-        distY = y - alan.getY();
+        distX = x - alan.getX(false);
+        distY = y - alan.getY(false);
         distance = Math.sqrt(Math.pow(distX, 2) + Math.pow(distY, 2)); // pythag theorem
         // adding up how many frames movement has been in x direction, capping out at +-20 to limit terminal velocity
         if (distX > 0 && xFrames > -20) {

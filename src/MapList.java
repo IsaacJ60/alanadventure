@@ -4,10 +4,11 @@ import java.util.Random;
 
 //TODO: CREATE MORE RNG GENERATED BLOCKS
 // PRIORITY - HIGH
-// - create good patterns for platform and boxes
-// - keep track of index errors and out of bounds
-// - implement block instance specific collision
+// DONE - create good patterns for platform and boxes
+// IN PROGRESS - keep track of index errors and out of bounds
 
+//FIXME:
+// - BOTTOM WALL BLOCK NOT SPAWNING
 
 public class MapList {
     private static ArrayList<Map> maps;
@@ -51,16 +52,16 @@ public class MapList {
 
             // TMP CODE TO DISPLAY ROW NUMBERS
             g.setColor(Color.WHITE);
-            g.drawString(String.valueOf(i), 250, blocks[i][0].getY()+20);
+            g.drawString(String.valueOf(i), 250, blocks[i][0].getY(true)+20);
 
             for (int j = 0; j < blocks[i].length; j++) {
 
-                x = blocks[i][j].getX()+Background.getWallLeftPos();
-                y = blocks[i][j].getY()-Alan.getOffset();
+                x = blocks[i][j].getX(true);
+                y = blocks[i][j].getY(true);
 
                 switch (blocks[i][j].getType()) {
                     case (Block.WALL) -> {
-                        if (i>0 && i<m.rows-1 && blocks[i][j].getTile() != null) { // making sure checks are in bounds
+                        if (i>0 && i<Map.getRows()-1 && blocks[i][j].getTile() != null) { // making sure checks are in bounds
                             g.drawImage(blocks[i][j].getTile().getImg(), x, y, null);
                         }
                     }
@@ -78,7 +79,7 @@ public class MapList {
 
 class Map {
     Block[][] map;
-    int columns = 9, rows; // AMOUNT OF COLUMNS AND ROWS IN THE GAME WINDOW
+    private static int columns = 9, rows; // AMOUNT OF COLUMNS AND ROWS IN THE GAME WINDOW
 
     Random rand = new Random();
 
@@ -93,6 +94,14 @@ class Map {
         this.map = map;
         this.rows = map.length;
         this.columns = map[0].length;
+    }
+
+    public static int getColumns() {
+        return columns;
+    }
+
+    public static int getRows() {
+        return rows;
     }
 
     public Block[][] getMapWithWallImages() {
@@ -191,7 +200,7 @@ class Map {
     }
 
     private void placeBlock(int x, int y, int r, int c, int blockType, int side) {
-        map[r][c] = new Block(x+Background.getWallWidth(), y, blockType, side);
+        map[r][c] = new Block(x, y, blockType, side);
     }
 
     // GENERATE ALL BLOCKS FOR LEVEL

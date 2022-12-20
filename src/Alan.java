@@ -6,18 +6,23 @@ import java.util.ArrayList;
 
 //TODO: MOVEMENT AND OFFSET
 // PRIORITY - LOW-MEDIUM
-// - calculate background position based on player offset
-// - acceleration
+//   IN-PROGRESS - acceleration
+//   INCOMPLETE - JUMP
+//   INCOMPLETE - PLATFORM COLLISION
+//   DONE - calculate background position based on player offset
 // > GRAPHICS:
-//   - flip animation for opposite direction
-//   - finish other animations
+//   INCOMPLETE - finish other animations
+//   DONE - flip animation for opposite direction
 
 public class Alan {
     public static final int a = KeyEvent.VK_A, d = KeyEvent.VK_D;
 
+    private boolean moveLeft = true, moveRight = true;
+
     int x, y;
     int width, height;
-    int health, speed, velocity;
+    int health, speed;
+    double velocity, accel = 0.0981;
     static int offset;
     Blaster weapon;
 
@@ -37,7 +42,7 @@ public class Alan {
 
     private Rectangle alanRect;
 
-    public Alan(int x, int y, int health, int speed, int velocity, Blaster weapon) {
+    public Alan(int x, int y, int health, int speed, double velocity, Blaster weapon) {
         this.x = x;
         this.y = y;
         this.health = health;
@@ -45,24 +50,24 @@ public class Alan {
         this.velocity = velocity;
         this.weapon = weapon;
         animFrame = 0;
-        this.width = 30;
+        this.width = 20;
         this.height = 30;
 
         offset = 0;
 
-        alanRect = new Rectangle(x,y,width-10,height);
+        alanRect = new Rectangle(x+5,y,width,height);
 
         for (int i = 0; i < 7; i++) {
-            idle.add(new ImageIcon("src/assets/alan/idle/idle" + i + ".png").getImage().getScaledInstance(width, height,Image.SCALE_DEFAULT));
+            idle.add(new ImageIcon("src/assets/alan/idle/idle" + i + ".png").getImage().getScaledInstance(30, height,Image.SCALE_DEFAULT));
         }
         for (int i = 0; i < 7; i++) {
-            ridle.add(new ImageIcon("src/assets/alan/idle/m_idle" + i + ".png").getImage().getScaledInstance(width, height,Image.SCALE_DEFAULT));
+            ridle.add(new ImageIcon("src/assets/alan/idle/m_idle" + i + ".png").getImage().getScaledInstance(30, height,Image.SCALE_DEFAULT));
         }
         for (int i = 0; i < 7; i++) {
-            walk.add(new ImageIcon("src/assets/alan/walk/walk" + i + ".png").getImage().getScaledInstance(width, height,Image.SCALE_DEFAULT));
+            walk.add(new ImageIcon("src/assets/alan/walk/walk" + i + ".png").getImage().getScaledInstance(30, height,Image.SCALE_DEFAULT));
         }
         for (int i = 0; i < 7; i++) {
-            rwalk.add(new ImageIcon("src/assets/alan/walk/m_walk" + i + ".png").getImage().getScaledInstance(width, height,Image.SCALE_DEFAULT));
+            rwalk.add(new ImageIcon("src/assets/alan/walk/m_walk" + i + ".png").getImage().getScaledInstance(30, height,Image.SCALE_DEFAULT));
         }
         allAnims.add(idle);
         allAnims.add(ridle);
@@ -74,8 +79,12 @@ public class Alan {
         return offset;
     }
 
-    public int getX() {
-        return x;
+    public int getX(boolean adjusted) {
+        if (adjusted) {
+            return x + Background.getWallLeftPos()+Background.getWallWidth();
+        } else {
+            return x;
+        }
     }
 
     public void setX(int x) {
@@ -88,6 +97,14 @@ public class Alan {
 
     public void setY(int y) {
         this.y = y;
+    }
+
+    public int getY(boolean adjusted) {
+        if (adjusted) {
+            return y-offset;
+        } else {
+            return y;
+        }
     }
 
     public int getHealth() {
@@ -106,25 +123,37 @@ public class Alan {
         this.weapon = weapon;
     }
 
+    //TODO: JUMP
     public void move(boolean[] keys, Graphics g) {
         getCollision(MapList.getBlocks(),g);
+        alanRect.setLocation(x+5,y);
         if (keys[a] || keys[d]) {
-            if (keys[a]) {
+            if (speed < 10) {
+                speed += 1;
+            }
+            if (keys[a] && moveLeft) {
+                if (dir == RIGHT) {
+                    speed = 0;
+                }
                 dir = LEFT;
                 x -= speed;
                 x = Math.max(x, 0);
             }
-            if (keys[d]) {
+            if (keys[d] && moveRight) {
+                if (dir == LEFT) {
+                    speed = 0;
+                }
                 dir = RIGHT;
                 x += speed;
-                x = Math.min(x, Background.getWallRightPos()-Background.getWallLeftPos()-Background.getWallWidth());
+                x = Math.min(x, Background.getWallRightPos()-Background.getWallLeftPos()-Background.getWallWidth()-width);
             }
             changeState(WALK, dir);
         } else {
             changeState(IDLE, dir);
+            speed = 0;
         }
-        y+=velocity;
-        offset+=velocity;
+        y+=(int)velocity;
+        offset+=(int)velocity;
         alanRect.setLocation(x+5,y);
     }
 
@@ -135,27 +164,79 @@ public class Alan {
         state = MODE;
     }
 
+    public void snapY(int y) {
+        this.y = y;
+    }
+
     public void getCollision(Block[][] blocks, Graphics g) {
-        for (int i = 0; i < blocks.length; i++) {
-            for (int j = 0; j < blocks[i].length; j++) {
-                if (blocks[i][j].collide(alanRect)) {
-                    if (blocks[i][j].getType() == Block.AIR) {
-                        speed = 10;
-                        velocity = 5;
-                    } else {
-                        //TODO: BRUH COLLISION SO ANNOYING
-                        if (alanRect.intersectsLine(blocks[i][j].getX(),blocks[i][j].getY(),blocks[i][j].getX()+Util.BLOCKLENGTH,blocks[i][j].getY())) {
-                            velocity = 0;
-                            g.setColor(Color.RED);
-                            g.drawLine(blocks[i][j].getX()+Background.getWallLeftPos(),blocks[i][j].getY()-offset,blocks[i][j].getX()+Background.getWallLeftPos()+Util.BLOCKLENGTH,blocks[i][j].getY()-offset);
-                        } else if (alanRect.intersectsLine(blocks[i][j].getX(),blocks[i][j].getY(),blocks[i][j].getX(),blocks[i][j].getY()+Util.BLOCKLENGTH)) {
-                            x = Math.min(x-Util.BLOCKLENGTH,blocks[i][j].getX()-Util.BLOCKLENGTH-1);
-                        } else if (alanRect.intersectsLine(blocks[i][j].getX()+Util.BLOCKLENGTH,blocks[i][j].getY(),blocks[i][j].getX()+Util.BLOCKLENGTH,blocks[i][j].getY()+Util.BLOCKLENGTH)) {
-                            x = Math.max(x,blocks[i][j].getX()+Util.BLOCKLENGTH+1);
+        int nextRow = getY(false)/Util.BLOCKLENGTH+1;
+        int mostY = 100, mostLeftX = 100, mostRightX = 100;
+        for (int i = 0; i < Map.getColumns(); i++) {
+            int blockType = blocks[nextRow][i].getType();
+            if (blockType != Block.AIR) {
+                if (blockType == Block.PLAT) {
+                    //TODO: CUSTOM PLATFORM COLLISION DETECTION
+                } else if (blockType == Block.WALL || blockType == Block.BOX) {
+                    if (x+width > blocks[nextRow][i].getX(false) && x < blocks[nextRow][i].getX(false) + Util.BLOCKLENGTH) {
+                        if (blocks[nextRow][i].getY(false)-y < mostY) {
+                            mostY = blocks[nextRow][i].getY(false)-y;
                         }
                     }
                 }
+
             }
+        }
+        if (mostY <= 10) {
+            velocity = 0;
+        } else {
+            if (velocity == 0) {
+                velocity = 3;
+            } else if (velocity < 10) {
+                velocity += accel*5;
+            }
+        }
+        for (int r = nextRow-1; r < nextRow; r++) {
+            for (int i = Map.getColumns()-1; i >= 0; i--) {
+                if (blocks[r][i].getX(false) < x) {
+                    if (blocks[r][i].getType() != Block.AIR) {
+                        if (y+height > blocks[r][i].getY(false) && y < blocks[r][i].getY(false) + Util.BLOCKLENGTH) {
+                            g.setColor(Color.CYAN);
+                            g.drawRect(blocks[r][i].getX(true), blocks[r][i].getY(true), Util.BLOCKLENGTH, Util.BLOCKLENGTH);
+                            if (x-(blocks[r][i].getX(false)+Util.BLOCKLENGTH) < mostLeftX) {
+                                mostLeftX = Math.abs(x-(blocks[r][i].getX(false)+Util.BLOCKLENGTH));
+                            }
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+        if (mostLeftX <= speed) {
+            moveLeft = false;
+        } else {
+            moveLeft = true;
+        }
+
+        for (int r = nextRow-1; r < nextRow; r++) {
+            for (int i = 0; i < Map.getColumns(); i++) {
+                if (blocks[r][i].getX(false) > x) {
+                    if (blocks[r][i].getType() != Block.AIR) {
+                        if (y+height > blocks[r][i].getY(false) && y < blocks[r][i].getY(false) + Util.BLOCKLENGTH) {
+                            g.setColor(Color.CYAN);
+                            g.drawRect(blocks[r][i].getX(true), blocks[r][i].getY(true), Util.BLOCKLENGTH, Util.BLOCKLENGTH);
+                            if (blocks[r][i].getX(false)-x+width < mostRightX) {
+                                mostRightX = Math.abs(blocks[r][i].getX(false)-(x+width));
+                            }
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+        if (mostRightX <= speed) {
+            moveRight = false;
+        } else {
+            moveRight = true;
         }
     }
 
@@ -175,12 +256,12 @@ public class Alan {
             }
         }
         if (dir == LEFT) {
-            g.drawImage(allAnims.get(state*2+1).get((int)animFrame),x+Background.getWallLeftPos(),y-offset,null);
+            g.drawImage(allAnims.get(state*2+1).get((int)animFrame),getX(true),getY(true),null);
         } else {
-            g.drawImage(allAnims.get(state*2).get((int)animFrame),x+Background.getWallLeftPos(),y-offset,null);
+            g.drawImage(allAnims.get(state*2).get((int)animFrame),getX(true),getY(true),null);
         }
         g.setColor(Color.RED);
-        g.drawRect((int) alanRect.getX()+Background.getWallLeftPos(), (int) alanRect.getY()-offset, alanRect.width, alanRect.height);
+        g.drawRect((int) alanRect.getX()+Background.getWallLeftPos()+Background.getWallWidth(), (int) alanRect.getY()-offset, alanRect.width, alanRect.height);
     }
 }
 
