@@ -48,7 +48,16 @@ public class MapList {
         Map m = maps.get(level);
         Block[][] blocks = m.getMapWithWallImages();
         int x, y;
-        for (int i = 0; i < blocks.length; i++) {
+        int alanY = Alan.getY(false)/Util.BLOCKLENGTH;
+        int blockBegin = 0, blockEnd = blocks.length;
+        if (alanY > 15) {
+            blockBegin = alanY - 15;
+        }
+        if (alanY < m.getRows()-15) {
+            blockEnd = alanY + 15;
+        }
+
+        for (int i = blockBegin; i < blockEnd; i++) {
 
             // TMP CODE TO DISPLAY ROW NUMBERS
             g.setColor(Color.WHITE);
@@ -61,7 +70,7 @@ public class MapList {
 
                 switch (blocks[i][j].getType()) {
                     case (Block.WALL) -> {
-                        if (i>0 && i<Map.getRows()-1 && blocks[i][j].getTile() != null) { // making sure checks are in bounds
+                        if (i>0 && i<m.getRows()-1 && blocks[i][j].getTile() != null) { // making sure checks are in bounds
                             g.drawImage(blocks[i][j].getTile().getImg(), x, y, null);
                         }
                     }
@@ -79,7 +88,8 @@ public class MapList {
 
 class Map {
     Block[][] map;
-    private static int columns = 9, rows; // AMOUNT OF COLUMNS AND ROWS IN THE GAME WINDOW
+    private static int columns = 9;
+    private int rows; // AMOUNT OF COLUMNS AND ROWS IN THE GAME WINDOW
 
     Random rand = new Random();
 
@@ -100,7 +110,7 @@ class Map {
         return columns;
     }
 
-    public static int getRows() {
+    public int getRows() {
         return rows;
     }
 

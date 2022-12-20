@@ -19,7 +19,7 @@ public class Alan {
 
     private boolean moveLeft = true, moveRight = true;
 
-    int x, y;
+    private static int x, y;
     int width, height;
     int health, speed;
     double velocity, accel = 0.1, jerk = 0.1;
@@ -79,7 +79,7 @@ public class Alan {
         return offset;
     }
 
-    public int getX(boolean adjusted) {
+    public static int getX(boolean adjusted) {
         if (adjusted) {
             return x + Background.getWallLeftPos()+Background.getWallWidth();
         } else {
@@ -87,15 +87,15 @@ public class Alan {
         }
     }
 
-    public void setX(int x) {
-        this.x = x;
+    public static void setX(int p) {
+        x = p;
     }
 
-    public void setY(int y) {
-        this.y = y;
+    public static void setY(int p) {
+        y = p;
     }
 
-    public int getY(boolean adjusted) {
+    public static int getY(boolean adjusted) {
         if (adjusted) {
             return y-offset+screenoffset;
         } else {
