@@ -15,49 +15,51 @@ import java.util.ArrayList;
 //   DONE - flip animation for opposite direction
 
 public class Alan {
-    public static final int a = KeyEvent.VK_A, d = KeyEvent.VK_D, space = KeyEvent.VK_SPACE;
+    public static final int a = KeyEvent.VK_A, d = KeyEvent.VK_D, space = KeyEvent.VK_SPACE; // constants for keyboard input
+    private static final int LEFT = 0, RIGHT = 1; // constants for direction
+    public static final int IDLE = 0, WALK = 1, JUMP = 2, FALL = 3; // constants for state
+    private static int x, y; // position of alan relative to game window
+    private int width, height; // dimensions
+    private int health, maxHealth, healthProgress; // current health, health capacity, and progress to +1 maximum health
+    private boolean moveLeft = true, moveRight = true; // whether alan can move left or right
+    private double velX, velY; // movement speed
+    private double accelY, jerk; // acceleration for gravity
+    private static int offset, screenOffset; // how far down alan has "travelled", subtracted from other game elements to give the effect that alan is falling
+    private Blaster weapon; // current weapon
+    private double animFrame; // the frame of the current animation being played
+    private int state = IDLE; // current state (e.g., idle, walk, fall, shoot) to change what animation is playing
+    private int dir = LEFT; // the direction alan is facing
 
-    private boolean moveLeft = true, moveRight = true;
-
-    private static int x, y;
-    int width, height;
-    int health, speed;
-    double velocity, accel = 0.1, jerk = 0.1;
-    static int offset, screenoffset;
-    Blaster weapon;
-
-    double animFrame;
-
-    int state = 0;
-    private final int LEFT = 0, RIGHT = 1;
-    int dir = LEFT;
-    public static final int IDLE = 0, WALK = 1, JUMP = 2, FALL = 3;
-
+    // arraylists for frames of every animation
     ArrayList<Image> walk = new ArrayList<>();
     ArrayList<Image> rwalk = new ArrayList<>();
     ArrayList<Image> idle = new ArrayList<>();
     ArrayList<Image> ridle = new ArrayList<>();
     ArrayList<Image> fall = new ArrayList<>();
+    ArrayList<Image> jump = new ArrayList<>();
     ArrayList<ArrayList<Image>> allAnims = new ArrayList<>();
 
-    private Rectangle alanRect;
+    private Rectangle alanRect; // hitbox
 
-    public Alan(int x, int y, int health, int speed, double velocity, Blaster weapon) {
+    public Alan(int x, int y, Blaster weapon) {
         this.x = x;
         this.y = y;
-        this.health = health;
-        this.speed = speed;
-        this.velocity = velocity;
-        this.weapon = weapon;
-        animFrame = 0;
         this.width = 20;
         this.height = 30;
+        this.health = 4;
+        this.velX = 5;
+        this.velY = 10;
+        this.accelY = 0.1;
+        this.jerk = 0.1;
+        this.weapon = weapon;
+        this.animFrame = 0;
 
-        offset = 0;
+        this.offset = 0;
+        this.screenOffset = 0;
 
-        alanRect = new Rectangle(x+5,y,width,height);
+        this.alanRect = new Rectangle(x+5,y,width,height); // adding 5 because the frames for alan's animation has transparency on the sides
 
-        for (int i = 0; i < 7; i++) {
+        for (int i = 0; i < 7; i++) { // adding all frames for each animation and scaling all images to 30x30 for 1:1 aspect ratio
             idle.add(new ImageIcon("src/assets/alan/idle/idle" + i + ".png").getImage().getScaledInstance(30, height,Image.SCALE_DEFAULT));
         }
         for (int i = 0; i < 7; i++) {
@@ -69,108 +71,101 @@ public class Alan {
         for (int i = 0; i < 7; i++) {
             rwalk.add(new ImageIcon("src/assets/alan/walk/m_walk" + i + ".png").getImage().getScaledInstance(30, height,Image.SCALE_DEFAULT));
         }
+        for (int i = 0; i < 9; i++) {
+            jump.add(new ImageIcon("src/assets/alan/jump/jump" + i + ".png").getImage().getScaledInstance(30, height,Image.SCALE_DEFAULT));
+        }
         allAnims.add(idle);
         allAnims.add(ridle);
         allAnims.add(walk);
         allAnims.add(rwalk);
+        allAnims.add(jump);
+        allAnims.add(jump);
     }
 
-    public static int getOffset() {
-        return offset;
-    }
-
-    public static int getX(boolean adjusted) {
-        if (adjusted) {
+    public static int getX(boolean adjusted) { // gets x
+        if (adjusted) { // whether you want x relative to the gameplay window
             return x + Background.getWallLeftPos()+Background.getWallWidth();
         } else {
             return x;
         }
     }
 
-    public static void setX(int p) {
-        x = p;
-    }
+    public void setX(int x) {
+        this.x = x;
+    } // sets x
 
-    public static void setY(int p) {
-        y = p;
-    }
 
-    public static int getY(boolean adjusted) {
-        if (adjusted) {
-            return y-offset+screenoffset;
+    public static int getY(boolean adjusted) { // gets y
+        if (adjusted) { // whether you want y relative to the gameplay window
+            return y-offset+screenOffset;
         } else {
             return y;
         }
     }
 
-    public int getHealth() {
-        return health;
+    public void setY(int p) {y = p;} // sets y
+    public int getHealth() {return health;} // gets hp
+    public void setHealth(int health) {this.health = health;} // sets hp
+    public static int getOffset() {return offset;} // gets offset
+    public static int getScreenOffset() {return screenOffset;} // gets screenOffset
+    public Blaster getWeapon() {return weapon;} // gets current weapon
+    public void setWeapon(Blaster weapon) {this.weapon = weapon;} // sets current weapon
+
+    public void changeState(int MODE, int d) { // changes state
+        if (state != MODE || d != dir) {
+            animFrame = 0;
+        }
+        state = MODE;
     }
 
-    public void setHealth(int health) {
-        this.health = health;
-    }
-
-    public Blaster getWeapon() {
-        return weapon;
-    }
-
-    public void setWeapon(Blaster weapon) {
-        this.weapon = weapon;
-    }
 
     //TODO: JUMP
     public void move(boolean[] keys, Graphics g) {
-//        System.out.println(jerk);
-        getCollision(MapList.getBlocks(),g);
-        alanRect.setLocation(x+5,y);
+        getCollision(MapList.getBlocks(),g); // getting collision between player and blocks
+        alanRect.setLocation(x+5,y); // setting rect location
         //HINT: make sure to check states if they are giving bugs
         if (keys[space] && state != JUMP) {
             changeState(JUMP, dir);
         }
         if (keys[a] || keys[d]) {
-            if (speed < 10) {
-                speed += 1;
+            if (velX < 10) {
+                velX += 1;
             }
             if (keys[a] && moveLeft) {
                 if (dir == RIGHT) {
-                    speed = 0;
+                    velX = 0;
                 }
                 dir = LEFT;
-                x -= speed;
+                x -= velX;
                 x = Math.max(x, 0);
             }
             if (keys[d] && moveRight) {
                 if (dir == LEFT) {
-                    speed = 0;
+                    velX = 0;
                 }
                 dir = RIGHT;
-                x += speed;
+                x += velX;
                 x = Math.min(x, Background.getWallRightPos()-Background.getWallLeftPos()-Background.getWallWidth()-width);
             }
             if (state != JUMP) {
                 changeState(WALK, dir);
             }
-        } else { // TODO: change to else if and put conditions
+        } else if (state != JUMP) { // TODO: change to else if and put conditions
             changeState(IDLE, dir);
-            speed = 0;
+            velX = 0;
         }
-        y+=(int)velocity;
-        offset+=(int)velocity;
-        if (screenoffset < 50 && velocity != 0) {
+        if (state == JUMP) {
+            jump();
+        }
+        y+=(int)velY;
+        offset+=(int)velY;
+        if (screenOffset < 50 && velY != 0) {
             if (jerk < 3) {
-                jerk += 0.1;
+                jerk += 0.2;
             }
-            screenoffset+=(int)jerk;
+            screenOffset+=(int)jerk;
         }
         alanRect.setLocation(x+5,y);
-    }
-
-    public void changeState(int MODE, int d) {
-        if (state != MODE || d != dir) {
-            animFrame = 0;
-        }
-        state = MODE;
     }
 
     public void jump() {
@@ -179,7 +174,7 @@ public class Alan {
 
     public void getCollision(Block[][] blocks, Graphics g) {
         int nextRow = getY(false)/Util.BLOCKLENGTH+1;
-        int mostY = 100, mostLeftX = 100, mostRightX = 100;
+        int nearestBlockY = 100, nearestLeftX = 100, nearestRightX = 100;
         for (int i = 0; i < Map.getColumns(); i++) {
             int blockType = blocks[nextRow][i].getType();
             if (blockType != Block.AIR) {
@@ -187,27 +182,27 @@ public class Alan {
                     //TODO: CUSTOM PLATFORM COLLISION DETECTION
                 } else if (blockType == Block.WALL || blockType == Block.BOX) {
                     if (x+width > blocks[nextRow][i].getX(false) && x < blocks[nextRow][i].getX(false) + Util.BLOCKLENGTH) {
-                        if (blocks[nextRow][i].getY(false)-y < mostY) {
-                            mostY = blocks[nextRow][i].getY(false)-y;
+                        if (blocks[nextRow][i].getY(false)-y < nearestBlockY) {
+                            nearestBlockY = blocks[nextRow][i].getY(false)-y;
                         }
                     }
                 }
 
             }
         }
-        if (mostY <= 10) {
-            if (screenoffset > 0) {
+        if (nearestBlockY <= 10) {
+            if (screenOffset > 0) {
                 if (jerk > 0) {
                     jerk -= 0.1;
                 }
-                screenoffset -= (int)jerk;
+                screenOffset -= (int)jerk;
             }
-            velocity = 0;
+            velY = 0;
         } else {
-            if (velocity == 0) {
-                velocity = 3;
-            } else if (velocity < 10) {
-                velocity += accel*5;
+            if (velY == 0) {
+                velY = 3;
+            } else if (velY < 10) {
+                velY += accelY*5;
             }
         }
         for (int r = nextRow-1; r < nextRow; r++) {
@@ -217,8 +212,8 @@ public class Alan {
                         if (y+height > blocks[r][i].getY(false) && y < blocks[r][i].getY(false) + Util.BLOCKLENGTH) {
                             g.setColor(Color.CYAN);
                             g.drawRect(blocks[r][i].getX(true), blocks[r][i].getY(true), Util.BLOCKLENGTH, Util.BLOCKLENGTH);
-                            if (x-(blocks[r][i].getX(false)+Util.BLOCKLENGTH) < mostLeftX) {
-                                mostLeftX = Math.abs(x-(blocks[r][i].getX(false)+Util.BLOCKLENGTH));
+                            if (x-(blocks[r][i].getX(false)+Util.BLOCKLENGTH) < nearestLeftX) {
+                                nearestLeftX = Math.abs(x-(blocks[r][i].getX(false)+Util.BLOCKLENGTH));
                             }
                         }
                         break;
@@ -226,7 +221,7 @@ public class Alan {
                 }
             }
         }
-        if (mostLeftX <= speed) {
+        if (nearestLeftX <= velX) {
             moveLeft = false;
         } else {
             moveLeft = true;
@@ -239,8 +234,8 @@ public class Alan {
                         if (y+height > blocks[r][i].getY(false) && y < blocks[r][i].getY(false) + Util.BLOCKLENGTH) {
                             g.setColor(Color.CYAN);
                             g.drawRect(blocks[r][i].getX(true), blocks[r][i].getY(true), Util.BLOCKLENGTH, Util.BLOCKLENGTH);
-                            if (blocks[r][i].getX(false)-x+width < mostRightX) {
-                                mostRightX = Math.abs(blocks[r][i].getX(false)-(x+width));
+                            if (blocks[r][i].getX(false)-x+width < nearestRightX) {
+                                nearestRightX = Math.abs(blocks[r][i].getX(false)-(x+width));
                             }
                         }
                         break;
@@ -248,26 +243,26 @@ public class Alan {
                 }
             }
         }
-        if (mostRightX <= speed) {
+        if (nearestRightX <= velX) {
             moveRight = false;
         } else {
             moveRight = true;
         }
     }
 
-    public void draw(Graphics g, boolean[] keys) {
+    public void draw(Graphics g, boolean[] keys) { //
         move(keys, g);
         if (state == IDLE) {
             if ((int) animFrame == idle.size()-1) {
                 animFrame = 0;
             } else {
-                animFrame+=0.2;
+                animFrame+=0.2; // frame should update every 1/5 ticks
             }
         } else if (state == WALK) {
             if ((int) animFrame == walk.size()-1) {
                 animFrame = 0;
             } else {
-                animFrame += 0.4;
+                animFrame += 0.4; // frame should update every 2/5 ticks
             }
         }
         if (dir == LEFT) {
@@ -277,7 +272,7 @@ public class Alan {
             g.drawImage(allAnims.get(state*2).get((int)animFrame),getX(true),getY(true),null);
         }
         g.setColor(Color.RED);
-        g.drawRect((int) alanRect.getX()+Background.getWallLeftPos()+Background.getWallWidth(), (int) alanRect.getY()-offset+screenoffset, alanRect.width, alanRect.height);
+        g.drawRect((int) alanRect.getX()+Background.getWallLeftPos()+Background.getWallWidth(), (int) alanRect.getY()-offset+screenOffset, alanRect.width, alanRect.height);
     }
 }
 
@@ -334,4 +329,3 @@ class Blaster {
         this.shootAnim = shootAnim;
     }
 }
-

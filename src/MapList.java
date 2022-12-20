@@ -11,10 +11,13 @@ import java.util.Random;
 // - BOTTOM WALL BLOCK NOT SPAWNING
 
 public class MapList {
-    private static ArrayList<Map> maps;
+    private static ArrayList<Map> maps; // all maps
+    // tiles for blocks
     public static Tile boxTile,wallTopLeft,wallTopRight,wallBottomLeft,wallBottomRight,
             wallFullLeft,wallFullRight,wallSideLeft,wallSideRight,wallTopBottom,
             wallTop, wallBottom, platTile;
+
+    // constructor gets images for tiles
     public MapList() {
         maps = new ArrayList<>();
         boxTile = new Tile("BOX", "src/tiles/box.png");
@@ -32,51 +35,69 @@ public class MapList {
         platTile = new Tile("PLAT", "src/tiles/plat.png");
     }
 
+    // add map to maps arraylist
     public void addMap(Map map) {
         maps.add(map);
     }
 
-    public ArrayList<Map> getMaps() {
+    // get all maps
+    public ArrayList<Map> getAllMaps() {
         return maps;
     }
 
+    // get blocks for level
     public static Block[][] getBlocks() {
         return maps.get(GamePanel.getLevel()).getMapWithWallImages();
     }
 
+    // get blocks when given level
+    public static Block[][] getBlocks(int level) {
+        return maps.get(level).getMapWithWallImages();
+    }
+
+    // draw all blocks
     public void drawBlocks(Graphics g, int level) {
-        Map m = maps.get(level);
-        Block[][] blocks = m.getMapWithWallImages();
-        int x, y;
-        int alanY = Alan.getY(false)/Util.BLOCKLENGTH;
-        int blockBegin = 0, blockEnd = blocks.length;
+        Map m = maps.get(level); // getting map for level
+        Block[][] blocks = m.getMapWithWallImages(); // get blocks that contain wall images
+        int x, y; // x and y for block location
+        int alanY = Alan.getY(false)/Util.BLOCKLENGTH; // alan's y location used for calculation visible rows
+        // used to measure when visible rows being and end
+        int firstVisibleRow = 0, lastVisibleRow = blocks.length;
+        // getting row beginning and end
         if (alanY > 15) {
-            blockBegin = alanY - 15;
+            firstVisibleRow = alanY - 15;
         }
         if (alanY < m.getRows()-15) {
-            blockEnd = alanY + 15;
+            lastVisibleRow = alanY + 15;
         }
 
-        for (int i = blockBegin; i < blockEnd; i++) {
+        // only iterate through rows that are visible
+        for (int i = firstVisibleRow; i < lastVisibleRow; i++) {
 
             // TMP CODE TO DISPLAY ROW NUMBERS
             g.setColor(Color.WHITE);
             g.drawString(String.valueOf(i), 250, blocks[i][0].getY(true)+20);
 
+            // going through each block row
             for (int j = 0; j < blocks[i].length; j++) {
 
+                // getting x and y values of block
                 x = blocks[i][j].getX(true);
                 y = blocks[i][j].getY(true);
 
+                // switch for each type of block
                 switch (blocks[i][j].getType()) {
+                    // drawing wall blocks
                     case (Block.WALL) -> {
                         if (i>0 && i<m.getRows()-1 && blocks[i][j].getTile() != null) { // making sure checks are in bounds
                             g.drawImage(blocks[i][j].getTile().getImg(), x, y, null);
                         }
                     }
+                    // drawing box blocks
                     case (Block.BOX) -> {
                         g.drawImage(boxTile.getImg(), x, y, null);
                     }
+                    // drawing platform blocks
                     case (Block.PLAT) -> {
                         g.drawImage(platTile.getImg(), x, y, null);
                     }
@@ -87,33 +108,31 @@ public class MapList {
 }
 
 class Map {
-    Block[][] map;
-    private static int columns = 9;
-    private int rows; // AMOUNT OF COLUMNS AND ROWS IN THE GAME WINDOW
+    Block[][] map; // 1 map
+    //TODO: move columns to the Util class or not...
+    private static int columns = 9; // columns stay the same
+    private int rows; // number of rows of map, determined with constructor input
 
-    Random rand = new Random();
+    Random rand = new Random(); // random object to get random ints for map generation
 
-    Map(int r) {
+    Map(int r) { // constructor with rows as input
         this.rows = r;
         map = new Block[rows][columns];
         fillBlocks(Block.AIR);
         generateBlocks();
     }
 
-    Map(Block[][] map) {
+    Map(Block[][] map) { // constructor with map as input
         this.map = map;
         this.rows = map.length;
-        this.columns = map[0].length;
     }
 
-    public static int getColumns() {
-        return columns;
-    }
+    // getters and setters for columns and rows
+    public static int getColumns() {return columns;}
+    public int getRows() {return rows;}
 
-    public int getRows() {
-        return rows;
-    }
-
+    // adding tile objects to wall blocks so allows us to not go through logic that checks that wall type a wall block is
+    // e.g, a block in the corner of a generation needs to have a corner img as its tile image
     public Block[][] getMapWithWallImages() {
         for (int i = 0; i < map.length; i++) {
             for (int j = 0; j < map[i].length; j++) {
@@ -304,7 +323,7 @@ class Map {
                 case 2 -> {
                     System.out.println("ROW: " + i + ", CLIFF");
                     // create cliff at row i on random side with wall blocks
-                    generateCliff(i, rand.nextInt(Util.LEFT, Util.RIGHT + 1), Block.WALL);
+                    generateCliff(i, rand.nextInt(Util.LEFT, Util.RIGHT + 1), Block.WALL, 4);
                 }
             }
         }
@@ -312,14 +331,14 @@ class Map {
 
     // FUNNEL IS JUST 2 OPPOSITE CLIFFS
     public void generateFunnel(int i) {
-        generateCliff(i, Util.LEFT, Block.WALL);
-        generateCliff(i, Util.RIGHT, Block.WALL);
+        generateCliff(i, Util.LEFT, Block.WALL, 4);
+        generateCliff(i, Util.RIGHT, Block.WALL, 4);
     }
 
     // GENERATING CLIFFS (TRIANGLE SHAPE) - ALONGSIDE GENERATING BOXES ON TOP
-    public void generateCliff(int r, int side, int type) {
+    public void generateCliff(int r, int side, int type, int maxLen) {
         int row = r;
-        int longest = rand.nextInt(2,5);
+        int longest = rand.nextInt(2,maxLen);
         //HINT: CONTROLS CHANCE OF BOXES SPAWNING ON CLIFF
         if (rand.nextInt(0,1) == 0) {
             System.out.println("ROW: " + (r-1) + ", BOX BLOCKS");
