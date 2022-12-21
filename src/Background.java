@@ -29,7 +29,7 @@ public class Background {
         maplist = new MapList();
 
         // making default level
-        Map lvl1 = new Map(100);
+        Map lvl1 = new Map(1000);
         maplist.addMap(lvl1);
     }
 

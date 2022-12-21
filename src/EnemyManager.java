@@ -27,10 +27,9 @@ class Enemy {
     public static final int IDLE = 0, FLY = 1;
     private int state = FLY;
     private int width, height, health;
-    private int xFrames, yFrames; // amount of frames moving in a positive/negative x/y
     private double x, y;
     private double distance, distX, distY; // how far away the enemy is compared to alan
-    private double speed, velX, velY, accel; // the speed and acceleration the enemy has
+    private double speed, velX, velY, maxVelX, maxVelY, accelX, accelY, accelFactor; // the speed and acceleration the enemy has
     private double animFrame;
 
     ArrayList<Image> idle = new ArrayList<>();
@@ -43,9 +42,11 @@ class Enemy {
         this.height = 26;
         this.health = health;
         this.speed = 2;
-        this.accel = 0.1;
-        this.xFrames = 0;
-        this.yFrames = 0;
+        this.maxVelX = 4.5;
+        this.maxVelY = 4.5;
+        this.accelX = 0;
+        this.accelY = 0;
+        this.accelFactor = .2;
         animFrame = 0;
         for (int i = 0; i < 6; i++) {
             idle.add(new ImageIcon("src/assets/enemy/fly/fly" + i + ".png").getImage().getScaledInstance(width, height, Image.SCALE_DEFAULT));
@@ -82,19 +83,20 @@ class Enemy {
         distY = y - alan.getY(false);
         distance = Math.sqrt(Math.pow(distX, 2) + Math.pow(distY, 2)); // pythag theorem
         // adding up how many frames movement has been in x direction, capping out at +-20 to limit terminal velocity
-        if (distX > 0 && xFrames > -20) {
-            xFrames--;
-        } else if (distX < 0 && xFrames < 20) {
-            xFrames++;
+        if (distX < 0 && velX < maxVelX) {
+            accelX += accelFactor;
+        } else if (distX > 0 && velX > -maxVelX) {
+            accelX -= accelFactor;
         }
-        if (distY > 0 && yFrames > -20) {
-            yFrames--;
-        } else if (distY < 0 && yFrames < 20) {
-            yFrames++;
+        if (distY < 0 && velY < maxVelY) {
+            accelY += accelFactor;
+        } else if (distY > 0 && velY > -maxVelY) {
+            accelY -= accelFactor;
         }
         // moving the enemy
-        velX = ((-1 / distance) * distX) * speed + xFrames * accel; // -1 so the enemy moves TOWARDS alan, just 1 would make the enemy run away from alan
-        velY = ((-1 / distance) * distY) * speed + yFrames * accel; // frames*accel so the enemy speeds up/down for a more "natural" look, instead of perfectly tracking alan
+        velX = ((-1 / distance) * distX) * speed + accelX; // -1 so the enemy moves TOWARDS alan, just 1 would make the enemy run away from alan
+        velY = ((-1 / distance) * distY) * speed + accelY; // frames*accel so the enemy speeds up/down for a more "natural" look, instead of perfectly tracking alan
+        System.out.println(velX+" "+velY);
         x += velX;
         y += velY;
     }

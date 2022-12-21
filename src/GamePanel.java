@@ -39,8 +39,7 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener, Mo
         alan = new Alan(150, HEIGHT/2-50, mgun);
 
         enemyManager = new EnemyManager();
-        enemyManager.addEnemy(350,600);
-        enemyManager.addEnemy(450,600);
+        enemyManager.addEnemy(400,600);
 
         timer = new Timer(20, this); // manages frames
         timer.start();

@@ -22,8 +22,8 @@ public class Alan {
     private int width, height; // dimensions
     private int health, maxHealth, healthProgress; // current health, health capacity, and progress to +1 maximum health
     private boolean moveLeft = true, moveRight = true; // whether alan can move left or right
-    private double velX, velY; // movement speed
-    private double accelY, jerk; // acceleration for gravity
+    private double velX, velY, maxVelX; // movement speed
+    private double accelX, accelY, jerk; // acceleration for gravity
     private static int offset, screenOffset; // how far down alan has "travelled", subtracted from other game elements to give the effect that alan is falling
     private Blaster weapon; // current weapon
     private double animFrame; // the frame of the current animation being played
@@ -49,7 +49,9 @@ public class Alan {
         this.health = 4;
         this.velX = 5;
         this.velY = 10;
+        this.accelX = 1.5;
         this.accelY = 0.1;
+        this.maxVelX = 10;
         this.jerk = 0.1;
         this.weapon = weapon;
         this.animFrame = 0;
@@ -128,8 +130,8 @@ public class Alan {
             changeState(JUMP, dir);
         }
         if (keys[a] || keys[d]) {
-            if (velX < 10) {
-                velX += 1;
+            if (velX < maxVelX) {
+                velX += accelX;
             }
             if (keys[a] && moveLeft) {
                 if (dir == RIGHT) {
