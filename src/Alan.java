@@ -36,6 +36,7 @@ public class Alan {
     ArrayList<Image> idle = new ArrayList<>();
     ArrayList<Image> ridle = new ArrayList<>();
     ArrayList<Image> fall = new ArrayList<>();
+    ArrayList<Image> rfall = new ArrayList<>();
     ArrayList<Image> jump = new ArrayList<>();
     ArrayList<ArrayList<Image>> allAnims = new ArrayList<>();
 
@@ -49,7 +50,7 @@ public class Alan {
         this.health = 4;
         this.velX = 5;
         this.velY = 10;
-        this.accelY = 0.1;
+        this.accelY = 1.0;
         this.jerk = 0.1;
         this.weapon = weapon;
         this.animFrame = 0;
@@ -74,12 +75,16 @@ public class Alan {
         for (int i = 0; i < 9; i++) {
             jump.add(new ImageIcon("src/assets/alan/jump/jump" + i + ".png").getImage().getScaledInstance(30, height,Image.SCALE_DEFAULT));
         }
+        fall.add(new ImageIcon("src/assets/alan/jump/jump5.png").getImage().getScaledInstance(30,height,Image.SCALE_DEFAULT));
+        rfall.add(new ImageIcon("src/assets/alan/jump/m_jump5.png").getImage().getScaledInstance(30,height,Image.SCALE_DEFAULT));
         allAnims.add(idle);
         allAnims.add(ridle);
         allAnims.add(walk);
         allAnims.add(rwalk);
         allAnims.add(jump);
         allAnims.add(jump);
+        allAnims.add(fall);
+        allAnims.add(fall);
     }
 
     public static int getX(boolean adjusted) { // gets x
@@ -124,7 +129,7 @@ public class Alan {
         getCollision(MapList.getBlocks(),g); // getting collision between player and blocks
         alanRect.setLocation(x+5,y); // setting rect location
         //HINT: make sure to check states if they are giving bugs
-        if (keys[space] && state != JUMP) {
+        if (keys[space] && state != JUMP && state != FALL) {
             changeState(JUMP, dir);
         }
         if (keys[a] || keys[d]) {
@@ -147,16 +152,16 @@ public class Alan {
                 x += velX;
                 x = Math.min(x, Background.getWallRightPos()-Background.getWallLeftPos()-Background.getWallWidth()-width);
             }
-            if (state != JUMP) {
+            if (velY == 0 && state != JUMP && state != FALL) { // if moving left right but not in air
                 changeState(WALK, dir);
             }
-        } else if (state != JUMP) { // TODO: change to else if and put conditions
-            changeState(IDLE, dir);
+        } else if (state != JUMP && state != FALL) { // TODO: change to else if and put conditions
             velX = 0;
+            changeState(IDLE, dir);
         }
-        if (state == JUMP) {
-            jump();
-        }
+
+        jump();
+
         y+=(int)velY;
         offset+=(int)velY;
         if (screenOffset < 50 && velY != 0) {
@@ -169,18 +174,16 @@ public class Alan {
     }
 
     public void jump() {
-        if (velY == 0.0) {
-            changeState(IDLE, dir); //TODO: make function to not changestate but detectstate
-        } else if (velY < 0) {
-            System.out.println("GOING UP");
-        } else if (velY > 0) {
-            System.out.println("GOING DOWN");
+        if (state == JUMP) {
+            velY -= 12;
         }
     }
 
     public void getCollision(Block[][] blocks, Graphics g) {
+        int prevRow = getY(false)/Util.BLOCKLENGTH-1;
         int nextRow = getY(false)/Util.BLOCKLENGTH+1;
-        int nearestBlockY = 100, nearestLeftX = 100, nearestRightX = 100;
+        int nearestBlockY = 100, nearestAboveY = 100, nearestLeftX = 100, nearestRightX = 100, snapX = 100;
+
         for (int i = 0; i < Map.getColumns(); i++) {
             int blockType = blocks[nextRow][i].getType();
             if (blockType != Block.AIR) {
@@ -196,7 +199,8 @@ public class Alan {
 
             }
         }
-        if (nearestBlockY <= 10) {
+
+        if (nearestBlockY <= 15) {
             if (screenOffset > 0) {
                 if (jerk > 0) {
                     jerk -= 0.1;
@@ -204,14 +208,40 @@ public class Alan {
                 screenOffset -= (int)jerk;
             }
             velY = 0;
+            if (state == FALL) { // TODO: change to else if and put conditions
+                changeState(IDLE, dir);
+            }
         } else {
             if (velY == 0) {
                 velY = 3;
-            } else if (velY < 10) {
-                velY += accelY*5;
+            } else if (velY < 15) {
+                velY += accelY;
+            }
+            changeState(FALL, dir);
+        }
+
+        for (int i = 0; i < Map.getColumns(); i++) {
+            int blockType = blocks[prevRow][i].getType();
+            if (blockType != Block.AIR) {
+                if (blockType == Block.PLAT) {
+                    //TODO: CUSTOM PLATFORM COLLISION DETECTION
+                } else if (blockType == Block.WALL || blockType == Block.BOX) {
+                    if (x+width > blocks[prevRow][i].getX(false) && x < blocks[prevRow][i].getX(false) + Util.BLOCKLENGTH) {
+                        if (y-blocks[prevRow][i].getY(false)+Util.BLOCKLENGTH < nearestAboveY) {
+                            nearestAboveY = blocks[prevRow][i].getY(false)-y;
+                        }
+                    }
+                }
+
             }
         }
-        for (int r = nextRow-1; r < nextRow; r++) {
+        if (nearestAboveY <= 15) {
+            if (velY < 0) {
+                velY = Math.abs(velY)/2;
+            }
+        }
+
+        for (int r = nextRow-2; r < nextRow; r++) {
             for (int i = Map.getColumns()-1; i >= 0; i--) {
                 if (blocks[r][i].getX(false) < x) {
                     if (blocks[r][i].getType() != Block.AIR) {
@@ -220,6 +250,7 @@ public class Alan {
                             g.drawRect(blocks[r][i].getX(true), blocks[r][i].getY(true), Util.BLOCKLENGTH, Util.BLOCKLENGTH);
                             if (x-(blocks[r][i].getX(false)+Util.BLOCKLENGTH) < nearestLeftX) {
                                 nearestLeftX = Math.abs(x-(blocks[r][i].getX(false)+Util.BLOCKLENGTH));
+                                snapX = blocks[r][i].getX(false)+Util.BLOCKLENGTH+1;
                             }
                         }
                         break;
@@ -229,11 +260,12 @@ public class Alan {
         }
         if (nearestLeftX <= velX) {
             moveLeft = false;
+            x = snapX;
         } else {
             moveLeft = true;
         }
 
-        for (int r = nextRow-1; r < nextRow; r++) {
+        for (int r = nextRow-2; r < nextRow; r++) {
             for (int i = 0; i < Map.getColumns(); i++) {
                 if (blocks[r][i].getX(false) > x) {
                     if (blocks[r][i].getType() != Block.AIR) {
@@ -242,6 +274,7 @@ public class Alan {
                             g.drawRect(blocks[r][i].getX(true), blocks[r][i].getY(true), Util.BLOCKLENGTH, Util.BLOCKLENGTH);
                             if (blocks[r][i].getX(false)-x+width < nearestRightX) {
                                 nearestRightX = Math.abs(blocks[r][i].getX(false)-(x+width));
+                                snapX = blocks[r][i].getX(false)-width-1;
                             }
                         }
                         break;
@@ -251,6 +284,7 @@ public class Alan {
         }
         if (nearestRightX <= velX) {
             moveRight = false;
+            x = snapX;
         } else {
             moveRight = true;
         }
