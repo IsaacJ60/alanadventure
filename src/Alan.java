@@ -169,7 +169,13 @@ public class Alan {
     }
 
     public void jump() {
-        System.out.println("JUMP!");
+        if (velY == 0.0) {
+            changeState(IDLE, dir); //TODO: make function to not changestate but detectstate
+        } else if (velY < 0) {
+            System.out.println("GOING UP");
+        } else if (velY > 0) {
+            System.out.println("GOING DOWN");
+        }
     }
 
     public void getCollision(Block[][] blocks, Graphics g) {
@@ -266,7 +272,6 @@ public class Alan {
             }
         }
         if (dir == LEFT) {
-            //FIXME: not yet added jump animation so index out of bounds (DON'T JUMP!)
             g.drawImage(allAnims.get(state*2+1).get((int)animFrame),getX(true),getY(true),null);
         } else {
             g.drawImage(allAnims.get(state*2).get((int)animFrame),getX(true),getY(true),null);
