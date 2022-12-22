@@ -61,7 +61,7 @@ public class Block {
 
     public int getY(boolean adjusted) {
         if (adjusted) {
-            return y-Alan.getOffset()+Background.getWallWidth()+Alan.getScreenOffset();
+            return y-Alan.getOffset()+Alan.getScreenOffset();
         } else {
             return y;
         }

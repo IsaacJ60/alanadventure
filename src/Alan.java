@@ -1,7 +1,6 @@
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.KeyEvent;
-import java.awt.image.ImageObserver;
+import java.awt.event.*;
 import java.util.ArrayList;
 
 //TODO: MOVEMENT AND OFFSET
@@ -21,7 +20,7 @@ public class Alan {
     private static int x, y; // position of alan relative to game window
     private int width, height; // dimensions
     private int health, maxHealth, healthProgress; // current health, health capacity, and progress to +1 maximum health
-    private boolean moveLeft = true, moveRight = true; // whether alan can move left or right
+    private boolean moveLeft = true, moveRight = true, firstSnap = true; // whether alan can move left or right
     private double velX, velY, maxVelX, maxVelY; // movement speed
     private double accelX, accelY, jerk; // acceleration for gravity
     private static int offset, screenOffset; // how far down alan has "travelled", subtracted from other game elements to give the effect that alan is falling
@@ -29,6 +28,7 @@ public class Alan {
     private double animFrame; // the frame of the current animation being played
     private int state = IDLE; // current state (e.g., idle, walk, fall, shoot) to change what animation is playing
     private int dir = LEFT; // the direction alan is facing
+    private int offsetOfOffset = 0;
 
     // arraylists for frames of every animation
     ArrayList<Image> walk = new ArrayList<>();
@@ -48,8 +48,8 @@ public class Alan {
         this.width = 20;
         this.height = 30;
         this.health = 4;
-        this.velX = 5;
-        this.velY = 10;
+        this.velX = 0;
+        this.velY = 0;
         this.maxVelX = 10;
         this.maxVelY = 15;
         this.accelY = 1.0;
@@ -98,8 +98,8 @@ public class Alan {
         }
     }
 
-    public void setX(int x) {
-        this.x = x;
+    public void setX(int p) {
+        x = p;
     } // sets x
 
 
@@ -163,13 +163,17 @@ public class Alan {
             changeState(IDLE, dir);
         }
 
+        if (state == FALL) {
+            firstSnap = true;
+        }
+
         jump();
 
         y+=(int)velY;
         offset+=(int)velY;
         if (screenOffset < 50 && velY != 0) {
             if (jerk < 3) {
-                jerk += 0.2;
+                jerk += 0.1;
             }
             screenOffset+=(int)jerk;
         }
@@ -177,15 +181,21 @@ public class Alan {
     }
 
     public void jump() {
+        //FIXME: DUDE GETS BLOCKED BY SOME RANDOM BLOCK THINGY
         if (state == JUMP) {
-            velY -= 12;
+            if (CustomTimer.getElapsedTime() > 0.5) {
+                velY -= 12;
+                CustomTimer.restart();
+            } else {
+                changeState(IDLE, dir);
+            }
         }
     }
 
     public void getCollision(Block[][] blocks, Graphics g) {
         int prevRow = getY(false)/Util.BLOCKLENGTH-1;
         int nextRow = getY(false)/Util.BLOCKLENGTH+1;
-        int nearestBlockY = 100, nearestAboveY = 100, nearestLeftX = 100, nearestRightX = 100, snapX = 100;
+        int nearestBlockY = 100, nearestAboveY = 100, nearestLeftX = 100, nearestRightX = 100, snapX = 0;
 
         for (int i = 0; i < Map.getColumns(); i++) {
             int blockType = blocks[nextRow][i].getType();
@@ -194,16 +204,19 @@ public class Alan {
                     //TODO: CUSTOM PLATFORM COLLISION DETECTION
                 } else if (blockType == Block.WALL || blockType == Block.BOX) {
                     if (x+width > blocks[nextRow][i].getX(false) && x < blocks[nextRow][i].getX(false) + Util.BLOCKLENGTH) {
+                        g.setColor(Color.RED);
+                        g.drawRect(blocks[nextRow][i].getX(true), blocks[nextRow][i].getY(true), Util.BLOCKLENGTH, Util.BLOCKLENGTH);
                         if (blocks[nextRow][i].getY(false)-y < nearestBlockY) {
-                            nearestBlockY = blocks[nextRow][i].getY(false)-y;
+                            nearestBlockY = Math.abs(blocks[nextRow][i].getY(false)-(y+height));
                         }
                     }
                 }
-
             }
         }
-
         if (nearestBlockY <= 15) {
+            if (y+height > blocks[nextRow][0].getY(false)) {
+                y = blocks[nextRow][0].getY(false)-height;
+            }
             if (screenOffset > 0) {
                 if (jerk > 0) {
                     jerk -= 0.1;
@@ -211,7 +224,7 @@ public class Alan {
                 screenOffset -= (int)jerk;
             }
             velY = 0;
-            if (state == FALL) { // TODO: change to else if and put conditions
+            if (state == FALL) {
                 changeState(IDLE, dir);
             }
         } else {
@@ -230,21 +243,22 @@ public class Alan {
                     //TODO: CUSTOM PLATFORM COLLISION DETECTION
                 } else if (blockType == Block.WALL || blockType == Block.BOX) {
                     if (x+width > blocks[prevRow][i].getX(false) && x < blocks[prevRow][i].getX(false) + Util.BLOCKLENGTH) {
-                        if (y-blocks[prevRow][i].getY(false)+Util.BLOCKLENGTH < nearestAboveY) {
-                            nearestAboveY = blocks[prevRow][i].getY(false)-y;
+                        g.setColor(Color.MAGENTA);
+                        g.drawRect(blocks[prevRow][i].getX(true), blocks[prevRow][i].getY(true), Util.BLOCKLENGTH, Util.BLOCKLENGTH);
+                        if (Math.abs(y-(blocks[prevRow][i].getY(false)+Util.BLOCKLENGTH)) < nearestAboveY) {
+                            nearestAboveY = Math.abs(y-(blocks[prevRow][i].getY(false)+Util.BLOCKLENGTH));
                         }
                     }
                 }
-
             }
         }
-        if (nearestAboveY <= 15) {
+        if (nearestAboveY <= 10) {
             if (velY < 0) {
                 velY = Math.abs(velY)/2;
             }
         }
 
-        for (int r = nextRow-2; r < nextRow; r++) {
+        for (int r = nextRow-2; r < (state != WALK ? nextRow+1 : nextRow); r++) {
             for (int i = Map.getColumns()-1; i >= 0; i--) {
                 if (blocks[r][i].getX(false) < x) {
                     if (blocks[r][i].getType() != Block.AIR) {
@@ -268,16 +282,16 @@ public class Alan {
             moveLeft = true;
         }
 
-        for (int r = nextRow-2; r < nextRow; r++) {
+        for (int r = nextRow-2; r < (state != WALK ? nextRow+1 : nextRow); r++) {
             for (int i = 0; i < Map.getColumns(); i++) {
                 if (blocks[r][i].getX(false) > x) {
                     if (blocks[r][i].getType() != Block.AIR) {
                         if (y+height > blocks[r][i].getY(false) && y < blocks[r][i].getY(false) + Util.BLOCKLENGTH) {
                             g.setColor(Color.CYAN);
                             g.drawRect(blocks[r][i].getX(true), blocks[r][i].getY(true), Util.BLOCKLENGTH, Util.BLOCKLENGTH);
-                            if (blocks[r][i].getX(false)-x+width < nearestRightX) {
+                            if (Math.abs(blocks[r][i].getX(false)-(x+width)) < nearestRightX) {
                                 nearestRightX = Math.abs(blocks[r][i].getX(false)-(x+width));
-                                snapX = blocks[r][i].getX(false)-width-1;
+                                snapX = blocks[r][i].getX(false)-width-5;
                             }
                         }
                         break;
@@ -285,6 +299,7 @@ public class Alan {
                 }
             }
         }
+        System.out.println(nearestRightX);
         if (nearestRightX <= velX) {
             moveRight = false;
             x = snapX;
@@ -314,7 +329,9 @@ public class Alan {
             g.drawImage(allAnims.get(state*2).get((int)animFrame),getX(true),getY(true),null);
         }
         g.setColor(Color.RED);
-        g.drawRect((int) alanRect.getX()+Background.getWallLeftPos()+Background.getWallWidth(), (int) alanRect.getY()-offset+screenOffset, alanRect.width, alanRect.height);
+        g.drawLine(0,getY(true),GamePanel.getWIDTH(),getY(true));
+        g.drawLine(0,getY(true)+height,GamePanel.getWIDTH(),getY(true)+height);
+        g.drawRect((int) alanRect.getX()+Background.getWallLeftPos()+Background.getWallWidth(), (int) alanRect.getY()-offset+screenOffset, alanRect.width, height);
     }
 }
 
