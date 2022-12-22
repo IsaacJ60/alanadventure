@@ -55,12 +55,12 @@ public class Alan {
         this.maxVelY = 15;
         this.accelY = 1.0;
         this.accelX = 1.0;
-        this.jerk = 0.1;
+        this.jerk = 0.2;
         this.weapon = weapon;
         this.animFrame = 0;
 
-        this.offset = 0;
-        this.screenOffset = 0;
+        offset = 0;
+        screenOffset = 0;
 
         this.alanRect = new Rectangle(x+5,y,width,height); // adding 5 because the frames for alan's animation has transparency on the sides
 
@@ -172,13 +172,14 @@ public class Alan {
 
         y+=(int)velY;
         offset+=(int)velY;
-        if (screenOffset < 50 && velY != 0) {
+        if (screenOffset < 47.8 && velY > 0) {
             if (jerk < 3) {
                 jerk += 0.1;
             }
-            screenOffset+=(int)jerk;
+            screenOffset+=jerk;
         }
         alanRect.setLocation(x+5,y);
+//        System.out.println(jerk);
     }
 
     public void jump() {
@@ -214,15 +215,17 @@ public class Alan {
                 }
             }
         }
-        if (nearestBlockY <= 15) {
+        if (nearestBlockY <= 10) {
             if (y+height > blocks[nextRow][0].getY(false)) {
                 y = blocks[nextRow][0].getY(false)-height;
+                //TODO: make offset slowly reach the new value instead of instantly adding (avoid stuttering)
+                offset -= nearestBlockY;
             }
             if (screenOffset > 0) {
                 if (jerk > 0) {
                     jerk -= 0.1;
                 }
-                screenOffset -= (int)jerk;
+                screenOffset -= jerk;
             }
             velY = 0;
             if (state == FALL) {
@@ -339,9 +342,11 @@ public class Alan {
             g.drawImage(allAnims.get(state*2).get((int)animFrame),getX(true),getY(true),null);
         }
         g.setColor(Color.RED);
-        g.drawLine(0,getY(true),GamePanel.getWIDTH(),getY(true));
-        g.drawLine(0,getY(true)+height,GamePanel.getWIDTH(),getY(true)+height);
-        g.drawRect((int) alanRect.getX()+Background.getWallLeftPos()+Background.getWallWidth(), (int) alanRect.getY()-offset+screenOffset, alanRect.width, height);
+//        g.drawLine(0,getY(true),GamePanel.getWIDTH(),getY(true));
+//        g.drawLine(0,getY(true)+height,GamePanel.getWIDTH(),getY(true)+height);
+//        g.drawRect((int) alanRect.getX()+Background.getWallLeftPos()+Background.getWallWidth(), (int) alanRect.getY()-offset+screenOffset, alanRect.width, height);
+//        g.setColor(Color.YELLOW);
+//        g.drawLine(0,GamePanel.getHEIGHT()/2-50+height,900,GamePanel.getHEIGHT()/2-50+height);
     }
 }
 
