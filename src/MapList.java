@@ -50,6 +50,10 @@ public class MapList {
         return maps.get(GamePanel.getLevel()).getMapWithWallImages();
     }
 
+    public static Block[][] getBlocksWithoutWallImages() {
+        return maps.get(GamePanel.getLevel()).getMap();
+    }
+
     // get blocks when given level
     public static Block[][] getBlocks(int level) {
         return maps.get(level).getMapWithWallImages();
@@ -58,7 +62,7 @@ public class MapList {
     // draw all blocks
     public void drawBlocks(Graphics g, int level) {
         Map m = maps.get(level); // getting map for level
-        Block[][] blocks = m.getMapWithWallImages(); // get blocks that contain wall images
+        Block[][] blocks = m.getMap(); // get blocks that contain wall images
         int x, y; // x and y for block location
         int alanY = Alan.getY(false)/Util.BLOCKLENGTH; // alan's y location used for calculation visible rows
         // used to measure when visible rows being and end
@@ -120,6 +124,7 @@ class Map {
         map = new Block[rows][columns];
         fillBlocks(Block.AIR);
         generateBlocks();
+        getMapWithWallImages();
     }
 
     Map(Block[][] map) { // constructor with map as input
@@ -198,6 +203,10 @@ class Map {
                 }
             }
         }
+        return map;
+    }
+
+    public Block[][] getMap() {
         return map;
     }
 

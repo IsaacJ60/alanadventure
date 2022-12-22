@@ -5,9 +5,9 @@ import java.util.ArrayList;
 
 //TODO: MOVEMENT AND OFFSET
 // PRIORITY - LOW-MEDIUM
-//   IN-PROGRESS - acceleration
-//   INCOMPLETE - JUMP
 //   INCOMPLETE - PLATFORM COLLISION
+//   DONE - acceleration
+//   DONE - JUMP
 //   DONE - calculate background position based on player offset
 // > GRAPHICS:
 //   INCOMPLETE - finish other animations
