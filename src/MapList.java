@@ -258,15 +258,15 @@ class Map {
             // - CLIFF (1 side forms cliff structure)
             switch (platType) {
                 case 0 -> {
-                    System.out.println("ROW: " + i + ", 1FLAT");
+//                    System.out.println("ROW: " + i + ", 1FLAT");
                     generateFlat(i,1);
                 }
                 case 1 -> {
-                    System.out.println("ROW: " + i + ", 2FLAT");
+//                    System.out.println("ROW: " + i + ", 2FLAT");
                     generateFlat(i,2);
                 }
                 case 2 -> {
-                    System.out.println("ROW: " + i + ", 3FLAT");
+//                    System.out.println("ROW: " + i + ", 3FLAT");
                     generateFlat(i,3);
                 }
             }
@@ -322,15 +322,15 @@ class Map {
             // - CLIFF (1 side forms cliff structure)
             switch (wallType) {
                 case 0 -> {
-                    System.out.println("ROW: " + i + ", PILLAR");
+//                    System.out.println("ROW: " + i + ", PILLAR");
                     generatePillar(i, rand.nextInt(Util.LEFT, Util.RIGHT + 1), Block.WALL);
                 }
                 case 1 -> {
-                    System.out.println("ROW: " + i + ", FUNNEL");
+//                    System.out.println("ROW: " + i + ", FUNNEL");
                     generateFunnel(i);
                 }
                 case 2 -> {
-                    System.out.println("ROW: " + i + ", CLIFF");
+//                    System.out.println("ROW: " + i + ", CLIFF");
                     // create cliff at row i on random side with wall blocks
                     generateCliff(i, rand.nextInt(Util.LEFT, Util.RIGHT + 1), Block.WALL, 4);
                 }
@@ -350,7 +350,7 @@ class Map {
         int longest = rand.nextInt(2,maxLen);
         //HINT: CONTROLS CHANCE OF BOXES SPAWNING ON CLIFF
         if (rand.nextInt(0,1) == 0) {
-            System.out.println("ROW: " + (r-1) + ", BOX BLOCKS");
+//            System.out.println("ROW: " + (r-1) + ", BOX BLOCKS");
             generateBoxBlocks(r-1, longest, Util.TOP, side); // GENERATE BOXES ON FUNNEL!
         }
         // CREATE CLIFF DIFFERENTLY BASED ON SIDE

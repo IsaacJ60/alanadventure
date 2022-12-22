@@ -12,6 +12,7 @@ import java.util.ArrayList;
 // > GRAPHICS:
 //   INCOMPLETE - finish other animations
 //   DONE - flip animation for opposite direction
+//   INCOMPLETE - jump animation, 1 block gap, changing to idle
 
 public class Alan {
     public static final int a = KeyEvent.VK_A, d = KeyEvent.VK_D, space = KeyEvent.VK_SPACE; // constants for keyboard input
@@ -75,11 +76,11 @@ public class Alan {
         for (int i = 0; i < 7; i++) {
             rwalk.add(new ImageIcon("src/assets/alan/walk/m_walk" + i + ".png").getImage().getScaledInstance(30, height,Image.SCALE_DEFAULT));
         }
-        for (int i = 0; i < 9; i++) {
+        for (int i = 0; i < 5; i++) {
             jump.add(new ImageIcon("src/assets/alan/jump/jump" + i + ".png").getImage().getScaledInstance(30, height,Image.SCALE_DEFAULT));
         }
-        fall.add(new ImageIcon("src/assets/alan/jump/jump5.png").getImage().getScaledInstance(30,height,Image.SCALE_DEFAULT));
-        rfall.add(new ImageIcon("src/assets/alan/jump/m_jump5.png").getImage().getScaledInstance(30,height,Image.SCALE_DEFAULT));
+        fall.add(new ImageIcon("src/assets/alan/jump/jump4.png").getImage().getScaledInstance(30,height,Image.SCALE_DEFAULT));
+        rfall.add(new ImageIcon("src/assets/alan/jump/m_jump4.png").getImage().getScaledInstance(30,height,Image.SCALE_DEFAULT));
         allAnims.add(idle);
         allAnims.add(ridle);
         allAnims.add(walk);
@@ -228,9 +229,10 @@ public class Alan {
                 changeState(IDLE, dir);
             }
         } else {
-            if (velY == 0) {
+            if (velY == 0) { // starts falling velocity at 3
                 velY = 3;
-            } else if (velY < maxVelY) {
+            }
+            else if (velY < maxVelY) {
                 velY += accelY;
             }
             changeState(FALL, dir);
@@ -299,7 +301,7 @@ public class Alan {
                 }
             }
         }
-        System.out.println(nearestRightX);
+//        System.out.println(nearestRightX);
         if (nearestRightX <= velX) {
             moveRight = false;
             x = snapX;
@@ -310,6 +312,7 @@ public class Alan {
 
     public void draw(Graphics g, boolean[] keys) { //
         move(keys, g);
+//        System.out.println(state+" "+velY);
         if (state == IDLE) {
             if ((int) animFrame == idle.size()-1) {
                 animFrame = 0;
@@ -321,6 +324,13 @@ public class Alan {
                 animFrame = 0;
             } else {
                 animFrame += 0.4; // frame should update every 2/5 ticks
+            }
+        }
+        else if (state == JUMP) {
+            if ((int) animFrame == jump.size()-1) {
+                animFrame = 0;
+            } else {
+                animFrame += 0.6; // frame should update every 2/5 ticks
             }
         }
         if (dir == LEFT) {
