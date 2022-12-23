@@ -15,23 +15,34 @@ import java.util.ArrayList;
 //   INCOMPLETE - jump animation, 1 block gap, changing to idle
 
 public class Alan {
+    // CONSTANTS
     public static final int a = KeyEvent.VK_A, d = KeyEvent.VK_D, space = KeyEvent.VK_SPACE; // constants for keyboard input
     private static final int LEFT = 0, RIGHT = 1; // constants for direction
     public static final int IDLE = 0, WALK = 1, JUMP = 2, FALL = 3; // constants for state
-    private static int x, y; // position of alan relative to game window
-    private int width, height; // dimensions
-    private int health, maxHealth, healthProgress; // current health, health capacity, and progress to +1 maximum health
-    private boolean moveLeft = true, moveRight = true, firstSnap = true; // whether alan can move left or right
-    private double velX, velY, maxVelX, maxVelY; // movement speed
-    private double accelX, accelY, jerk; // acceleration for gravity
-    private static int offset, screenOffset; // how far down alan has "travelled", subtracted from other game elements to give the effect that alan is falling
-    private Blaster weapon; // current weapon
-    private double animFrame; // the frame of the current animation being played
+
+    // STATES
     private int state = IDLE; // current state (e.g., idle, walk, fall, shoot) to change what animation is playing
     private int dir = LEFT; // the direction alan is facing
-    private int offsetOfOffset = 0;
 
-    // arraylists for frames of every animation
+    // PLAYER INFO AND STATS
+    private final Rectangle alanRect; // hitbox
+    private static int x, y; // position of alan relative to game window
+    private final int width, height; // dimensions
+    private int health, maxHealth, healthProgress; // current health, health capacity, and progress to +1 maximum health
+
+    // MOVEMENT LIMITERS AND VELOCITIES
+    private boolean moveLeft = true, moveRight = true;
+    private double velX, velY, jerk; // movement speed & screenoffset jerk
+    private final double maxVelX, maxVelY, accelX, accelY; // velocity & acceleration
+
+    // SCREEN OFFSETS
+    private static int offset, screenOffset; // how far down alan has "travelled", subtracted from other game elements to give the effect that alan is falling
+
+    // WEAPONS
+    private Blaster weapon; // current weapon
+
+    // ANIMATIONS
+    private double animFrame; // the frame of the current animation being played
     ArrayList<Image> walk = new ArrayList<>();
     ArrayList<Image> rwalk = new ArrayList<>();
     ArrayList<Image> idle = new ArrayList<>();
@@ -39,13 +50,12 @@ public class Alan {
     ArrayList<Image> fall = new ArrayList<>();
     ArrayList<Image> rfall = new ArrayList<>();
     ArrayList<Image> jump = new ArrayList<>();
+    // all animations
     ArrayList<ArrayList<Image>> allAnims = new ArrayList<>();
 
-    private Rectangle alanRect; // hitbox
-
-    public Alan(int x, int y, Blaster weapon) {
-        this.x = x;
-        this.y = y;
+    public Alan(int posX, int posY, Blaster weapon) {
+        x = posX;
+        y = posY;
         this.width = 20;
         this.height = 30;
         this.health = 4;
@@ -56,8 +66,8 @@ public class Alan {
         this.accelY = 1.0;
         this.accelX = 1.0;
         this.jerk = 0.2;
-        this.weapon = weapon;
         this.animFrame = 0;
+        this.weapon = weapon;
 
         offset = 0;
         screenOffset = 0;
@@ -81,6 +91,7 @@ public class Alan {
         }
         fall.add(new ImageIcon("src/assets/alan/jump/jump4.png").getImage().getScaledInstance(30,height,Image.SCALE_DEFAULT));
         rfall.add(new ImageIcon("src/assets/alan/jump/m_jump4.png").getImage().getScaledInstance(30,height,Image.SCALE_DEFAULT));
+
         allAnims.add(idle);
         allAnims.add(ridle);
         allAnims.add(walk);
@@ -88,8 +99,17 @@ public class Alan {
         allAnims.add(jump);
         allAnims.add(jump);
         allAnims.add(fall);
-        allAnims.add(fall);
+        allAnims.add(rfall);
     }
+
+    public void setX(int p) {x = p;} // sets x
+    public void setY(int p) {y = p;} // sets y
+    public int getHealth() {return health;} // gets hp
+    public void setHealth(int health) {this.health = health;} // sets hp
+    public static int getOffset() {return offset;} // gets offset
+    public static int getScreenOffset() {return screenOffset;} // gets screenOffset
+    public Blaster getWeapon() {return weapon;} // gets current weapon
+    public void setWeapon(Blaster weapon) {this.weapon = weapon;} // sets current weapon
 
     public static int getX(boolean adjusted) { // gets x
         if (adjusted) { // whether you want x relative to the gameplay window
@@ -99,11 +119,6 @@ public class Alan {
         }
     }
 
-    public void setX(int p) {
-        x = p;
-    } // sets x
-
-
     public static int getY(boolean adjusted) { // gets y
         if (adjusted) { // whether you want y relative to the gameplay window
             return y-offset+screenOffset;
@@ -112,14 +127,6 @@ public class Alan {
         }
     }
 
-    public void setY(int p) {y = p;} // sets y
-    public int getHealth() {return health;} // gets hp
-    public void setHealth(int health) {this.health = health;} // sets hp
-    public static int getOffset() {return offset;} // gets offset
-    public static int getScreenOffset() {return screenOffset;} // gets screenOffset
-    public Blaster getWeapon() {return weapon;} // gets current weapon
-    public void setWeapon(Blaster weapon) {this.weapon = weapon;} // sets current weapon
-
     public void changeState(int MODE, int d) { // changes state
         if (state != MODE || d != dir) {
             animFrame = 0;
@@ -127,155 +134,206 @@ public class Alan {
         state = MODE;
     }
 
-
-    //TODO: JUMP
     public void move(boolean[] keys, Graphics g) {
-        getCollision(MapList.getBlocks(),g); // getting collision between player and blocks
+        getCollision(MapList.getBlocksWithoutWallImages(),g); // getting collision between player and blocks
         alanRect.setLocation(x+5,y); // setting rect location
-        //HINT: make sure to check states if they are giving bugs
+
+        // allow jump only if not jumping or falling and if space pressed
         if (keys[space] && state != JUMP && state != FALL) {
             changeState(JUMP, dir);
         }
+
+        // left right movement keys pressed
         if (keys[a] || keys[d]) {
+            // checking if max speed not yet reached
             if (velX < maxVelX) {
                 velX += accelX;
             }
+
+            // if "A" key pressed and player allowed to move left
             if (keys[a] && moveLeft) {
+                // checking if switched direction, reset velocity
                 if (dir == RIGHT) {
                     velX = 0;
                 }
+                // changing direction state to left
                 dir = LEFT;
+                // changing horizontal position towards left
                 x -= velX;
+                // ensuring x doesn't go out of bounds
                 x = Math.max(x, 0);
             }
+
+            // if "D" key pressed and player allowed to move right
             if (keys[d] && moveRight) {
+                // checking if switched direction, reset velocity
                 if (dir == LEFT) {
                     velX = 0;
                 }
+                // changing direction state to right
                 dir = RIGHT;
+                // changing horizontal position towards right
                 x += velX;
-                x = Math.min(x, Background.getWallRightPos()-Background.getWallLeftPos()-Background.getWallWidth()-width);
+                // making sure player doesn't go out of bounds
+                x = Math.min(x, Background.getWallRightPos()-Background.getWallLeftPos()-Background.getWallWidth()-width-10);
             }
-            if (velY == 0 && state != JUMP && state != FALL) { // if moving left right but not in air
+
+            // if moving left right but not in air, walking on ground
+            if (velY == 0 && state != JUMP && state != FALL) {
                 changeState(WALK, dir);
             }
-        } else if (state != JUMP && state != FALL) { // TODO: change to else if and put conditions
+        } else if (state != JUMP && state != FALL) {
+            // if not pressing "A" or "D", and not in air, idling
             velX = 0;
             changeState(IDLE, dir);
         }
 
+        // if falling, allow player to snap to block on Y-axis again
+        // (snapping repeatedly while on a block causes offset issues)
         if (state == FALL) {
-            firstSnap = true;
+            // whether alan can move left or right
+            boolean firstSnap = true;
         }
 
+        // JUMPING, logic inside function determines whether jump is performed or not
         jump();
 
+        // increasing game-y value of player and offset
         y+=(int)velY;
         offset+=(int)velY;
+
+        // applying additional offset to make stopping and accelerating smoother
         if (screenOffset < 47.8 && velY > 0) {
             if (jerk < 3) {
                 jerk += 0.1;
             }
             screenOffset+=jerk;
         }
+
+        // setting hitbox rectangle new x and y values
         alanRect.setLocation(x+5,y);
-//        System.out.println(jerk);
     }
 
     public void jump() {
-        //FIXME: DUDE GETS BLOCKED BY SOME RANDOM BLOCK THINGY
         if (state == JUMP) {
-            if (CustomTimer.getElapsedTime() > 0.5) {
+            if (Util.getElapsedTime() > 0.5) {
                 velY -= 12;
-                CustomTimer.restart();
+                Util.restart();
             } else {
                 changeState(IDLE, dir);
             }
         }
     }
 
+    // get collision on 4 sides of blocks
+    // instead of scanning through all blocks or a general area of blocks,
+    // getCollision instead runs through specific rows of blocks that narrow
+    // down the search field tremendously
+    // each check for each side of blocks is performed separately
     public void getCollision(Block[][] blocks, Graphics g) {
+        // getting rows with same y values as player
         int prevRow = getY(false)/Util.BLOCKLENGTH-1;
         int nextRow = getY(false)/Util.BLOCKLENGTH+1;
+
+        // variables to track the nearest block distances
         int nearestBlockY = 100, nearestAboveY = 100, nearestLeftX = 100, nearestRightX = 100, snapX = 0;
 
+        // top down collision
         for (int i = 0; i < Map.getColumns(); i++) {
             int blockType = blocks[nextRow][i].getType();
-            if (blockType != Block.AIR) {
-                if (blockType == Block.PLAT) {
-                    //TODO: CUSTOM PLATFORM COLLISION DETECTION
-                } else if (blockType == Block.WALL || blockType == Block.BOX) {
+            if (blockType != Block.AIR) { // if block isn't air, check for distance to player
+                // only check top when velocity is positive (going down)
+                if ((blockType == Block.WALL || blockType == Block.BOX || blockType == Block.PLAT) && velY >= 0) {
+                    // checkig player has a chance of colliding with block (x value within range of block x values)
                     if (x+width > blocks[nextRow][i].getX(false) && x < blocks[nextRow][i].getX(false) + Util.BLOCKLENGTH) {
-                        g.setColor(Color.RED);
-                        g.drawRect(blocks[nextRow][i].getX(true), blocks[nextRow][i].getY(true), Util.BLOCKLENGTH, Util.BLOCKLENGTH);
                         if (blocks[nextRow][i].getY(false)-y < nearestBlockY) {
+                            // updating nearest distance
                             nearestBlockY = Math.abs(blocks[nextRow][i].getY(false)-(y+height));
                         }
                     }
                 }
             }
         }
-        if (nearestBlockY <= 10) {
+        // if nearest distance is less than or equal to next velocity increment, stop player
+        if (nearestBlockY <= velY) {
+
+            // set velocity in y-dir to be 0
+            velY = 0;
+
+            // if snapping is needed (player went too far passed top of block and is now somewhat stuck in block)
             if (y+height > blocks[nextRow][0].getY(false)) {
                 y = blocks[nextRow][0].getY(false)-height;
                 //TODO: make offset slowly reach the new value instead of instantly adding (avoid stuttering)
                 offset -= nearestBlockY;
             }
+
+            // if the screen offset hasn't caught up yet (hasn't reached 0 and "reset")
             if (screenOffset > 0) {
+                // change jerk to create smooth motion
                 if (jerk > 0) {
                     jerk -= 0.1;
                 }
+                // decrease screen offset to "reset" camera position
                 screenOffset -= jerk;
             }
-            velY = 0;
+
+            // if originally falling, change state to idle now that player is grounded
             if (state == FALL) {
                 changeState(IDLE, dir);
             }
-        } else {
-            if (velY == 0) { // starts falling velocity at 3
-                velY = 3;
+        } else { // in the case that the player has not reached block/ground
+            if (velY == 0) { // starts falling velocity at 3 (if velocity is 0, when player just starts to fall)
+                velY = 5;
             }
-            else if (velY < maxVelY) {
+            else if (velY < maxVelY) { // increase velocity if not reached max y vel
                 velY += accelY;
             }
-            changeState(FALL, dir);
+            changeState(FALL, dir); // change state to falling
         }
 
+        // bottom up collision checking
         for (int i = 0; i < Map.getColumns(); i++) {
             int blockType = blocks[prevRow][i].getType();
             if (blockType != Block.AIR) {
-                if (blockType == Block.PLAT) {
-                    //TODO: CUSTOM PLATFORM COLLISION DETECTION
-                } else if (blockType == Block.WALL || blockType == Block.BOX) {
+                // only check bottom collision in solid blocks and when going upwards in y-dir
+                if ((blockType == Block.WALL || blockType == Block.BOX) && velY < 0) {
+                    // checking if block is in collision boundary of Alan
                     if (x+width > blocks[prevRow][i].getX(false) && x < blocks[prevRow][i].getX(false) + Util.BLOCKLENGTH) {
-                        g.setColor(Color.MAGENTA);
-                        g.drawRect(blocks[prevRow][i].getX(true), blocks[prevRow][i].getY(true), Util.BLOCKLENGTH, Util.BLOCKLENGTH);
                         if (Math.abs(y-(blocks[prevRow][i].getY(false)+Util.BLOCKLENGTH)) < nearestAboveY) {
+                            // setting nearest distance
                             nearestAboveY = Math.abs(y-(blocks[prevRow][i].getY(false)+Util.BLOCKLENGTH));
                         }
                     }
                 }
             }
         }
+        // flipping y-dir and decreasing by 1/2
         if (nearestAboveY <= 10) {
             if (velY < 0) {
                 velY = Math.abs(velY)/2;
             }
         }
 
+        // right to left collision checking
+        // similar logic to top-down collisions
+        // differences:
+        // - checks multiple rows, player able to collide with multiple rows of block
+        // - checks on y-axis instead of x
+        // - snapping to x-axis isn't as bug prone as snapping to y because no offset
         for (int r = nextRow-2; r < (state != WALK ? nextRow+1 : nextRow); r++) {
             for (int i = Map.getColumns()-1; i >= 0; i--) {
-                if (blocks[r][i].getX(false) < x) {
-                    if (blocks[r][i].getType() != Block.AIR) {
-                        if (y+height > blocks[r][i].getY(false) && y < blocks[r][i].getY(false) + Util.BLOCKLENGTH) {
-                            g.setColor(Color.CYAN);
-                            g.drawRect(blocks[r][i].getX(true), blocks[r][i].getY(true), Util.BLOCKLENGTH, Util.BLOCKLENGTH);
-                            if (x-(blocks[r][i].getX(false)+Util.BLOCKLENGTH) < nearestLeftX) {
-                                nearestLeftX = Math.abs(x-(blocks[r][i].getX(false)+Util.BLOCKLENGTH));
-                                snapX = blocks[r][i].getX(false)+Util.BLOCKLENGTH+1;
+                Block block = blocks[r][i];
+                if (block.getX(false) < x) {
+                    if (block.getType() != Block.AIR) {
+                        if (block.getType() == Block.BOX || block.getType() == Block.WALL) {
+                            if (y+height > block.getY(false) && y < block.getY(false) + Util.BLOCKLENGTH) {
+                                if (x-(block.getX(false)+Util.BLOCKLENGTH) < nearestLeftX) {
+                                    nearestLeftX = Math.abs(x-(block.getX(false)+Util.BLOCKLENGTH));
+                                    snapX = block.getX(false)+Util.BLOCKLENGTH+1;
+                                }
                             }
+                            break;
                         }
-                        break;
                     }
                 }
             }
@@ -287,24 +345,25 @@ public class Alan {
             moveLeft = true;
         }
 
+        // left to right collision checking - SAME AS RIGHT TO LEFT BUT X VALUES TO CHECK ARE DIFFERENT
         for (int r = nextRow-2; r < (state != WALK ? nextRow+1 : nextRow); r++) {
             for (int i = 0; i < Map.getColumns(); i++) {
-                if (blocks[r][i].getX(false) > x) {
-                    if (blocks[r][i].getType() != Block.AIR) {
-                        if (y+height > blocks[r][i].getY(false) && y < blocks[r][i].getY(false) + Util.BLOCKLENGTH) {
-                            g.setColor(Color.CYAN);
-                            g.drawRect(blocks[r][i].getX(true), blocks[r][i].getY(true), Util.BLOCKLENGTH, Util.BLOCKLENGTH);
-                            if (Math.abs(blocks[r][i].getX(false)-(x+width)) < nearestRightX) {
-                                nearestRightX = Math.abs(blocks[r][i].getX(false)-(x+width));
-                                snapX = blocks[r][i].getX(false)-width-5;
+                Block block = blocks[r][i];
+                if (block.getX(false) > x) {
+                    if (block.getType() != Block.AIR) {
+                        if (block.getType() == Block.BOX || block.getType() == Block.WALL) {
+                            if (y + height > block.getY(false) && y < block.getY(false) + Util.BLOCKLENGTH) {
+                                if (Math.abs(block.getX(false) - (x + width)) < nearestRightX) {
+                                    nearestRightX = Math.abs(block.getX(false) - (x + width));
+                                    snapX = block.getX(false) - width - 5;
+                                }
                             }
+                            break;
                         }
-                        break;
                     }
                 }
             }
         }
-//        System.out.println(nearestRightX);
         if (nearestRightX <= velX) {
             moveRight = false;
             x = snapX;
@@ -313,9 +372,11 @@ public class Alan {
         }
     }
 
+    // drawing alan in different states and directions
     public void draw(Graphics g, boolean[] keys) { //
+
         move(keys, g);
-//        System.out.println(state+" "+velY);
+
         if (state == IDLE) {
             if ((int) animFrame == idle.size()-1) {
                 animFrame = 0;
@@ -336,17 +397,23 @@ public class Alan {
                 animFrame += 0.6; // frame should update every 2/5 ticks
             }
         }
+
+        // drawing animation based on direction
         if (dir == LEFT) {
-            g.drawImage(allAnims.get(state*2+1).get((int)animFrame),getX(true),getY(true),null);
+            g.drawImage(allAnims.get(state*2+1).get((int)animFrame),getX(true)-5,getY(true)+3,null);
         } else {
-            g.drawImage(allAnims.get(state*2).get((int)animFrame),getX(true),getY(true),null);
+            g.drawImage(allAnims.get(state*2).get((int)animFrame),getX(true),getY(true)+3,null);
         }
+
+        /*
+        code to draw hitboxes
         g.setColor(Color.RED);
-//        g.drawLine(0,getY(true),GamePanel.getWIDTH(),getY(true));
-//        g.drawLine(0,getY(true)+height,GamePanel.getWIDTH(),getY(true)+height);
-//        g.drawRect((int) alanRect.getX()+Background.getWallLeftPos()+Background.getWallWidth(), (int) alanRect.getY()-offset+screenOffset, alanRect.width, height);
-//        g.setColor(Color.YELLOW);
-//        g.drawLine(0,GamePanel.getHEIGHT()/2-50+height,900,GamePanel.getHEIGHT()/2-50+height);
+        g.drawLine(0,getY(true),GamePanel.getWIDTH(),getY(true));
+        g.drawLine(0,getY(true)+height,GamePanel.getWIDTH(),getY(true)+height);
+        g.drawRect((int) alanRect.getX()+Background.getWallLeftPos()+Background.getWallWidth(), (int) alanRect.getY()-offset+screenOffset, alanRect.width, height);
+        g.setColor(Color.YELLOW);
+        g.drawLine(0,GamePanel.getHEIGHT()/2-50+height,900,GamePanel.getHEIGHT()/2-50+height);
+        */
     }
 }
 

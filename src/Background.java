@@ -6,20 +6,14 @@ import java.awt.*;
 // - health, powerups, etc.
 
 public class Background {
-    MapList maplist;
-
-    TileGroup walls;
-    Tile wallTile;
-    Image wallImgLeft;
-    Image wallImgRight;
-    private static int wallWidth;
-
-    private static int wallLeftPos, wallRightPos;
+    private final MapList maplist;
+    private final TileGroup walls;
+    private static int wallWidth, wallLeftPos, wallRightPos;
 
     public Background() {
-        wallImgLeft = new ImageIcon("src/tiles/sideleft.png").getImage();
-        wallImgRight = new ImageIcon("src/tiles/sideright.png").getImage();
-        wallTile = new Tile("wall", wallImgLeft, wallImgRight);
+        Image wallImgLeft = new ImageIcon("src/tiles/sideleft.png").getImage();
+        Image wallImgRight = new ImageIcon("src/tiles/sideright.png").getImage();
+        Tile wallTile = new Tile("wall", wallImgLeft, wallImgRight);
         walls = new TileGroup("walls", wallTile);
 
         wallLeftPos = GamePanel.getWIDTH()/2-GamePanel.getWIDTH()/5+1;
@@ -32,6 +26,12 @@ public class Background {
         Map lvl1 = new Map(500);
         maplist.addMap(lvl1);
     }
+
+    public static int getWallWidth() {return wallWidth;}
+    public static int getWallLeftPos() {return wallLeftPos;}
+    public static void setWallLeftPos(int w) {wallLeftPos = w;}
+    public static int getWallRightPos() {return wallRightPos;}
+    public static void setWallRightPos(int w) {wallRightPos = w;}
 
     public void draw(Graphics g) {
         setBackground(g, Color.BLACK);
@@ -47,26 +47,6 @@ public class Background {
     public void drawWalls(Graphics g) {
         walls.drawWall(g, wallLeftPos, 0, GamePanel.getHEIGHT(), true);
         walls.drawWall(g, wallRightPos, 0, GamePanel.getHEIGHT(), false);
-    }
-
-    public static int getWallWidth() {
-        return wallWidth;
-    }
-
-    public static int getWallLeftPos() {
-        return wallLeftPos;
-    }
-
-    public static void setWallLeftPos(int w) {
-        wallLeftPos = w;
-    }
-
-    public static int getWallRightPos() {
-        return wallRightPos;
-    }
-
-    public static void setWallRightPos(int w) {
-        wallRightPos = w;
     }
 }
 
@@ -121,43 +101,14 @@ class Tile {
         this.height = img.getHeight(null);
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Image getImg() {
-        return img;
-    }
-
-    public void setImg(Image img) {
-        this.img = img;
-    }
-
-    public Image getRimg() {
-        return rimg;
-    }
-
-    public void setRimg(Image rimg) {
-        this.rimg = rimg;
-    }
-
-    public int getWidth() {
-        return width;
-    }
-
-    public void setWidth(int width) {
-        this.width = width;
-    }
-
-    public int getHeight() {
-        return height;
-    }
-
-    public void setHeight(int height) {
-        this.height = height;
-    }
+    public String getName() {return name;}
+    public void setName(String name) {this.name = name;}
+    public Image getImg() {return img;}
+    public void setImg(Image img) {this.img = img;}
+    public Image getRimg() {return rimg;}
+    public void setRimg(Image rimg) {this.rimg = rimg;}
+    public int getWidth() {return width;}
+    public void setWidth(int width) {this.width = width;}
+    public int getHeight() {return height;}
+    public void setHeight(int height) {this.height = height;}
 }

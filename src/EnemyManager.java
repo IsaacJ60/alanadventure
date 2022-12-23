@@ -18,17 +18,17 @@ public class EnemyManager{
     }
     public void drawEnemies(Graphics g, Alan alan){
         for(Enemy e : enemies){
-            e.draw(g, alan);
+            e.draw(g);
         }
     }
 }
 
 class Enemy {
     public static final int IDLE = 0, FLY = 1;
-    private int state = FLY;
-    private int width, height, health;
+    private final int state = FLY;
+    private final int width, height;
+    private int health;
     private double x, y;
-    private double distance, distX, distY; // how far away the enemy is compared to alan
     private double speed, velX, velY, maxVelX, maxVelY, accelX, accelY, accelFactor; // the speed and acceleration the enemy has
     private double animFrame;
 
@@ -77,11 +77,12 @@ class Enemy {
         this.health = health;
     }
 
-    public void move(Alan alan) {
+    public void move() {
         // distance calculations
-        distX = x - alan.getX(false);
-        distY = y - alan.getY(false);
-        distance = Math.sqrt(Math.pow(distX, 2) + Math.pow(distY, 2)); // pythag theorem
+        double distX = x - Alan.getX(false);
+        // how far away the enemy is compared to alan
+        double distY = y - Alan.getY(false);
+        double distance = Math.sqrt(Math.pow(distX, 2) + Math.pow(distY, 2)); // pythag theorem
         // adding up how many frames movement has been in x direction, capping out at +-20 to limit terminal velocity
         if (distX < 0 && velX < maxVelX) {
             accelX += accelFactor;
@@ -104,8 +105,8 @@ class Enemy {
         y -= d;
     }
 
-    public void draw(Graphics g, Alan alan) {
-        move(alan);
+    public void draw(Graphics g) {
+        move();
 
         if (state == FLY) {
             if ((int) animFrame == idle.size() - 1) {

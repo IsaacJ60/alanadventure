@@ -5,15 +5,16 @@
 import java.awt.*;
 
 public class Block {
-    private int x;
-    private int y;
-    private int width;
-    private int height;
-    public static final int AIR = 0, BOX = 1, PLAT = 2, SPIKE = 3, WALL = 4;
-    private int type;
-    private int side;
+    // PROPERTIES
+    private int x, y, width, height, side;
+    private final Rectangle rect;
+    // image property
     private Tile tile;
-    private Rectangle rect;
+
+    // TYPE CONSTANTS
+    public static final int AIR = 0, BOX = 1, PLAT = 2, SPIKE = 3, WALL = 4;
+    // store type of block
+    private int type;
 
     public Block(int x, int y, int type, int side) {
         this.x = x;
@@ -23,29 +24,20 @@ public class Block {
         rect = new Rectangle(x,y,Util.BLOCKLENGTH,Util.BLOCKLENGTH);
     }
 
-    public Tile getTile() {
-        return tile;
-    }
-
-    public void setTile(Tile tile) {
-        this.tile = tile;
-    }
-
-    public boolean collide(Rectangle otherRect) {
-        return rect.intersects(otherRect);
-    }
-
-    public boolean collide(int x, int y, int width, int height) {
-        return rect.intersects(new Rectangle(x,y,width,height));
-    }
-
-    public int getSide() {
-        return side;
-    }
-
-    public void setSide(int side) {
-        this.side = side;
-    }
+    public Tile getTile() {return tile;}
+    public void setTile(Tile tile) {this.tile = tile;}
+    public boolean collide(Rectangle otherRect) {return rect.intersects(otherRect);}
+    public boolean collide(int x, int y, int width, int height) {return rect.intersects(new Rectangle(x,y,width,height));}
+    public int getSide() {return side;}
+    public void setSide(int side) {this.side = side;}
+    public void setX(int x) {this.x = x;}
+    public void setY(int y) {this.y = y;}
+    public int getWidth() {return width;}
+    public void setWidth(int width) {this.width = width;}
+    public int getHeight() {return height;}
+    public void setHeight(int height) {this.height = height;}
+    public void setType(int type) {this.type = type;}
+    public int getType() {return type;}
 
     public int getX(boolean adjusted) {
         if (adjusted) {
@@ -55,43 +47,11 @@ public class Block {
         }
     }
 
-    public void setX(int x) {
-        this.x = x;
-    }
-
     public int getY(boolean adjusted) {
         if (adjusted) {
             return y-Alan.getOffset()+Alan.getScreenOffset();
         } else {
             return y;
         }
-    }
-
-    public void setY(int y) {
-        this.y = y;
-    }
-
-    public int getWidth() {
-        return width;
-    }
-
-    public void setWidth(int width) {
-        this.width = width;
-    }
-
-    public int getHeight() {
-        return height;
-    }
-
-    public void setHeight(int height) {
-        this.height = height;
-    }
-
-    public void setType(int type) {
-        this.type = type;
-    }
-
-    public int getType() {
-        return type;
     }
 }
