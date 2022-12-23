@@ -16,4 +16,3 @@ public class AAdventure extends JFrame { // frame
         new AAdventure();
     }
 }
-
