@@ -9,8 +9,10 @@ public class Background {
     private final MapList maplist;
     private final TileGroup walls;
     private static int wallWidth, wallLeftPos, wallRightPos;
+    private Image bg;
 
     public Background() {
+        bg = new ImageIcon("src/tiles/bg.png").getImage().getScaledInstance(GamePanel.getWIDTH(), GamePanel.getHEIGHT(), Image.SCALE_DEFAULT);
         Image wallImgLeft = new ImageIcon("src/tiles/sideleft.png").getImage();
         Image wallImgRight = new ImageIcon("src/tiles/sideright.png").getImage();
         Tile wallTile = new Tile("wall", wallImgLeft, wallImgRight);
@@ -34,7 +36,10 @@ public class Background {
     public static void setWallRightPos(int w) {wallRightPos = w;}
 
     public void draw(Graphics g) {
-        setBackground(g, Color.BLACK);
+        g.setColor(Color.BLACK);
+        setBackground(g, g.getColor());
+        g.drawImage(bg,0,Alan.getScreenOffset()/3,null);
+        g.fillRect(getWallLeftPos(), 0, getWallRightPos()-getWallLeftPos(), GamePanel.getHEIGHT());
         maplist.drawBlocks(g, GamePanel.getLevel());
         drawWalls(g);
     }
@@ -61,12 +66,12 @@ class TileGroup {
 
     public void drawWall(Graphics g, int x1, int y1, int y2, boolean flipped) {
         if (flipped) {
-            for (int i = y1; i < y2; i+=tile.getWidth()) {
-                g.drawImage(tile.getRimg(),x1,i,null);
+            for (int i = y1; i < 500*Util.BLOCKLENGTH; i+=tile.getWidth()) {
+                g.drawImage(tile.getRimg(),x1,i-Alan.getOffset()+Alan.getScreenOffset(),null);
             }
         } else {
-            for (int i = y1; i < y2; i+=tile.getWidth()) {
-                g.drawImage(tile.getImg(),x1,i,null);
+            for (int i = y1; i < 500*Util.BLOCKLENGTH; i+=tile.getWidth()) {
+                g.drawImage(tile.getImg(),x1,i-Alan.getOffset()+Alan.getScreenOffset(),null);
             }
         }
     }

@@ -16,23 +16,22 @@ import java.util.ArrayList;
 
 public class Alan {
     // CONSTANTS
-    public static final int a = KeyEvent.VK_A, d = KeyEvent.VK_D, space = KeyEvent.VK_SPACE; // constants for keyboard input
-    private static final int LEFT = 0, RIGHT = 1; // constants for direction
+    public static final int LEFT = 0, RIGHT = 1; // constants for direction
     public static final int IDLE = 0, WALK = 1, JUMP = 2, FALL = 3; // constants for state
 
     // STATES
-    private int state = IDLE; // current state (e.g., idle, walk, fall, shoot) to change what animation is playing
-    private int dir = LEFT; // the direction alan is facing
+    private static int state = IDLE; // current state (e.g., idle, walk, fall, shoot) to change what animation is playing
+    private static int dir = LEFT; // the direction alan is facing
 
     // PLAYER INFO AND STATS
     private final Rectangle alanRect; // hitbox
-    private static int x, y; // position of alan relative to game window
-    private final int width, height; // dimensions
+    private static int x, y, width, height; // dimensions
     private int health, maxHealth, healthProgress; // current health, health capacity, and progress to +1 maximum health
 
     // MOVEMENT LIMITERS AND VELOCITIES
     private boolean moveLeft = true, moveRight = true;
-    private double velX, velY, jerk; // movement speed & screenoffset jerk
+
+    private static double velX, velY, jerk; // movement speed & screenoffset jerk
     private final double maxVelX, maxVelY, accelX, accelY; // velocity & acceleration
 
     // SCREEN OFFSETS
@@ -53,19 +52,22 @@ public class Alan {
     // all animations
     ArrayList<ArrayList<Image>> allAnims = new ArrayList<>();
 
+    // TIMERS
+    Util.CustomTimer jumpTimer = new Util.CustomTimer();
+
     public Alan(int posX, int posY, Blaster weapon) {
         x = posX;
         y = posY;
-        this.width = 20;
-        this.height = 30;
+        velX = 0;
+        velY = 0;
+        jerk = 0.2;
+        width = 20;
+        height = 30;
         this.health = 4;
-        this.velX = 0;
-        this.velY = 0;
         this.maxVelX = 10;
         this.maxVelY = 15;
         this.accelY = 1.0;
         this.accelX = 1.0;
-        this.jerk = 0.2;
         this.animFrame = 0;
         this.weapon = weapon;
 
@@ -102,8 +104,12 @@ public class Alan {
         allAnims.add(rfall);
     }
 
-    public void setX(int p) {x = p;} // sets x
-    public void setY(int p) {y = p;} // sets y
+    public static int getDir() {return dir;}
+    public static void setX(int p) {x = p;} // sets x
+    public static void setY(int p) {y = p;} // sets y
+    public static int getHeight() {return height;}
+    public static int getVelY() {return (int)velY;}
+    public static int getState() {return state;}
     public int getHealth() {return health;} // gets hp
     public void setHealth(int health) {this.health = health;} // sets hp
     public static int getOffset() {return offset;} // gets offset
@@ -139,19 +145,19 @@ public class Alan {
         alanRect.setLocation(x+5,y); // setting rect location
 
         // allow jump only if not jumping or falling and if space pressed
-        if (keys[space] && state != JUMP && state != FALL) {
+        if (keys[Util.space] && state != JUMP && state != FALL) {
             changeState(JUMP, dir);
         }
 
         // left right movement keys pressed
-        if (keys[a] || keys[d]) {
+        if (keys[Util.a] || keys[Util.d]) {
             // checking if max speed not yet reached
             if (velX < maxVelX) {
                 velX += accelX;
             }
 
             // if "A" key pressed and player allowed to move left
-            if (keys[a] && moveLeft) {
+            if (keys[Util.a] && moveLeft) {
                 // checking if switched direction, reset velocity
                 if (dir == RIGHT) {
                     velX = 0;
@@ -165,7 +171,7 @@ public class Alan {
             }
 
             // if "D" key pressed and player allowed to move right
-            if (keys[d] && moveRight) {
+            if (keys[Util.d] && moveRight) {
                 // checking if switched direction, reset velocity
                 if (dir == LEFT) {
                     velX = 0;
@@ -188,13 +194,6 @@ public class Alan {
             changeState(IDLE, dir);
         }
 
-        // if falling, allow player to snap to block on Y-axis again
-        // (snapping repeatedly while on a block causes offset issues)
-        if (state == FALL) {
-            // whether alan can move left or right
-            boolean firstSnap = true;
-        }
-
         // JUMPING, logic inside function determines whether jump is performed or not
         jump();
 
@@ -212,13 +211,19 @@ public class Alan {
 
         // setting hitbox rectangle new x and y values
         alanRect.setLocation(x+5,y);
+
+        // SHOOTING, logic inside
+        if (weapon.shoot(keys, (int) velY, g)) {
+            velY-=velY*1.2;
+        }
+        weapon.animation(g, MapList.getBlocksWithoutWallImages());
     }
 
     public void jump() {
         if (state == JUMP) {
-            if (Util.getElapsedTime() > 0.5) {
+            if (jumpTimer.getElapsedTime() > 0.5) {
                 velY -= 12;
-                Util.restart();
+                jumpTimer.restart();
             } else {
                 changeState(IDLE, dir);
             }
@@ -255,7 +260,7 @@ public class Alan {
             }
         }
         // if nearest distance is less than or equal to next velocity increment, stop player
-        if (nearestBlockY <= velY) {
+        if (nearestBlockY <= velY+5) {
 
             // set velocity in y-dir to be 0
             velY = 0;
@@ -417,56 +422,3 @@ public class Alan {
     }
 }
 
-class Blaster {
-    String name;
-    int damage, capacity, speed;
-    ArrayList<Image> shootAnim;
-
-    Blaster(String name, int damage, int capacity, int speed, ArrayList<Image> shootAnim) {
-        this.name = name;
-        this.damage = damage;
-        this.capacity = capacity;
-        this.speed = speed;
-        this.shootAnim = shootAnim;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public int getDamage() {
-        return damage;
-    }
-
-    public void setDamage(int damage) {
-        this.damage = damage;
-    }
-
-    public int getCapacity() {
-        return capacity;
-    }
-
-    public void setCapacity(int capacity) {
-        this.capacity = capacity;
-    }
-
-    public int getSpeed() {
-        return speed;
-    }
-
-    public void setSpeed(int speed) {
-        this.speed = speed;
-    }
-
-    public ArrayList<Image> getShootAnim() {
-        return shootAnim;
-    }
-
-    public void setShootAnim(ArrayList<Image> shootAnim) {
-        this.shootAnim = shootAnim;
-    }
-}
