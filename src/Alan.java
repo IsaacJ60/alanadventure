@@ -33,6 +33,7 @@ public class Alan {
 
     private static double velX, velY, jerk; // movement speed & screenoffset jerk
     private final double maxVelX, maxVelY, accelX, accelY; // velocity & acceleration
+    private static int nearestY;
 
     // SCREEN OFFSETS
     private static int offset, screenOffset; // how far down alan has "travelled", subtracted from other game elements to give the effect that alan is falling
@@ -49,6 +50,8 @@ public class Alan {
     ArrayList<Image> fall = new ArrayList<>();
     ArrayList<Image> rfall = new ArrayList<>();
     ArrayList<Image> jump = new ArrayList<>();
+    ArrayList<Image> shoot = new ArrayList<>();
+    ArrayList<Image> rshoot = new ArrayList<>();
     // all animations
     ArrayList<ArrayList<Image>> allAnims = new ArrayList<>();
 
@@ -93,7 +96,12 @@ public class Alan {
         }
         fall.add(new ImageIcon("src/assets/alan/jump/jump4.png").getImage().getScaledInstance(30,height,Image.SCALE_DEFAULT));
         rfall.add(new ImageIcon("src/assets/alan/jump/m_jump4.png").getImage().getScaledInstance(30,height,Image.SCALE_DEFAULT));
-
+        for (int i = 0; i < 6; i++) {
+            shoot.add(new ImageIcon("src/assets/alan/shoot/shoot" + i + ".png").getImage().getScaledInstance(30, height,Image.SCALE_DEFAULT));
+        }
+        for (int i = 0; i < 6; i++) {
+            rshoot.add(new ImageIcon("src/assets/alan/shoot/m_shoot" + i + ".png").getImage().getScaledInstance(30, height,Image.SCALE_DEFAULT));
+        }
         allAnims.add(idle);
         allAnims.add(ridle);
         allAnims.add(walk);
@@ -102,9 +110,12 @@ public class Alan {
         allAnims.add(jump);
         allAnims.add(fall);
         allAnims.add(rfall);
+        allAnims.add(shoot);
+        allAnims.add(rshoot);
     }
 
     public static int getDir() {return dir;}
+    public static int getNearestY() {return nearestY;}
     public static void setX(int p) {x = p;} // sets x
     public static void setY(int p) {y = p;} // sets y
     public static int getHeight() {return height;}
@@ -133,11 +144,14 @@ public class Alan {
         }
     }
 
-    public void changeState(int MODE, int d) { // changes state
+    public void changeState(int MODE, int d, boolean forceChange) { // changes state
         if (state != MODE || d != dir) {
             animFrame = 0;
         }
         state = MODE;
+        if (forceChange) {
+            animFrame = 0;
+        }
     }
 
     public void move(boolean[] keys, Graphics g) {
@@ -145,8 +159,8 @@ public class Alan {
         alanRect.setLocation(x+5,y); // setting rect location
 
         // allow jump only if not jumping or falling and if space pressed
-        if (keys[Util.space] && state != JUMP && state != FALL) {
-            changeState(JUMP, dir);
+        if (keys[Util.space] && !GamePanel.getPrevSpaced() && state != JUMP && state != FALL) {
+            changeState(JUMP, dir, false);
         }
 
         // left right movement keys pressed
@@ -186,18 +200,19 @@ public class Alan {
 
             // if moving left right but not in air, walking on ground
             if (velY == 0 && state != JUMP && state != FALL) {
-                changeState(WALK, dir);
+                changeState(WALK, dir, false);
             }
         } else if (state != JUMP && state != FALL) {
             // if not pressing "A" or "D", and not in air, idling
             velX = 0;
-            changeState(IDLE, dir);
+            changeState(IDLE, dir, false);
         }
 
         // JUMPING, logic inside function determines whether jump is performed or not
         jump();
 
         // increasing game-y value of player and offset
+        System.out.println("Y: " + (y-GamePanel.getHEIGHT()/2-50+100) + " | " + "OFFSET: " + offset);
         y+=(int)velY;
         offset+=(int)velY;
 
@@ -214,6 +229,7 @@ public class Alan {
 
         // SHOOTING, logic inside
         if (weapon.shoot(keys, (int) velY, g)) {
+            changeState(FALL, dir, true); // just to reset animframe
             velY-=velY*1.2;
         }
         weapon.animation(g, MapList.getBlocksWithoutWallImages());
@@ -225,7 +241,7 @@ public class Alan {
                 velY -= 12;
                 jumpTimer.restart();
             } else {
-                changeState(IDLE, dir);
+                changeState(IDLE, dir, false);
             }
         }
     }
@@ -237,7 +253,7 @@ public class Alan {
     // each check for each side of blocks is performed separately
     public void getCollision(Block[][] blocks, Graphics g) {
         // getting rows with same y values as player
-        int prevRow = getY(false)/Util.BLOCKLENGTH-1;
+        int prevRow = getY(false)/Util.BLOCKLENGTH;
         int nextRow = getY(false)/Util.BLOCKLENGTH+1;
 
         // variables to track the nearest block distances
@@ -284,7 +300,7 @@ public class Alan {
 
             // if originally falling, change state to idle now that player is grounded
             if (state == FALL) {
-                changeState(IDLE, dir);
+                changeState(IDLE, dir, false);
             }
         } else { // in the case that the player has not reached block/ground
             if (velY == 0) { // starts falling velocity at 3 (if velocity is 0, when player just starts to fall)
@@ -293,8 +309,9 @@ public class Alan {
             else if (velY < maxVelY) { // increase velocity if not reached max y vel
                 velY += accelY;
             }
-            changeState(FALL, dir); // change state to falling
+            changeState(FALL, dir, false); // change state to falling
         }
+        nearestY = nearestBlockY;
 
         // bottom up collision checking
         for (int i = 0; i < Map.getColumns(); i++) {
@@ -313,9 +330,10 @@ public class Alan {
             }
         }
         // flipping y-dir and decreasing by 1/2
-        if (nearestAboveY <= 10) {
+        if (nearestAboveY <= 15) {
             if (velY < 0) {
                 velY = Math.abs(velY)/2;
+//                offset += 6;
             }
         }
 
@@ -382,7 +400,14 @@ public class Alan {
 
         move(keys, g);
 
-        if (state == IDLE) {
+        if (weapon.isAlanShoot()) {
+            if ((int) animFrame == shoot.size()-1) {
+                animFrame = 0;
+                weapon.setAlanShoot(false);
+            } else {
+                animFrame+=0.8; // frame should update every 1/5 ticks
+            }
+        } else if (state == IDLE) {
             if ((int) animFrame == idle.size()-1) {
                 animFrame = 0;
             } else {
@@ -405,9 +430,17 @@ public class Alan {
 
         // drawing animation based on direction
         if (dir == LEFT) {
-            g.drawImage(allAnims.get(state*2+1).get((int)animFrame),getX(true)-5,getY(true)+3,null);
+            if (weapon.isAlanShoot()) {
+                g.drawImage(rshoot.get((int)animFrame),getX(true)-5,getY(true)+3,null);
+            } else {
+                g.drawImage(allAnims.get(state*2+1).get((int)animFrame),getX(true)-5,getY(true)+3,null);
+            }
         } else {
-            g.drawImage(allAnims.get(state*2).get((int)animFrame),getX(true),getY(true)+3,null);
+            if (weapon.isAlanShoot()) {
+                g.drawImage(shoot.get((int)animFrame),getX(true)-5,getY(true)+3,null);
+            } else {
+                g.drawImage(allAnims.get(state*2).get((int)animFrame),getX(true)-5,getY(true)+3,null);
+            }
         }
 
         /*

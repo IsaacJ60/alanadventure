@@ -11,6 +11,7 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener, Mo
     private static int WIDTH = 900, HEIGHT = 700;
     private static int tarX, tarY;
     private static int level = 0;
+    private static boolean spaced = false, prevSpaced = false;
 
     Background bg;
     Alan alan;
@@ -46,6 +47,8 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener, Mo
     }
 
     // getter and setter for mouse pos, lives, and level
+    public static boolean getSpaced() {return spaced;}
+    public static boolean getPrevSpaced() {return prevSpaced;}
     public static int getTarX() {return tarX;}
     public static int getTarY() {return tarY;}
     public static int getWIDTH() {return WIDTH;}
@@ -81,12 +84,20 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener, Mo
     public void keyPressed(KeyEvent e) {
         int key = e.getKeyCode();
         keys[key] = true;
+        if (key == Util.space) {
+            prevSpaced = spaced;
+            spaced = true;
+        }
     }
 
     @Override
     public void keyReleased(KeyEvent e) {
         int key = e.getKeyCode();
         keys[key] = false;
+        if (key == Util.space) {
+            prevSpaced = spaced;
+            spaced = false;
+        }
     }
 
     // ActionListener

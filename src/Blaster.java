@@ -9,6 +9,8 @@ public class Blaster {
     String name;
     int damage, capacity, speed, lastX, lastY;
     private Image defaultBullet;
+
+    private boolean alanShoot;
     ArrayList<Image> shootAnim;
     ArrayList<Image> explosion;
     ArrayList<Bullet> bullets;
@@ -25,6 +27,7 @@ public class Blaster {
         this.speed = speed;
         this.shootAnim = shootAnim;
         lastX = 0; lastY = 0;
+        alanShoot = false;
         defaultBullet = new ImageIcon("src/assets/alan/shoot/bullets/bullet.png").getImage().getScaledInstance(16,32,Image.SCALE_DEFAULT);
         for (int i = 0; i < 5; i++) {
             shootAnim.add(new ImageIcon("src/assets/alan/shoot/bullets/bullet.png").getImage());
@@ -42,6 +45,13 @@ public class Blaster {
     public void setLastY(int y) {
         lastY = y;
     }
+    public boolean isAlanShoot() {
+        return alanShoot;
+    }
+
+    public void setAlanShoot(boolean alanShoot) {
+        this.alanShoot = alanShoot;
+    }
 
     // SHOOT - CHECKS IF PLAYER WANTS TO SHOOT AND IF TIMER ALLOWS, ADDS BULLET IF ALLOWED
     public boolean shoot(boolean[] keys, int velY, Graphics g) {
@@ -49,9 +59,10 @@ public class Blaster {
         if (Alan.getState() == Alan.FALL && keys[Util.space] && shootTimer.getElapsedTime() > 0.15 && velY > 0) {
             shootTimer.restart();
             // add bullet
-            bullets.add(new Bullet(Alan.getX(false)+(Alan.getDir() == Alan.LEFT ? 3 : 12), Alan.getY(false)+Alan.getVelY(),
-                    Alan.getY(false)+Alan.getVelY(),
+            bullets.add(new Bullet(Alan.getX(false) + (Alan.getDir() == Alan.LEFT ? 2 : 8), Alan.getY(false) + Alan.getVelY() + 10,
+                    Alan.getY(false) + Alan.getVelY() + 10,
                     defaultBullet));
+            alanShoot = true;
             return true;
         }
         return false;
@@ -61,12 +72,15 @@ public class Blaster {
     public void animation(Graphics g, Block[][] blocks) {
         ArrayList<Bullet> rm = new ArrayList<>(); // removal list
         for (Bullet b : bullets) { // go through all bullets
-            g.drawImage(b.getImg(), b.getX(true), b.getY(true), null);
-            b.setY(b.getY(false) + speed);
             if (getCollision(b, blocks)) {
                 rm.add(b);
             } else if (b.getY(false) > b.getStartY() + 300) {
                 rm.add(b);
+            } else if (Alan.getNearestY() < 10) {
+                rm.add(b);
+            } else {
+                g.drawImage(b.getImg(), b.getX(true), b.getY(true), null);
+                b.setY(b.getY(false) + speed);
             }
         }
         for (Bullet b : rm) {
@@ -74,32 +88,24 @@ public class Blaster {
         }
     }
 
-    // getting collision for block and bullet - SAME LOGIC AS TOP-DOWN PLAYER COLLISION
     public boolean getCollision(Bullet b, Block[][] blocks) {
-        int nextRow = b.getY(false)/Util.BLOCKLENGTH+1; int nearestBlockY = 100;
-        for (int r = nextRow-2; r < nextRow+2; r++) {
+        int nextRow = b.getY(false)/Util.BLOCKLENGTH+1;
+        for (int r = nextRow-1; r < nextRow+2; r++) {
             for (int i = 0; i < Map.getColumns(); i++) {
                 int blockType = blocks[r][i].getType();
                 if (blockType != Block.AIR) {
                     if ((blockType == Block.WALL || blockType == Block.BOX || blockType == Block.PLAT)) {
-                        if (b.getX(false)+b.getRect().getWidth() > blocks[r][i].getX(false) &&
-                                b.getX(false) < blocks[r][i].getX(false) + Util.BLOCKLENGTH) {
-                            if (blocks[r][i].getY(false)-b.getY(false) < nearestBlockY) {
-                                nearestBlockY = (int) Math.abs(blocks[r][i].getY(false)-(b.getY(false)+b.getRect().getHeight()));
-                                if (nearestBlockY <= speed) {
-                                    if (blockType == Block.BOX) {
-                                        blocks[r][i].setType(Block.AIR);
-                                        blastPlaces.add(new int[]{r*Util.BLOCKLENGTH, i*Util.BLOCKLENGTH, 0});
-                                    }
-                                    return true;
-                                }
+                        if (blocks[r][i].collide(b.getRect())) {
+                            if (blockType == Block.BOX) {
+                                blocks[r][i].setType(Block.AIR);
+                                blastPlaces.add(new int[]{r*Util.BLOCKLENGTH, i*Util.BLOCKLENGTH, 0});
                             }
+                            return true;
                         }
                     }
                 }
             }
         }
-
         return false;
     }
 
@@ -161,7 +167,7 @@ class Bullet {
         this.x = x;
         this.y = y;
         this.img = img;
-        this.rect = new Rectangle(x,y,img.getWidth(null), getImg().getHeight(null));
+        this.rect = new Rectangle(x,y,8, 16);
     }
 
     public int getX(boolean adjusted) { // gets x
@@ -181,7 +187,10 @@ class Bullet {
     }
     public Rectangle getRect() {return rect;}
     public void setX(int x) {this.x = x;}
-    public void setY(int y) {this.y = y;}
+    public void setY(int y) {
+        this.y = y;
+        this.rect.setLocation(this.x, this.y);
+    }
     public Image getImg() {return img;}
     public void setImg(Image img) {this.img = img;}
     public int getStartY() {return startY;}
