@@ -212,7 +212,7 @@ public class Alan {
         jump();
 
         // increasing game-y value of player and offset
-        System.out.println("Y: " + (y-GamePanel.getHEIGHT()/2-50+100) + " | " + "OFFSET: " + offset);
+//        System.out.println("Y: " + (y-GamePanel.getHEIGHT()/2-50+100) + " | " + "OFFSET: " + offset);
         y+=(int)velY;
         offset+=(int)velY;
 

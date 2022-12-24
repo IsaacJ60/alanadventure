@@ -122,7 +122,7 @@ class Map {
     public int getRows() {return rows;}
     // getting map and blocks
     public Block[][] getMap() {return map;}
-    public Block getBlock(int a, int b) {return map[a][b];}
+    public Block getBlock(int r, int c) {return map[r][c];}
     // placing blocks
     private void placeBlock(int x, int y, int r, int c, int blockType, int side) {map[r][c] = new Block(x, y, blockType, side);}
 
@@ -159,21 +159,28 @@ class Map {
         for (int i = 3; i < rows-5; i+=Util.MAXCHUNKSIZE) {
             //HINT: getting type of wall, if doesn't match any types then don't spawn
             // - increasing bound decreases wall spawns
-            int boxType = rand.nextInt(0,7);
+            int boxType = rand.nextInt(0,10);
             //NOTE - 3 PATTERNS ARE:
             // - PILLAR (3x3 to 1x3 to 1x1)
             // - FUNNEL (2 sides funnel into centre)
             // - CLIFF (1 side forms cliff structure)
             switch (boxType) {
-                case 0 -> generateBoxes(i,4, 2);
-                case 1 -> generateBoxes(i,5, 3);
-                case 2 -> generateBoxes(i,3,2);
+                case 0 -> generateBoxes(i, rand.nextInt(3,5), 1);
+                case 1 -> generateBoxes(i,rand.nextInt(4,6), 2);
+                case 2 -> generateBoxes(i,rand.nextInt(2,4),2);
             }
         }
     }
 
     public void generateBoxes(int row, int length, int height) {
-        ;
+        int start = rand.nextInt(0,columns-length-1);
+        for (int i = row; i < row+height; i++) {
+            for (int j = start; j < start+length; j++) {
+                if (rand.nextInt(0,3) != 0 && getBlock(i,j).getType() == Block.AIR) {
+                    placeBlock(i,j,Block.BOX,Util.INDEX,Util.NEUTRAL);
+                }
+            }
+        }
     }
 
     public void generatePlatBlocks() {
