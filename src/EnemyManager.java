@@ -18,7 +18,7 @@ public class EnemyManager{
     }
     public void drawEnemies(Graphics g, Alan alan){
         for(Enemy e : enemies){
-            e.draw(g);
+            e.draw(g, alan);
         }
     }
 }
@@ -77,11 +77,11 @@ class Enemy {
         this.health = health;
     }
 
-    public void move() {
+    public void move(Alan alan) {
         // distance calculations
-        double distX = x - Alan.getX(false);
+        double distX = x - alan.getX(false);
         // how far away the enemy is compared to alan
-        double distY = y - Alan.getY(false);
+        double distY = y - alan.getY(false);
         double distance = Math.sqrt(Math.pow(distX, 2) + Math.pow(distY, 2)); // pythag theorem
         // adding up how many frames movement has been in x direction, capping out at +-20 to limit terminal velocity
         if (distX < 0 && velX < maxVelX) {
@@ -105,8 +105,8 @@ class Enemy {
         y -= d;
     }
 
-    public void draw(Graphics g) {
-        move();
+    public void draw(Graphics g, Alan alan) {
+        move(alan);
 
         if (state == FLY) {
             if ((int) animFrame == idle.size() - 1) {
@@ -114,7 +114,7 @@ class Enemy {
             } else {
                 animFrame += 0.33;
             }
-            g.drawImage(idle.get((int) animFrame), (int) x+Background.getWallLeftPos(), (int) y-Alan.getOffset(), null);
+            g.drawImage(idle.get((int) animFrame), (int) x+Background.getWallLeftPos(), (int) y-alan.getOffset(), null);
         }
     }
 }

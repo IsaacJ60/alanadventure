@@ -49,13 +49,13 @@ public class Blaster {
     }
 
     // SHOOT - CHECKS IF PLAYER WANTS TO SHOOT AND IF TIMER ALLOWS, ADDS BULLET IF ALLOWED
-    public boolean shoot(boolean[] keys, int velY, Graphics g) {
+    public boolean shoot(boolean[] keys, int velY, Graphics g, Alan alan) {
         blastAnim(blastPlaces, g);
-        if (Alan.getState() == Alan.FALL && keys[Util.space] && shootTimer.getElapsedTime() > 0.15 && velY > 0) {
+        if (alan.getState() == alan.FALL && keys[Util.space] && shootTimer.getElapsedTime() > 0.15 && velY > 0) {
             shootTimer.restart();
             // add bullet
-            bullets.add(new Bullet(Alan.getX(false) + (Alan.getDir() == Alan.LEFT ? 2 : 8), Alan.getY(false) + Alan.getVelY() + 10,
-                    Alan.getY(false) + Alan.getVelY() + 10,
+            bullets.add(new Bullet(alan.getX(false) + (alan.getDir() == alan.LEFT ? 2 : 8), alan.getY(false) + alan.getVelY() + 10,
+                    alan.getY(false) + alan.getVelY() + 10,
                     defaultBullet));
             alanShoot = true;
             return true;
@@ -64,18 +64,18 @@ public class Blaster {
     }
 
     // DRAWS ALL BULLETS AND CHECKS FOR COLLISION BETWEEN BLOCK AND BULLET
-    public void animation(Graphics g, Block[][] blocks) {
+    public void animation(Graphics g, Block[][] blocks, Alan alan, Map map) {
         ArrayList<Bullet> rm = new ArrayList<>(); // removal list
         for (Bullet b : bullets) { // go through all bullets
-            if (getCollision(b, blocks)) {
+            if (getCollision(b, blocks, alan, map)) {
                 rm.add(b);
-            } else if (b.getY(false) > b.getStartY() + 300) {
+            } else if (b.getY(false,alan) > b.getStartY() + 300) {
                 rm.add(b);
-            } else if (Alan.getNearestY() < 10) {
+            } else if (alan.getNearestY() < 10) {
                 rm.add(b);
             } else {
-                g.drawImage(b.getImg(), b.getX(true), b.getY(true), null);
-                b.setY(b.getY(false) + speed);
+                g.drawImage(b.getImg(), b.getX(true), b.getY(true,alan), null);
+                b.setY(b.getY(false,alan) + speed);
             }
         }
         for (Bullet b : rm) {
@@ -83,10 +83,10 @@ public class Blaster {
         }
     }
 
-    public boolean getCollision(Bullet b, Block[][] blocks) {
-        int nextRow = b.getY(false)/Util.BLOCKLENGTH+1;
+    public boolean getCollision(Bullet b, Block[][] blocks, Alan alan, Map map) {
+        int nextRow = b.getY(false,alan)/Util.BLOCKLENGTH+1;
         for (int r = nextRow-1; r < nextRow+2; r++) {
-            for (int i = 0; i < Map.getColumns(); i++) {
+            for (int i = 0; i < map.getColumns(); i++) {
                 int blockType = blocks[r][i].getType();
                 if (blockType != Block.AIR) {
                     if ((blockType == Block.WALL || blockType == Block.BOX || blockType == Block.PLAT)) {
@@ -165,9 +165,9 @@ class Bullet {
         }
     }
 
-    public int getY(boolean adjusted) { // gets y
+    public int getY(boolean adjusted, Alan alan) { // gets y
         if (adjusted) { // whether you want y relative to the gameplay window
-            return y- Alan.getOffset() + Alan.getScreenOffset();
+            return y- alan.getOffset() + alan.getScreenOffset();
         } else {
             return y;
         }

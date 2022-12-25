@@ -1,3 +1,4 @@
+import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Random;
@@ -17,7 +18,7 @@ public class MapList {
     // MAP BLOCKS
     public static Tile boxTile,wallTopLeft,wallTopRight,wallBottomLeft,wallBottomRight,
             wallFullLeft,wallFullRight,wallSideLeft,wallSideRight,wallTopBottom,
-            wallTop, wallBottom, platTile;
+            wallTop, wallBottom, platTile, wallImgLeft, wallImgRight;
 
     // constructor gets images for tiles
     public MapList() {
@@ -35,24 +36,26 @@ public class MapList {
         wallTop = new Tile("BOX", "src/tiles/walltop.png");
         wallBottom = new Tile("BOX", "src/tiles/wallbottom.png");
         platTile = new Tile("PLAT", "src/tiles/plat.png");
+        wallImgLeft = new Tile("WALL LEFT", "src/tiles/sideleft.png");
+        wallImgRight = new Tile("WALL RIGHT", "src/tiles/sideright.png");
     }
 
     // add map to maps arraylist
     public void addMap(Map map) {maps.add(map);}
     // get all maps
-    public ArrayList<Map> getAllMaps() {return maps;}
+    public static ArrayList<Map> getAllMaps() {return maps;}
     // get blocks for level
-    public static Block[][] getBlocksWithWallImages() {return maps.get(GamePanel.getLevel()).getMapWithWallImages();}
-    public static Block[][] getBlocksWithoutWallImages() {return maps.get(GamePanel.getLevel()).getMap();}
+    public static Block[][] getBlocksWithWallImages() {return maps.get(Util.getLevel()).getMapWithWallImages();}
+    public static Block[][] getBlocksWithoutWallImages() {return maps.get(Util.getLevel()).getMap();}
     // get blocks when given level
     public static Block[][] getBlockswithWallImages(int level) {return maps.get(level).getMapWithWallImages();}
 
     // draw all blocks
-    public void drawBlocks(Graphics g, int level) {
+    public void drawBlocks(Graphics g, int level, Alan alan) {
         Map m = maps.get(level); // getting map for level
         Block[][] blocks = m.getMap(); // get blocks that contain wall images
         int x, y; // x and y for block location
-        int alanY = Alan.getY(false)/Util.BLOCKLENGTH; // alan's y location used for calculation visible rows
+        int alanY = alan.getY(false)/Util.BLOCKLENGTH; // alan's y location used for calculation visible rows
         // used to measure when visible rows being and end
         int firstVisibleRow = 0, lastVisibleRow = blocks.length;
         // getting row beginning and end
@@ -68,14 +71,17 @@ public class MapList {
 
             // TMP CODE TO DISPLAY ROW NUMBERS
             g.setColor(Color.WHITE);
-            g.drawString(String.valueOf(i), 250, blocks[i][0].getY(true)+20);
+            g.drawString(String.valueOf(i), 230, blocks[i][0].getY(true, alan)+20);
+
+            g.drawImage(wallImgLeft.getImg(), Background.getWallLeftPos()-15, blocks[i][0].getY(true, alan),null);
+            g.drawImage(wallImgRight.getImg(), Background.getWallRightPos(), blocks[i][0].getY(true, alan),null);
 
             // going through each block row
             for (int j = 0; j < blocks[i].length; j++) {
 
                 // getting x and y values of block
                 x = blocks[i][j].getX(true);
-                y = blocks[i][j].getY(true);
+                y = blocks[i][j].getY(true, alan);
 
                 // switch for each type of block
                 switch (blocks[i][j].getType()) {
@@ -99,7 +105,7 @@ public class MapList {
 class Map {
     Block[][] map; // 1 map
     //TODO: move columns to the Util class or not...
-    private static final int columns = 9; // columns stay the same
+    private final int columns = 9; // columns stay the same
     private final int rows; // number of rows of map, determined with constructor input
 
     Random rand = new Random(); // random object to get random ints for map generation
@@ -118,7 +124,7 @@ class Map {
     }
 
     // getters and setters for columns and rows
-    public static int getColumns() {return columns;}
+    public int getColumns() {return columns;}
     public int getRows() {return rows;}
     // getting map and blocks
     public Block[][] getMap() {return map;}
@@ -156,7 +162,7 @@ class Map {
     }
 
     public void generationOfFreeStandingRandomizedBreakableBoxBlocks(String s) {
-        for (int i = 3; i < rows-5; i+=Util.MAXCHUNKSIZE) {
+        for (int i = Util.GENERATIONSTART; i < rows-5; i+=Util.MAXCHUNKSIZE) {
             //HINT: getting type of wall, if doesn't match any types then don't spawn
             // - increasing bound decreases wall spawns
             int boxType = rand.nextInt(0,10);
@@ -184,7 +190,7 @@ class Map {
     }
 
     public void generatePlatBlocks() {
-        for (int i = 3; i < rows-5; i+=Util.MAXCHUNKSIZE) {
+        for (int i = Util.GENERATIONSTART; i < rows-5; i+=Util.MAXCHUNKSIZE) {
             //HINT: getting type of wall, if doesn't match any types then don't spawn
             // - increasing bound decreases wall spawns
             int platType = rand.nextInt(0,7);
@@ -238,8 +244,7 @@ class Map {
 
     // GENERATING WALL BLOCKS
     public void generateWallBlocks() {
-        //TODO: arbitrarily starting generating wall blocks at row 3, change to something that makes sense
-        for (int i = 3; i < rows-5; i+=Util.MAXCHUNKSIZE) {
+        for (int i = Util.GENERATIONSTART; i < rows-5; i+=Util.MAXCHUNKSIZE) {
             //HINT: getting type of wall, if doesn't match any types then don't spawn
             // - increasing bound decreases wall spawns
             int wallType = rand.nextInt(0,7);

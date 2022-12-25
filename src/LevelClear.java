@@ -1,9 +1,8 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.ArrayList;
 
-public class GamePanel extends JPanel implements KeyListener, ActionListener, MouseListener {
+public class LevelClear extends JPanel implements KeyListener, ActionListener, MouseListener {
     Timer timer;
 
     AAdventure mainFrame;
@@ -12,17 +11,8 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener, Mo
 
     private static int WIDTH = AAdventure.getGameWidth(), HEIGHT = AAdventure.getGameHeight();
     private static int tarX, tarY;
-    private static boolean spaced = false, prevSpaced = false;
 
-    Background bg;
-
-    private static Alan alan;
-    EnemyManager enemyManager;
-    Enemy enemy;
-    Blaster mgun;
-    ArrayList<Image> mgunAnim;
-
-    public GamePanel(AAdventure a) {
+    public LevelClear(AAdventure a) {
         mainFrame = a;
         keys = new boolean[KeyEvent.KEY_LAST+1];
         setPreferredSize(new Dimension(WIDTH, HEIGHT));
@@ -32,64 +22,52 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener, Mo
         addMouseListener(this);
         addKeyListener(this);
 
-        bg = new Background(); // background exclusive to game class
-
-        //TODO: create bullet manager class
-        mgun = new Blaster("Machine Gun", 10,32,13);
-
-        alan = new Alan(150, HEIGHT/2-50, mgun);
-
-        enemyManager = new EnemyManager();
-        enemyManager.addEnemy(400,600);
-
         timer = new Timer(20, this); // manages frames
         timer.start();
     }
 
     // getter and setter for mouse pos, lives, and level
-    public static boolean getSpaced() {return spaced;}
-    public static boolean getPrevSpaced() {return prevSpaced;}
     public static int getTarX() {return tarX;}
     public static int getTarY() {return tarY;}
     public static int getWIDTH() {return WIDTH;}
     public static void setWIDTH(int w) {WIDTH = w;}
     public static int getHEIGHT() {return HEIGHT;}
     public static void setHEIGHT(int h) {HEIGHT = h;}
-    public static Alan getAlan() {return alan;}
-    public static void setAlan(Alan a) {alan = a;}
 
     // MouseListener
     @Override
-    public void mouseClicked(MouseEvent e) {;}
+    public void mouseClicked(MouseEvent e) {
+        AAdventure.setCurrPanel("GAME");
+    }
     @Override
-    public void mouseEntered(MouseEvent e) {;}
+    public void mouseEntered(MouseEvent e) {
+        ;
+    }
     @Override
-    public void mouseExited(MouseEvent e) {;}
+    public void mouseExited(MouseEvent e) {
+        ;
+    }
     @Override
     public void mousePressed(MouseEvent e) {;}
     @Override
-    public void mouseReleased(MouseEvent e) {;}
+    public void mouseReleased(MouseEvent e) {
+        ;
+    }
     @Override
-    public void keyTyped(KeyEvent e) {}
+    public void keyTyped(KeyEvent e) {
+
+    }
 
     @Override
     public void keyPressed(KeyEvent e) {
         int key = e.getKeyCode();
         keys[key] = true;
-        if (key == Util.space) {
-            prevSpaced = spaced;
-            spaced = true;
-        }
     }
 
     @Override
     public void keyReleased(KeyEvent e) {
         int key = e.getKeyCode();
         keys[key] = false;
-        if (key == Util.space) {
-            prevSpaced = spaced;
-            spaced = false;
-        }
     }
 
     // ActionListener
@@ -100,16 +78,13 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener, Mo
 //        // getting mouse pos
 //        tarX = mouse.x - offset.x;
 //        tarY = mouse.y - offset.y;
-        // move ball & paddle
         mainFrame.start();
         repaint();
     }
     @Override
     public void paint(Graphics g) {
         requestFocus();
-        bg.draw(g, alan);
-        alan.draw(g, keys, MapList.getAllMaps().get(Util.getLevel()));
-        enemyManager.drawEnemies(g, alan);
+        g.setColor(Color.GREEN);
+        g.fillRect(0,0,900,700);
     }
 }
-

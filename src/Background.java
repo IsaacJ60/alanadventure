@@ -6,27 +6,15 @@ import java.awt.*;
 // - health, powerups, etc.
 
 public class Background {
-    private final MapList maplist;
-    private final TileGroup walls;
     private static int wallWidth, wallLeftPos, wallRightPos;
-    private Image bg;
+    private final Image bg;
 
+    // manages basic background elements and ui as well as side walls
     public Background() {
         bg = new ImageIcon("src/tiles/bg.png").getImage().getScaledInstance(GamePanel.getWIDTH(), GamePanel.getHEIGHT(), Image.SCALE_DEFAULT);
-        Image wallImgLeft = new ImageIcon("src/tiles/sideleft.png").getImage();
-        Image wallImgRight = new ImageIcon("src/tiles/sideright.png").getImage();
-        Tile wallTile = new Tile("wall", wallImgLeft, wallImgRight);
-        walls = new TileGroup("walls", wallTile);
-
         wallLeftPos = GamePanel.getWIDTH()/2-GamePanel.getWIDTH()/5+1;
-        wallRightPos = GamePanel.getWIDTH()/2+GamePanel.getWIDTH()/5-walls.tile.getWidth();
-        wallWidth = walls.tile.getWidth();
-
-        maplist = new MapList();
-
-        // making default level
-        Map lvl1 = new Map(500);
-        maplist.addMap(lvl1);
+        wallRightPos = GamePanel.getWIDTH()/2+GamePanel.getWIDTH()/5-22;
+        wallWidth = 22;
     }
 
     public static int getWallWidth() {return wallWidth;}
@@ -35,45 +23,18 @@ public class Background {
     public static int getWallRightPos() {return wallRightPos;}
     public static void setWallRightPos(int w) {wallRightPos = w;}
 
-    public void draw(Graphics g) {
+    // main driver code for drawing map and its blocks
+    public void draw(Graphics g, Alan alan) {
         g.setColor(Color.BLACK);
         setBackground(g, g.getColor());
-        g.drawImage(bg,0,Alan.getScreenOffset()/3,null);
+        g.drawImage(bg,0,alan.getScreenOffset()/3,null);
         g.fillRect(getWallLeftPos(), 0, getWallRightPos()-getWallLeftPos(), GamePanel.getHEIGHT());
-        maplist.drawBlocks(g, GamePanel.getLevel());
-        drawWalls(g);
+        GameManager.getMaplist().drawBlocks(g, Util.getLevel(), alan);
     }
 
     public void setBackground(Graphics g, Color col) {
         g.setColor(col);
         g.fillRect(0,0,GamePanel.getWIDTH(),GamePanel.getHEIGHT());
-    }
-
-    public void drawWalls(Graphics g) {
-        walls.drawWall(g, wallLeftPos, 0, GamePanel.getHEIGHT(), true);
-        walls.drawWall(g, wallRightPos, 0, GamePanel.getHEIGHT(), false);
-    }
-}
-
-class TileGroup {
-    String name;
-    Tile tile;
-
-    TileGroup(String name, Tile tile) {
-        this.name = name;
-        this.tile = tile;
-    }
-
-    public void drawWall(Graphics g, int x1, int y1, int y2, boolean flipped) {
-        if (flipped) {
-            for (int i = y1; i < 500*Util.BLOCKLENGTH; i+=tile.getWidth()) {
-                g.drawImage(tile.getRimg(),x1,i-Alan.getOffset()+Alan.getScreenOffset(),null);
-            }
-        } else {
-            for (int i = y1; i < 500*Util.BLOCKLENGTH; i+=tile.getWidth()) {
-                g.drawImage(tile.getImg(),x1,i-Alan.getOffset()+Alan.getScreenOffset(),null);
-            }
-        }
     }
 }
 
@@ -117,3 +78,4 @@ class Tile {
     public int getHeight() {return height;}
     public void setHeight(int height) {this.height = height;}
 }
+

@@ -47,9 +47,9 @@ public class Block {
         }
     }
 
-    public int getY(boolean adjusted) {
+    public int getY(boolean adjusted, Alan alan) {
         if (adjusted) {
-            return y-Alan.getOffset()+Alan.getScreenOffset();
+            return y-alan.getOffset()+alan.getScreenOffset();
         } else {
             return y;
         }

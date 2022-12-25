@@ -20,23 +20,24 @@ public class Alan {
     public static final int IDLE = 0, WALK = 1, JUMP = 2, FALL = 3; // constants for state
 
     // STATES
-    private static int state = IDLE; // current state (e.g., idle, walk, fall, shoot) to change what animation is playing
-    private static int dir = LEFT; // the direction alan is facing
+    private int state = IDLE; // current state (e.g., idle, walk, fall, shoot) to change what animation is playing
+    private int dir = LEFT; // the direction alan is facing
 
     // PLAYER INFO AND STATS
+    private static int width, height; // dimensions
     private final Rectangle alanRect; // hitbox
-    private static int x, y, width, height; // dimensions
+    private int x, y;
     private int health, maxHealth, healthProgress; // current health, health capacity, and progress to +1 maximum health
 
     // MOVEMENT LIMITERS AND VELOCITIES
     private boolean moveLeft = true, moveRight = true;
 
-    private static double velX, velY, jerk; // movement speed & screenoffset jerk
+    private double velX, velY, jerk; // movement speed & screenoffset jerk
     private final double maxVelX, maxVelY, accelX, accelY; // velocity & acceleration
-    private static int nearestY;
+    private int nearestY;
 
     // SCREEN OFFSETS
-    private static int offset, screenOffset; // how far down alan has "travelled", subtracted from other game elements to give the effect that alan is falling
+    private int offset, screenOffset; // how far down alan has "travelled", subtracted from other game elements to give the effect that alan is falling
 
     // WEAPONS
     private Blaster weapon; // current weapon
@@ -114,33 +115,32 @@ public class Alan {
         allAnims.add(rshoot);
     }
 
-    public static int getDir() {return dir;}
-    public static int getNearestY() {return nearestY;}
-    public static void setX(int p) {x = p;} // sets x
-    public static void setY(int p) {y = p;} // sets y
-    public static int getHeight() {return height;}
-    public static int getVelY() {return (int)velY;}
-    public static int getState() {return state;}
+    public int getDir() {return dir;}
+    public int getNearestY() {return nearestY;}
+    public void setX(int p) {x = p;} // sets x
+    public void setY(int p) {y = p;} // sets y
+    public int getVelY() {return (int)velY;}
+    public int getState() {return state;}
     public int getHealth() {return health;} // gets hp
     public void setHealth(int health) {this.health = health;} // sets hp
-    public static int getOffset() {return offset;} // gets offset
-    public static int getScreenOffset() {return screenOffset;} // gets screenOffset
+    public int getOffset() {return offset;} // gets offset
+    public int getScreenOffset() {return screenOffset;} // gets screenOffset
     public Blaster getWeapon() {return weapon;} // gets current weapon
     public void setWeapon(Blaster weapon) {this.weapon = weapon;} // sets current weapon
 
-    public static int getX(boolean adjusted) { // gets x
+    public int getX(boolean adjusted) { // gets x
         if (adjusted) { // whether you want x relative to the gameplay window
-            return x + Background.getWallLeftPos()+Background.getWallWidth();
+            return this.x + Background.getWallLeftPos()+Background.getWallWidth();
         } else {
             return x;
         }
     }
 
-    public static int getY(boolean adjusted) { // gets y
+    public int getY(boolean adjusted) { // gets y
         if (adjusted) { // whether you want y relative to the gameplay window
-            return y-offset+screenOffset;
+            return this.y-offset+screenOffset;
         } else {
-            return y;
+            return this.y;
         }
     }
 
@@ -154,8 +154,8 @@ public class Alan {
         }
     }
 
-    public void move(boolean[] keys, Graphics g) {
-        getCollision(MapList.getBlocksWithoutWallImages(),g); // getting collision between player and blocks
+    public void move(boolean[] keys, Graphics g, Map map) {
+        getCollision(MapList.getBlocksWithoutWallImages(),g,this, map); // getting collision between player and blocks
         alanRect.setLocation(x+5,y); // setting rect location
 
         // allow jump only if not jumping or falling and if space pressed
@@ -228,11 +228,11 @@ public class Alan {
         alanRect.setLocation(x+5,y);
 
         // SHOOTING, logic inside
-        if (weapon.shoot(keys, (int) velY, g)) {
+        if (weapon.shoot(keys, (int) velY, g, this)) {
             changeState(FALL, dir, true); // just to reset animframe
             velY-=velY*1.2;
         }
-        weapon.animation(g, MapList.getBlocksWithoutWallImages());
+        weapon.animation(g, MapList.getBlocksWithoutWallImages(), this, map);
     }
 
     public void jump() {
@@ -251,25 +251,31 @@ public class Alan {
     // getCollision instead runs through specific rows of blocks that narrow
     // down the search field tremendously
     // each check for each side of blocks is performed separately
-    public void getCollision(Block[][] blocks, Graphics g) {
+    public void getCollision(Block[][] blocks, Graphics g, Alan alan, Map map) {
         // getting rows with same y values as player
         int prevRow = getY(false)/Util.BLOCKLENGTH;
         int nextRow = getY(false)/Util.BLOCKLENGTH+1;
+
+        //HINT: CHANGING LEVELS HERE
+        // USE GAMEMANAGER TO SWITCH TO NEXT LEVEL WHEN ALAN REACHES CERTAIN POINT
+        if (nextRow == map.getRows()-15) {
+            GameManager.toLevel(Util.getLevel()+1);
+        }
 
         // variables to track the nearest block distances
         int nearestBlockY = 100, nearestAboveY = 100, nearestLeftX = 100, nearestRightX = 100, snapX = 0;
 
         // top down collision
-        for (int i = 0; i < Map.getColumns(); i++) {
+        for (int i = 0; i < map.getColumns(); i++) {
             int blockType = blocks[nextRow][i].getType();
             if (blockType != Block.AIR) { // if block isn't air, check for distance to player
                 // only check top when velocity is positive (going down)
                 if ((blockType == Block.WALL || blockType == Block.BOX || blockType == Block.PLAT) && velY >= 0) {
                     // checkig player has a chance of colliding with block (x value within range of block x values)
                     if (x+width > blocks[nextRow][i].getX(false) && x < blocks[nextRow][i].getX(false) + Util.BLOCKLENGTH) {
-                        if (blocks[nextRow][i].getY(false)-y < nearestBlockY) {
+                        if (blocks[nextRow][i].getY(false, alan)-y < nearestBlockY) {
                             // updating nearest distance
-                            nearestBlockY = Math.abs(blocks[nextRow][i].getY(false)-(y+height));
+                            nearestBlockY = Math.abs(blocks[nextRow][i].getY(false, alan)-(y+height));
                         }
                     }
                 }
@@ -282,8 +288,8 @@ public class Alan {
             velY = 0;
 
             // if snapping is needed (player went too far passed top of block and is now somewhat stuck in block)
-            if (y+height > blocks[nextRow][0].getY(false)) {
-                y = blocks[nextRow][0].getY(false)-height;
+            if (y+height > blocks[nextRow][0].getY(false, alan)) {
+                y = blocks[nextRow][0].getY(false, alan)-height;
                 //TODO: make offset slowly reach the new value instead of instantly adding (avoid stuttering)
                 offset -= nearestBlockY;
             }
@@ -314,16 +320,16 @@ public class Alan {
         nearestY = nearestBlockY;
 
         // bottom up collision checking
-        for (int i = 0; i < Map.getColumns(); i++) {
+        for (int i = 0; i < map.getColumns(); i++) {
             int blockType = blocks[prevRow][i].getType();
             if (blockType != Block.AIR) {
                 // only check bottom collision in solid blocks and when going upwards in y-dir
                 if ((blockType == Block.WALL || blockType == Block.BOX) && velY < 0) {
                     // checking if block is in collision boundary of Alan
                     if (x+width > blocks[prevRow][i].getX(false) && x < blocks[prevRow][i].getX(false) + Util.BLOCKLENGTH) {
-                        if (Math.abs(y-(blocks[prevRow][i].getY(false)+Util.BLOCKLENGTH)) < nearestAboveY) {
+                        if (Math.abs(y-(blocks[prevRow][i].getY(false,alan)+Util.BLOCKLENGTH)) < nearestAboveY) {
                             // setting nearest distance
-                            nearestAboveY = Math.abs(y-(blocks[prevRow][i].getY(false)+Util.BLOCKLENGTH));
+                            nearestAboveY = Math.abs(y-(blocks[prevRow][i].getY(false,alan)+Util.BLOCKLENGTH));
                         }
                     }
                 }
@@ -344,12 +350,12 @@ public class Alan {
         // - checks on y-axis instead of x
         // - snapping to x-axis isn't as bug prone as snapping to y because no offset
         for (int r = nextRow-2; r < (state != WALK ? nextRow+1 : nextRow); r++) {
-            for (int i = Map.getColumns()-1; i >= 0; i--) {
+            for (int i = map.getColumns()-1; i >= 0; i--) {
                 Block block = blocks[r][i];
                 if (block.getX(false) < x) {
                     if (block.getType() != Block.AIR) {
                         if (block.getType() == Block.BOX || block.getType() == Block.WALL) {
-                            if (y+height > block.getY(false) && y < block.getY(false) + Util.BLOCKLENGTH) {
+                            if (y+height > block.getY(false,alan) && y < block.getY(false,alan) + Util.BLOCKLENGTH) {
                                 if (x-(block.getX(false)+Util.BLOCKLENGTH) < nearestLeftX) {
                                     nearestLeftX = Math.abs(x-(block.getX(false)+Util.BLOCKLENGTH));
                                     snapX = block.getX(false)+Util.BLOCKLENGTH+1;
@@ -370,12 +376,12 @@ public class Alan {
 
         // left to right collision checking - SAME AS RIGHT TO LEFT BUT X VALUES TO CHECK ARE DIFFERENT
         for (int r = nextRow-2; r < (state != WALK ? nextRow+1 : nextRow); r++) {
-            for (int i = 0; i < Map.getColumns(); i++) {
+            for (int i = 0; i < map.getColumns(); i++) {
                 Block block = blocks[r][i];
                 if (block.getX(false) > x) {
                     if (block.getType() != Block.AIR) {
                         if (block.getType() == Block.BOX || block.getType() == Block.WALL) {
-                            if (y + height > block.getY(false) && y < block.getY(false) + Util.BLOCKLENGTH) {
+                            if (y + height > block.getY(false,alan) && y < block.getY(false,alan) + Util.BLOCKLENGTH) {
                                 if (Math.abs(block.getX(false) - (x + width)) < nearestRightX) {
                                     nearestRightX = Math.abs(block.getX(false) - (x + width));
                                     snapX = block.getX(false) - width - 5;
@@ -396,9 +402,9 @@ public class Alan {
     }
 
     // drawing alan in different states and directions
-    public void draw(Graphics g, boolean[] keys) { //
+    public void draw(Graphics g, boolean[] keys, Map map) { //
 
-        move(keys, g);
+        move(keys, g, map);
 
         if (weapon.isAlanShoot()) {
             if ((int) animFrame == shoot.size()-1) {
