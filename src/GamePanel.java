@@ -33,9 +33,7 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener, Mo
 
 
         //TODO: create bullet manager class
-        mgunAnim = new ArrayList<>();
-        mgunAnim.add(new ImageIcon("src/tiles/middle.png").getImage());
-        mgun = new Blaster("Machine Gun", 10,32,13, mgunAnim);
+        mgun = new Blaster("Machine Gun", 10,32,13);
 
         alan = new Alan(150, HEIGHT/2-50, mgun);
 
@@ -118,4 +116,3 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener, Mo
         enemyManager.drawEnemies(g, alan);
     }
 }
-

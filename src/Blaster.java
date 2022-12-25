@@ -11,13 +11,12 @@ public class Blaster {
     private Image defaultBullet;
 
     private boolean alanShoot;
-    ArrayList<Image> shootAnim;
     ArrayList<Image> explosion;
     ArrayList<Bullet> bullets;
     ArrayList<int[]> blastPlaces;
     Util.CustomTimer shootTimer;
 
-    public Blaster(String name, int damage, int capacity, int speed, ArrayList<Image> shootAnim) {
+    public Blaster(String name, int damage, int capacity, int speed) {
         bullets = new ArrayList<>();
         blastPlaces = new ArrayList<>();
         explosion = new ArrayList<>();
@@ -25,13 +24,9 @@ public class Blaster {
         this.damage = damage;
         this.capacity = capacity;
         this.speed = speed;
-        this.shootAnim = shootAnim;
         lastX = 0; lastY = 0;
         alanShoot = false;
         defaultBullet = new ImageIcon("src/assets/alan/shoot/bullets/bullet.png").getImage().getScaledInstance(16,32,Image.SCALE_DEFAULT);
-        for (int i = 0; i < 5; i++) {
-            shootAnim.add(new ImageIcon("src/assets/alan/shoot/bullets/bullet.png").getImage());
-        }
         for (int i = 0; i < 5; i++) {
 //            explosion.add(new ImageIcon("src/assets/alan/shoot/bullets/explosion" + i + ".png").getImage());
         }
@@ -146,14 +141,6 @@ public class Blaster {
 
     public void setSpeed(int speed) {
         this.speed = speed;
-    }
-
-    public ArrayList<Image> getShootAnim() {
-        return shootAnim;
-    }
-
-    public void setShootAnim(ArrayList<Image> shootAnim) {
-        this.shootAnim = shootAnim;
     }
 }
 
