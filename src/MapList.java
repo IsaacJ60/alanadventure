@@ -3,8 +3,8 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.Random;
 
-//TODO: CREATE MORE RNG GENERATED BLOCKS
-// PRIORITY - HIGH
+//TODO:
+// INCOMPLETE - INTEGRATE SIDE WALLS INTO BLOCK LIST
 // DONE - create good patterns for platform and boxes
 // IN PROGRESS - keep track of index errors and out of bounds
 
@@ -32,7 +32,7 @@ public class MapList {
         wallFullRight = new Tile("BOX", "src/tiles/wallfullright.png");
         wallSideLeft = new Tile("BOX", "src/tiles/wallsideleft.png");
         wallSideRight = new Tile("BOX", "src/tiles/wallsideright.png");
-        wallTopBottom = new Tile("BOX", "src/tiles/walltopbottom.png");
+        wallTopBottom = new Tile("BOX", "src/tiles/topbottom.png");
         wallTop = new Tile("BOX", "src/tiles/walltop.png");
         wallBottom = new Tile("BOX", "src/tiles/wallbottom.png");
         platTile = new Tile("PLAT", "src/tiles/plat.png");
@@ -104,8 +104,7 @@ public class MapList {
 
 class Map {
     Block[][] map; // 1 map
-    //TODO: move columns to the Util class or not...
-    private final int columns = 9; // columns stay the same
+    private final int columns = Util.DEFAULTCOLUMNS; // columns stay the same
     private final int rows; // number of rows of map, determined with constructor input
 
     Random rand = new Random(); // random object to get random ints for map generation
@@ -118,9 +117,10 @@ class Map {
         getMapWithWallImages();
     }
 
-    Map(Block[][] map) { // constructor with map as input
-        this.map = map;
-        this.rows = map.length;
+    Map(Block[][] b) { // constructor with rows as input
+        this.rows = b.length;
+        map = new Block[this.rows][columns];
+        fillBlocks(Block.AIR);
     }
 
     // getters and setters for columns and rows
@@ -339,11 +339,11 @@ class Map {
                             //HINT: CHECKING IF PART OF STRAIGHT WALL SEQUENCE
                         } else if (map[i - 1][j].getType() == Block.WALL && map[i + 1][j].getType() == Block.WALL) {
                             if (map[i][j].getSide() == Util.LEFT) {
-                                if (map[i][j + 1].getType() == Block.AIR) {
+                                if (map[i][j + 1].getType() == Block.AIR || map[i][j + 1].getType() == Block.PLAT) {
                                     map[i][j].setTile(MapList.wallSideRight);
                                 }
                             } else if (map[i][j].getSide() == Util.RIGHT) {
-                                if (map[i][j - 1].getType() == Block.AIR) {
+                                if (map[i][j - 1].getType() == Block.AIR || map[i][j - 1].getType() == Block.PLAT) {
                                     map[i][j].setTile(MapList.wallSideLeft);
                                 }
                             }

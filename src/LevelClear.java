@@ -2,6 +2,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
+//TODO: DISPLAY LEVEL STATS AND GIVE REWARD EVERY X LEVELS
+
 public class LevelClear extends JPanel implements KeyListener, ActionListener, MouseListener {
     Timer timer;
 
@@ -37,6 +39,7 @@ public class LevelClear extends JPanel implements KeyListener, ActionListener, M
     // MouseListener
     @Override
     public void mouseClicked(MouseEvent e) {
+        requestFocus();
         AAdventure.setCurrPanel("GAME");
     }
     @Override
@@ -83,7 +86,6 @@ public class LevelClear extends JPanel implements KeyListener, ActionListener, M
     }
     @Override
     public void paint(Graphics g) {
-        requestFocus();
         g.setColor(Color.GREEN);
         g.fillRect(0,0,900,700);
     }

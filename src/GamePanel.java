@@ -1,7 +1,6 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.ArrayList;
 
 public class GamePanel extends JPanel implements KeyListener, ActionListener, MouseListener {
     Timer timer;
@@ -11,16 +10,14 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener, Mo
     private final boolean[] keys;
 
     private static int WIDTH = AAdventure.getGameWidth(), HEIGHT = AAdventure.getGameHeight();
-    private static int tarX, tarY;
+    private static int tarX, tarY, alpha = 255;
     private static boolean spaced = false, prevSpaced = false;
 
     Background bg;
 
     private static Alan alan;
     EnemyManager enemyManager;
-    Enemy enemy;
     Blaster mgun;
-    ArrayList<Image> mgunAnim;
 
     public GamePanel(AAdventure a) {
         mainFrame = a;
@@ -60,7 +57,7 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener, Mo
 
     // MouseListener
     @Override
-    public void mouseClicked(MouseEvent e) {;}
+    public void mouseClicked(MouseEvent e) {}
     @Override
     public void mouseEntered(MouseEvent e) {;}
     @Override
@@ -107,9 +104,12 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener, Mo
     @Override
     public void paint(Graphics g) {
         requestFocus();
-        bg.draw(g, alan);
+        bg.draw(g, Util.getLevel(), alan);
         alan.draw(g, keys, MapList.getAllMaps().get(Util.getLevel()));
         enemyManager.drawEnemies(g, alan);
+
+        alpha = Util.increaseOpacity(alpha, false);
+        Util.overlay(g,0,0,0,alpha);
     }
 }
 

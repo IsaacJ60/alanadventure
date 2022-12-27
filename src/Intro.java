@@ -2,6 +2,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
+//IDEA: PLAY ANIMATED GIF OF ALAN JUMPING INTO HOLE UPON PLAYER STARTING GAME
+
 public class Intro extends JPanel implements KeyListener, ActionListener, MouseListener {
     Timer timer;
 
@@ -10,7 +12,10 @@ public class Intro extends JPanel implements KeyListener, ActionListener, MouseL
     private final boolean[] keys;
 
     private static int WIDTH = AAdventure.getGameWidth(), HEIGHT = AAdventure.getGameHeight();
-    private static int tarX, tarY;
+    private static int tarX, tarY, alpha = 0;
+
+    Alan alan;
+    Background bg;
 
     public Intro(AAdventure a) {
         mainFrame = a;
@@ -21,6 +26,10 @@ public class Intro extends JPanel implements KeyListener, ActionListener, MouseL
         // adding listener for events
         addMouseListener(this);
         addKeyListener(this);
+
+        bg = new Background();
+
+        alan = new Alan(20, HEIGHT/2+50, new Blaster("Machine Gun", 10,32,13));
 
         timer = new Timer(20, this); // manages frames
         timer.start();
@@ -37,7 +46,6 @@ public class Intro extends JPanel implements KeyListener, ActionListener, MouseL
     // MouseListener
     @Override
     public void mouseClicked(MouseEvent e) {
-        AAdventure.setCurrPanel("GAME");
     }
     @Override
     public void mouseEntered(MouseEvent e) {
@@ -83,9 +91,17 @@ public class Intro extends JPanel implements KeyListener, ActionListener, MouseL
     }
     @Override
     public void paint(Graphics g) {
-        requestFocus();
-        g.setColor(Color.MAGENTA);
-        g.fillRect(0,0,900,700);
+        bg.draw(g, 0, alan);
+        alan.draw(g, keys, GameManager.intromap);
+        g.setFont(Util.fontTitle6);
+        g.drawString("ALAN'S", 372,400-alan.getOffset()+alan.getScreenOffset());
+        g.drawString("ADVENTURE", 322,455-alan.getOffset()+alan.getScreenOffset());
+
+        // opacity decrease
+        if (alan.getY(false) > 25*Util.BLOCKLENGTH) {
+            alpha = Util.increaseOpacity(alpha, true);
+            Util.overlay(g,0,0,0,alpha);
+        }
     }
 }
 

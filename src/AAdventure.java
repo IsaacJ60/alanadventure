@@ -21,6 +21,7 @@ public class AAdventure extends JFrame { // frame
         super("Alan's Adventure");
 
         GameManager.loadLevels();
+        Util.loadFonts();
 
         card = new CardLayout();
         setLayout(card);
