@@ -12,7 +12,6 @@ public class Util {
     static Font fontTitle4;
     static Font fontTitle5;
     static Font fontTitle6;
-    static Font fontTitle7;
 
     // GAME VARIABLES
     private static int level = 0;

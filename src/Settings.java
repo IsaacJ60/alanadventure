@@ -2,9 +2,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
-//TODO: GIVE REWARD EVERY X LEVELS
+//TODO: DISPLAY LEVEL STATS
 
-public class LevelClear extends JPanel implements KeyListener, ActionListener, MouseListener {
+public class Settings extends JPanel implements KeyListener, ActionListener, MouseListener {
     Timer timer;
 
     AAdventure mainFrame;
@@ -12,9 +12,9 @@ public class LevelClear extends JPanel implements KeyListener, ActionListener, M
     private final boolean[] keys;
 
     private static int WIDTH = AAdventure.getGameWidth(), HEIGHT = AAdventure.getGameHeight();
-    private static int tarX, tarY;
+    private static int tarX, tarY, alpha = 0;
 
-    public LevelClear(AAdventure a) {
+    public Settings(AAdventure a) {
         mainFrame = a;
         keys = new boolean[KeyEvent.KEY_LAST+1];
         setPreferredSize(new Dimension(WIDTH, HEIGHT));
@@ -38,10 +38,7 @@ public class LevelClear extends JPanel implements KeyListener, ActionListener, M
 
     // MouseListener
     @Override
-    public void mouseClicked(MouseEvent e) {
-        requestFocus();
-        AAdventure.setCurrPanel("GAME");
-    }
+    public void mouseClicked(MouseEvent e) {}
     @Override
     public void mouseEntered(MouseEvent e) {;}
     @Override
@@ -57,7 +54,9 @@ public class LevelClear extends JPanel implements KeyListener, ActionListener, M
     public void keyPressed(KeyEvent e) {
         int key = e.getKeyCode();
         keys[key] = true;
-        GameManager.requestSettings(keys);
+        if (keys[KeyEvent.VK_ESCAPE]) {
+            AAdventure.setCurrPanel(AAdventure.getLastPanel());
+        }
     }
 
     @Override
@@ -80,8 +79,8 @@ public class LevelClear extends JPanel implements KeyListener, ActionListener, M
     }
     @Override
     public void paint(Graphics g) {
-        g.setColor(Color.DARK_GRAY);
-        g.fillRect(0,0,900,700);
+        alpha = Util.increaseOpacity(alpha, true);
+        Util.overlay(g,0,0,0,alpha);
+        //TODO: make settings lol
     }
 }
-

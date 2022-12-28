@@ -8,6 +8,7 @@ public class AAdventure extends JFrame { // frame
     private GamePanel game;
     private Intro intro;
     private LevelClear levelClear;
+    private Settings settings;
 
     private static final int WIDTH = 900, HEIGHT = 700;
     public static int getGameWidth() {return WIDTH;}
@@ -16,6 +17,9 @@ public class AAdventure extends JFrame { // frame
     private static String currPanel = "INTRO";
     public static String getCurrPanel() {return currPanel;}
     public static void setCurrPanel(String curr) {currPanel = curr;}
+    private static String lastPanel = "INTRO";
+    public static String getLastPanel() {return lastPanel;}
+    public static void setLastPanel(String curr) {lastPanel = curr;}
 
     public AAdventure() {
         super("Alan's Adventure");
@@ -35,6 +39,9 @@ public class AAdventure extends JFrame { // frame
         levelClear = new LevelClear(this);
         add("LEVELCLEAR", levelClear);
 
+        settings = new Settings(this);
+        add("SETTINGS", settings);
+
         pack();
 
         setResizable(false);
@@ -43,8 +50,8 @@ public class AAdventure extends JFrame { // frame
     }
 
     public void start(){
-        card.show(getContentPane(), currPanel);  // I don't know why we need to tell the LayoutManager what it's parent
-        // Container is, but when we add to a JFrame, we are adding to the ContentPane.
+        //TODO: request focus only when currpanel changes to avoid constantly requesting
+        card.show(getContentPane(), currPanel);
     }
 
     public static void main(String[] args) {

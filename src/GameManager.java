@@ -1,3 +1,5 @@
+import java.awt.event.KeyEvent;
+
 public class GameManager {
 
     private static final int WIDTH = AAdventure.getGameWidth(), HEIGHT = AAdventure.getGameHeight();
@@ -57,5 +59,12 @@ public class GameManager {
         Util.setLevel(l); // setting level to l
         //TODO: perhaps make a reset() function in alan to avoid bugs from recreating an instance each level
         GamePanel.setAlan(new Alan(150, HEIGHT/2-50, GamePanel.getAlan().getWeapon())); // resetting alan
+    }
+
+    public static void requestSettings(boolean[] keys) {
+        if (keys[KeyEvent.VK_ESCAPE]) {
+            AAdventure.setLastPanel(AAdventure.getCurrPanel());
+            AAdventure.setCurrPanel("SETTINGS");
+        }
     }
 }

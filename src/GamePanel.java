@@ -18,6 +18,7 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener, Mo
     private static Alan alan;
     EnemyManager enemyManager;
     Blaster mgun;
+    Powerups powers;
 
     public GamePanel(AAdventure a) {
         mainFrame = a;
@@ -35,6 +36,8 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener, Mo
         mgun = new Blaster("Machine Gun", 10,32,13);
 
         alan = new Alan(150, HEIGHT/2-50, mgun);
+
+        powers = new Powerups(2);
 
         enemyManager = new EnemyManager();
         enemyManager.addEnemy(400,600);
@@ -54,6 +57,7 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener, Mo
     public static void setHEIGHT(int h) {HEIGHT = h;}
     public static Alan getAlan() {return alan;}
     public static void setAlan(Alan a) {alan = a;}
+    public static void setAlanCoords(int x, int y) {alan.setX(x); alan.setY(y);}
 
     // MouseListener
     @Override
@@ -77,6 +81,7 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener, Mo
             prevSpaced = spaced;
             spaced = true;
         }
+        GameManager.requestSettings(keys);
     }
 
     @Override
@@ -107,6 +112,7 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener, Mo
         bg.draw(g, Util.getLevel(), alan);
         alan.draw(g, keys, MapList.getAllMaps().get(Util.getLevel()));
         enemyManager.drawEnemies(g, alan);
+        powers.usePowers();
 
         alpha = Util.increaseOpacity(alpha, false);
         Util.overlay(g,0,0,0,alpha);

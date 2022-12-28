@@ -8,9 +8,6 @@ import java.util.Random;
 // DONE - create good patterns for platform and boxes
 // IN PROGRESS - keep track of index errors and out of bounds
 
-//FIXME:
-// - BOTTOM WALL BLOCK NOT SPAWNING
-
 public class MapList {
     // ALL MAPS
     private static ArrayList<Map> maps;
@@ -128,7 +125,12 @@ class Map {
     public int getRows() {return rows;}
     // getting map and blocks
     public Block[][] getMap() {return map;}
-    public Block getBlock(int r, int c) {return map[r][c];}
+    public Block getBlock(int r, int c) {
+        if (r < rows && c < columns) {
+            return map[r][c];
+        }
+        return map[0][0];
+    }
     // placing blocks
     private void placeBlock(int x, int y, int r, int c, int blockType, int side) {map[r][c] = new Block(x, y, blockType, side);}
 
@@ -244,7 +246,7 @@ class Map {
 
     // GENERATING WALL BLOCKS
     public void generateWallBlocks() {
-        for (int i = Util.GENERATIONSTART; i < rows-5; i+=Util.MAXCHUNKSIZE) {
+        for (int i = Util.GENERATIONSTART; i < rows-10; i+=Util.MAXCHUNKSIZE) {
             //HINT: getting type of wall, if doesn't match any types then don't spawn
             // - increasing bound decreases wall spawns
             int wallType = rand.nextInt(0,7);
@@ -255,7 +257,7 @@ class Map {
             switch (wallType) {
                 case 0 -> generatePillar(i, rand.nextInt(Util.LEFT, Util.RIGHT + 1), Block.WALL);
                 case 1 -> generateFunnel(i);
-                case 2 -> generateCliff(i, rand.nextInt(Util.LEFT, Util.RIGHT + 1), Block.WALL, 4);
+                case 2 -> generateCliff(i, rand.nextInt(Util.LEFT, Util.RIGHT + 1), Block.WALL, 5);
             }
         }
     }
@@ -272,7 +274,6 @@ class Map {
         int longest = rand.nextInt(2,maxLen);
         //HINT: CONTROLS CHANCE OF BOXES SPAWNING ON CLIFF
         if (rand.nextInt(0,1) == 0) {
-//            System.out.println("ROW: " + (r-1) + ", BOX BLOCKS");
             generateBoxBlocks(r-1, longest, Util.TOP, side); // GENERATE BOXES ON FUNNEL!
         }
         // CREATE CLIFF DIFFERENTLY BASED ON SIDE
@@ -320,7 +321,7 @@ class Map {
                 if (map[i][j].getType() == Block.WALL) {
                     if (i>0 && i<rows-1) { // making sure checks are in bounds
                         //HINT: CHECKING IF BLOCK IS ALONE (NO VERTICAL CONNECTIONS)
-                        if (map[i-1][j].getType() == Block.AIR && map[i + 1][j].getType() == Block.AIR) {
+                        if (map[i-1][j].getType() == Block.AIR && map[i+1][j].getType() == Block.AIR) {
                             // CHECKING SIDE
                             if (map[i][j].getSide() == Util.LEFT) {
                                 if (map[i][j+1].getType() != Block.WALL) { // FULL SIDE
@@ -337,13 +338,13 @@ class Map {
                                 }
                             }
                             //HINT: CHECKING IF PART OF STRAIGHT WALL SEQUENCE
-                        } else if (map[i - 1][j].getType() == Block.WALL && map[i + 1][j].getType() == Block.WALL) {
+                        } else if (map[i-1][j].getType() == Block.WALL && map[i+1][j].getType() == Block.WALL) {
                             if (map[i][j].getSide() == Util.LEFT) {
-                                if (map[i][j + 1].getType() == Block.AIR || map[i][j + 1].getType() == Block.PLAT) {
+                                if (map[i][j+1].getType() != Block.WALL) {
                                     map[i][j].setTile(MapList.wallSideRight);
                                 }
                             } else if (map[i][j].getSide() == Util.RIGHT) {
-                                if (map[i][j - 1].getType() == Block.AIR || map[i][j - 1].getType() == Block.PLAT) {
+                                if (map[i][j - 1].getType() != Block.WALL) {
                                     map[i][j].setTile(MapList.wallSideLeft);
                                 }
                             }
@@ -351,26 +352,26 @@ class Map {
                             // - SAME LOGIC EXCEPT CORNER HAS 2 SIDES OCCUPIED
                             // - TOP/BOTTOM HAS 3 SIDES OCCUPIED AND ONE HORIZONTAL EDGE IS REMAINING
                         } else if (map[i][j].getSide() == Util.LEFT) {
-                            if (map[i + 1][j].getType() == Block.AIR && map[i][j + 1].getType() == Block.AIR) {
+                            if (map[i+1][j].getType() != Block.WALL && map[i][j+1].getType() != Block.WALL) {
                                 map[i][j].setTile(MapList.wallBottomRight);
-                            } else if (map[i - 1][j].getType() == Block.AIR && map[i][j + 1].getType() == Block.AIR) {
+                            } else if (map[i-1][j].getType() != Block.WALL && map[i][j+1].getType() != Block.WALL) {
                                 map[i][j].setTile(MapList.wallTopRight);
                             } else { // IF TOP RIGHT AND BOTTOM RIGHT HAVE ONE OCCUPIED SPACE
-                                if (map[i - 1][j].getType() == Block.WALL) {
+                                if (map[i-1][j].getType() == Block.WALL) {
                                     map[i][j].setTile(MapList.wallBottom);
-                                } else if (map[i + 1][j].getType() == Block.WALL) {
+                                } else if (map[i+1][j].getType() == Block.WALL) {
                                     map[i][j].setTile(MapList.wallTop);
                                 }
                             }
                         } else if (map[i][j].getSide() == Util.RIGHT) {
-                            if (map[i + 1][j].getType() == Block.AIR && map[i][j - 1].getType() == Block.AIR) {
+                            if (map[i+1][j].getType() != Block.WALL && map[i][j-1].getType() != Block.WALL) {
                                 map[i][j].setTile(MapList.wallBottomLeft);
-                            } else if (map[i - 1][j].getType() == Block.AIR && map[i][j - 1].getType() == Block.AIR) {
+                            } else if (map[i-1][j].getType() != Block.WALL && map[i][j-1].getType() != Block.WALL) {
                                 map[i][j].setTile(MapList.wallTopLeft);
                             } else {
-                                if (map[i - 1][j].getType() == Block.WALL) {
+                                if (map[i-1][j].getType() == Block.WALL) {
                                     map[i][j].setTile(MapList.wallBottom);
-                                } else if (map[i + 1][j].getType() == Block.WALL) {
+                                } else if (map[i+1][j].getType() == Block.WALL) {
                                     map[i][j].setTile(MapList.wallTop);
                                 }
                             }

@@ -5,14 +5,14 @@ import java.util.ArrayList;
 
 //TODO: MOVEMENT AND OFFSET
 // PRIORITY - LOW-MEDIUM
-//   INCOMPLETE - PLATFORM COLLISION
+//   DONE - PLATFORM COLLISION
 //   DONE - acceleration
 //   DONE - JUMP
 //   DONE - calculate background position based on player offset
 // > GRAPHICS:
-//   INCOMPLETE - finish other animations
+//   DONE - finish other animations
 //   DONE - flip animation for opposite direction
-//   INCOMPLETE - jump animation, 1 block gap, changing to idle
+//   DONE - jump animation, 1 block gap, changing to idle
 
 public class Alan {
     // CONSTANTS
@@ -21,7 +21,7 @@ public class Alan {
 
     // STATES
     private int state = IDLE; // current state (e.g., idle, walk, fall, shoot) to change what animation is playing
-    private int dir = LEFT; // the direction alan is facing
+    private int dir = RIGHT; // the direction alan is facing
 
     // PLAYER INFO AND STATS
     private static int width, height; // dimensions

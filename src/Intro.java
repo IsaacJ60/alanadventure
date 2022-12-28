@@ -2,8 +2,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
-//IDEA: PLAY ANIMATED GIF OF ALAN JUMPING INTO HOLE UPON PLAYER STARTING GAME
-
 public class Intro extends JPanel implements KeyListener, ActionListener, MouseListener {
     Timer timer;
 
@@ -70,6 +68,7 @@ public class Intro extends JPanel implements KeyListener, ActionListener, MouseL
     public void keyPressed(KeyEvent e) {
         int key = e.getKeyCode();
         keys[key] = true;
+        GameManager.requestSettings(keys);
     }
 
     @Override
@@ -86,6 +85,7 @@ public class Intro extends JPanel implements KeyListener, ActionListener, MouseL
 //        // getting mouse pos
 //        tarX = mouse.x - offset.x;
 //        tarY = mouse.y - offset.y;
+        requestFocus();
         mainFrame.start();
         repaint();
     }
