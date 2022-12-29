@@ -120,4 +120,3 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener, Mo
         Util.overlay(g,0,0,0,alpha);
     }
 }
-

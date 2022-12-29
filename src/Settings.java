@@ -54,9 +54,7 @@ public class Settings extends JPanel implements KeyListener, ActionListener, Mou
     public void keyPressed(KeyEvent e) {
         int key = e.getKeyCode();
         keys[key] = true;
-        if (keys[KeyEvent.VK_ESCAPE]) {
-            AAdventure.setCurrPanel(AAdventure.getLastPanel());
-        }
+        GameManager.requestSettings(keys);
     }
 
     @Override

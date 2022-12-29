@@ -63,8 +63,13 @@ public class GameManager {
 
     public static void requestSettings(boolean[] keys) {
         if (keys[KeyEvent.VK_ESCAPE]) {
-            AAdventure.setLastPanel(AAdventure.getCurrPanel());
-            AAdventure.setCurrPanel("SETTINGS");
+            if (AAdventure.getCurrPanel().equals("SETTINGS")) {
+                AAdventure.setCurrPanel(AAdventure.getLastPanel());
+                AAdventure.setLastPanel("SETTINGS");
+            } else {
+                AAdventure.setLastPanel(AAdventure.getCurrPanel());
+                AAdventure.setCurrPanel("SETTINGS");
+            }
         }
     }
 }

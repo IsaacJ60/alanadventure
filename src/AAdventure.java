@@ -10,6 +10,8 @@ public class AAdventure extends JFrame { // frame
     private LevelClear levelClear;
     private Settings settings;
 
+    Sound sound;
+
     private static final int WIDTH = 900, HEIGHT = 700;
     public static int getGameWidth() {return WIDTH;}
     public static int getGameHeight() {return HEIGHT;}
@@ -20,12 +22,17 @@ public class AAdventure extends JFrame { // frame
     private static String lastPanel = "INTRO";
     public static String getLastPanel() {return lastPanel;}
     public static void setLastPanel(String curr) {lastPanel = curr;}
+    private static String switchPanel = "";
+    public static String getSwitchPanel() {return switchPanel;}
+    public static void setSwitchPanel(String curr) {switchPanel = curr;}
 
     public AAdventure() {
         super("Alan's Adventure");
 
         GameManager.loadLevels();
         Util.loadFonts();
+
+        sound = new Sound();
 
         card = new CardLayout();
         setLayout(card);
@@ -51,6 +58,12 @@ public class AAdventure extends JFrame { // frame
 
     public void start(){
         //TODO: request focus only when currpanel changes to avoid constantly requesting
+        if (!switchPanel.equals(currPanel)) {
+            if (currPanel.equals("INTRO")) {
+                Sound.introMusic("START");
+            }
+            switchPanel = currPanel;
+        }
         card.show(getContentPane(), currPanel);
     }
 
