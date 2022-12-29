@@ -13,7 +13,7 @@ public class Intro extends JPanel implements KeyListener, ActionListener, MouseL
     private static int tarX, tarY, alpha = 0;
 
     Alan alan;
-    EnemyManager enemyManager;
+    private static EnemyManager enemyManager;
     Background bg;
     Powerups powers;
 
@@ -34,8 +34,7 @@ public class Intro extends JPanel implements KeyListener, ActionListener, MouseL
         alan = new Alan(20, HEIGHT/2+50, new Blaster("Machine Gun", 10,32,13));
 
         enemyManager = new EnemyManager();
-        enemyManager.addWorm(300,700);
-        enemyManager.addWorm(400,700);
+        enemyManager.generateWorms(MapList.getBlocksWithoutWallImages(), alan);
 
         timer = new Timer(20, this); // manages frames
         timer.start();

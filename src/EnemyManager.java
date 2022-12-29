@@ -1,6 +1,7 @@
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 //TODO: ADD SUBCLASSES TO ENEMY FOR SPECIFIC ENEMIES
 // PRIORITY - LOW
@@ -91,39 +92,45 @@ class Worm{
 
 
     public void move(Block[][] blocks){
-        int prevCol = getX(true)/Util.BLOCKLENGTH-1;
-        int nextCol = getX(true)/Util.BLOCKLENGTH+1;
-        int currRow = getY(false)/Util.BLOCKLENGTH+1; // add one to get the row of blocks the worm is standing on
-        int currCol = getX(true)/Util.BLOCKLENGTH;
+        Block[][] oneIndBlocks = new Block[blocks.length][blocks[0].length+2];
+        int prevCol = getX(true)/Util.BLOCKLENGTH-1+1;
+        int nextCol = getX(true)/Util.BLOCKLENGTH+1+1;
+        int currRow = getY(false)/Util.BLOCKLENGTH;
+        int grndRow = currRow+1; // add one to get the row of blocks the worm is standing on
+        int currCol = getX(true)/Util.BLOCKLENGTH+0+1;
+
+        for(int i=0; i<blocks.length; i++) {
+            for(int j=0; j<blocks[i].length; j++){
+                oneIndBlocks[i][j+1] = blocks[i][j];
+            }
+            oneIndBlocks[i][0] = new Block(0,0,Block.AIR,Util.NEUTRAL);
+            oneIndBlocks[i][10] = new Block(0,0,Block.AIR,Util.NEUTRAL);
+        }
+
+//        System.out.println(Arrays.toString(blocks[30]));
+//        System.out.println(Arrays.toString(oneIndBlocks[30]));
+//        System.out.println("-------------");
 
 //        System.out.println("prevCol: "+prevCol);
 //        System.out.println("nextCol: "+nextCol);
-//        System.out.println("currRow: "+currRow);
+//        System.out.println("grndRow: "+grndRow);
 //        System.out.println("currCol: "+currCol);
 //        System.out.println("------------------");
 
         if(dir == LEFT){
-            if(prevCol == -1) {
+            if (oneIndBlocks[grndRow][currCol].getType() != Block.AIR && oneIndBlocks[currRow][currCol].getType() == Block.AIR) {
+                x-=speed;
+            } else {
                 dir = RIGHT;
-            }
-            else{
-                if (blocks[currRow][prevCol].getType() == Block.AIR || blocks[currRow][prevCol].getType() == Block.SPIKE) {
-                    dir = RIGHT;
-                } else {
-                    x -= speed;
-                }
+                x+=2*speed;
             }
         }
         else{
-            if(nextCol == 9) {
+            if (oneIndBlocks[grndRow][currCol].getType() != Block.AIR && oneIndBlocks[currRow][currCol].getType() == Block.AIR) {
+                x+=speed;
+            } else {
                 dir = LEFT;
-            }
-            else{
-                if (blocks[currRow][nextCol].getType() == Block.AIR || blocks[currRow][nextCol].getType() == Block.SPIKE) {
-                    dir = LEFT;
-                } else {
-                    x += speed;
-                }
+                x-=2*speed;
             }
         }
     }
@@ -131,7 +138,7 @@ class Worm{
     public void draw(Graphics g, Block[][] blocks) {
         move(blocks);
         g.setColor(Color.YELLOW);
-        g.fillRect(x, y-GamePanel.getAlan().getOffset()+GamePanel.getAlan().getScreenOffset(), width, height);
+        g.drawRect(x, y-GamePanel.getAlan().getOffset()+GamePanel.getAlan().getScreenOffset(), width, height);
     }
 }
 
