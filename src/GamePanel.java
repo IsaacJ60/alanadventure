@@ -61,7 +61,9 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener, Mo
 
     // MouseListener
     @Override
-    public void mouseClicked(MouseEvent e) {}
+    public void mouseClicked(MouseEvent e) {
+        powers.activatePower(Powerups.GUNPOWDER);
+    }
     @Override
     public void mouseEntered(MouseEvent e) {;}
     @Override
@@ -110,9 +112,9 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener, Mo
     public void paint(Graphics g) {
         requestFocus();
         bg.draw(g, Util.getLevel(), alan);
-        alan.draw(g, keys, MapList.getAllMaps().get(Util.getLevel()));
+        alan.draw(g, keys, MapList.getAllMaps().get(Util.getLevel()), powers);
         enemyManager.drawEnemies(g, alan);
-        powers.usePowers();
+        powers.usePowers(alan);
 
         alpha = Util.increaseOpacity(alpha, false);
         Util.overlay(g,0,0,0,alpha);

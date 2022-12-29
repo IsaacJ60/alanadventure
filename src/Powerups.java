@@ -43,10 +43,10 @@ public class Powerups{
         activepowers = new int[powers.length];
     }
 
-    public void usePowers() {
+    public void usePowers(Alan alan) {
         for (int i = 0; i < powers.length; i++) {
             if (activepowers[powers[i]] == 1) {
-                powerups.get(i).usePower();
+                powerups.get(i).usePower(alan);
             }
         }
     }

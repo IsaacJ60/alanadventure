@@ -1,7 +1,7 @@
 public class RapidFire implements usePowers {
 
     @Override
-    public void usePower() {
-        System.out.println("RAPIDFIRE");
+    public void usePower(Alan alan) {
+        alan.setWeaponSpeed(20);
     }
 }

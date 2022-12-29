@@ -127,6 +127,7 @@ public class Alan {
     public int getScreenOffset() {return screenOffset;} // gets screenOffset
     public Blaster getWeapon() {return weapon;} // gets current weapon
     public void setWeapon(Blaster weapon) {this.weapon = weapon;} // sets current weapon
+    public void setWeaponSpeed(int s) {weapon.setSpeed(s);}
 
     public int getX(boolean adjusted) { // gets x
         if (adjusted) { // whether you want x relative to the gameplay window
@@ -154,8 +155,8 @@ public class Alan {
         }
     }
 
-    public void move(boolean[] keys, Graphics g, Map map) {
-        getCollision(MapList.getBlocksWithoutWallImages(),g,this, map); // getting collision between player and blocks
+    public void move(boolean[] keys, Graphics g, Map map, Powerups powerups) {
+        getCollision(g,this, map); // getting collision between player and blocks
         alanRect.setLocation(x+5,y); // setting rect location
 
         // allow jump only if not jumping or falling and if space pressed
@@ -232,7 +233,7 @@ public class Alan {
             changeState(FALL, dir, true); // just to reset animframe
             velY-=velY*1.2;
         }
-        weapon.animation(g, MapList.getBlocksWithoutWallImages(), this, map);
+        weapon.animation(g,this, map, powerups);
     }
 
     public void jump() {
@@ -251,7 +252,8 @@ public class Alan {
     // getCollision instead runs through specific rows of blocks that narrow
     // down the search field tremendously
     // each check for each side of blocks is performed separately
-    public void getCollision(Block[][] blocks, Graphics g, Alan alan, Map map) {
+    public void getCollision(Graphics g, Alan alan, Map map) {
+        Block[][] blocks = map.getMap();
         // getting rows with same y values as player
         int prevRow = getY(false)/Util.BLOCKLENGTH;
         int nextRow = getY(false)/Util.BLOCKLENGTH+1;
@@ -402,9 +404,9 @@ public class Alan {
     }
 
     // drawing alan in different states and directions
-    public void draw(Graphics g, boolean[] keys, Map map) { //
+    public void draw(Graphics g, boolean[] keys, Map map, Powerups powerups) { //
 
-        move(keys, g, map);
+        move(keys, g, map, powerups);
 
         if (weapon.isAlanShoot()) {
             if ((int) animFrame == shoot.size()-1) {

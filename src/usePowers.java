@@ -1,3 +1,3 @@
 public interface usePowers {
-    void usePower();
+    void usePower(Alan alan);
 }

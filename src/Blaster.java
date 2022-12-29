@@ -13,12 +13,14 @@ public class Blaster {
     private boolean alanShoot;
     ArrayList<Image> explosion;
     ArrayList<Bullet> bullets;
-    ArrayList<int[]> blastPlaces;
+    ArrayList<Integer> blastPlaces;
+    ArrayList<Block> blastBlocks;
     Util.CustomTimer shootTimer;
 
     public Blaster(String name, int damage, int capacity, int speed) {
         bullets = new ArrayList<>();
         blastPlaces = new ArrayList<>();
+        blastBlocks = new ArrayList<>();
         explosion = new ArrayList<>();
         this.name = name;
         this.damage = damage;
@@ -28,7 +30,7 @@ public class Blaster {
         alanShoot = false;
         defaultBullet = new ImageIcon("src/assets/alan/shoot/bullets/bullet.png").getImage().getScaledInstance(16,32,Image.SCALE_DEFAULT);
         for (int i = 0; i < 5; i++) {
-//            explosion.add(new ImageIcon("src/assets/alan/shoot/bullets/explosion" + i + ".png").getImage());
+            explosion.add(new ImageIcon("src/assets/alan/shoot/explosion/explosion" + i + ".png").getImage());
         }
         shootTimer = new Util.CustomTimer();
         shootTimer.start();
@@ -50,11 +52,11 @@ public class Blaster {
 
     // SHOOT - CHECKS IF PLAYER WANTS TO SHOOT AND IF TIMER ALLOWS, ADDS BULLET IF ALLOWED
     public boolean shoot(boolean[] keys, int velY, Graphics g, Alan alan) {
-        blastAnim(blastPlaces, g);
-        if (alan.getState() == alan.FALL && keys[Util.space] && shootTimer.getElapsedTime() > 0.15 && velY > 0) {
+        blastAnim(g, alan);
+        if (alan.getState() == Alan.FALL && keys[Util.space] && shootTimer.getElapsedTime() > 0.15 && velY > 0) {
             shootTimer.restart();
             // add bullet
-            bullets.add(new Bullet(alan.getX(false) + (alan.getDir() == alan.LEFT ? 2 : 8), alan.getY(false) + alan.getVelY() + 10,
+            bullets.add(new Bullet(alan.getX(false) + (alan.getDir() == Alan.LEFT ? 2 : 8), alan.getY(false) + alan.getVelY() + 10,
                     alan.getY(false) + alan.getVelY() + 10,
                     defaultBullet));
             alanShoot = true;
@@ -64,10 +66,11 @@ public class Blaster {
     }
 
     // DRAWS ALL BULLETS AND CHECKS FOR COLLISION BETWEEN BLOCK AND BULLET
-    public void animation(Graphics g, Block[][] blocks, Alan alan, Map map) {
+    public void animation(Graphics g, Alan alan, Map map, Powerups powerups) {
+        Block[][] blocks = map.getMap();
         ArrayList<Bullet> rm = new ArrayList<>(); // removal list
         for (Bullet b : bullets) { // go through all bullets
-            if (getCollision(b, blocks, alan, map)) {
+            if (getCollision(b, blocks, alan, map, powerups)) {
                 rm.add(b);
             } else if (b.getY(false,alan) > b.getStartY() + 300) {
                 rm.add(b);
@@ -83,7 +86,7 @@ public class Blaster {
         }
     }
 
-    public boolean getCollision(Bullet b, Block[][] blocks, Alan alan, Map map) {
+    public boolean getCollision(Bullet b, Block[][] blocks, Alan alan, Map map, Powerups powerups) {
         int nextRow = b.getY(false,alan)/Util.BLOCKLENGTH+1;
         for (int r = nextRow-1; r < nextRow+2; r++) {
             for (int i = 0; i < map.getColumns(); i++) {
@@ -93,7 +96,11 @@ public class Blaster {
                         if (blocks[r][i].collide(b.getRect())) {
                             if (blockType == Block.BOX) {
                                 blocks[r][i].setType(Block.AIR);
-                                blastPlaces.add(new int[]{r*Util.BLOCKLENGTH, i*Util.BLOCKLENGTH, 0});
+                                blastPlaces.add(0);
+                                blastBlocks.add(blocks[r][i]);
+                                if (powerups.getPower(Powerups.GUNPOWDER) == 1) {
+                                    gunpowderEffect(blocks, r, i);
+                                }
                             }
                             return true;
                         }
@@ -104,10 +111,35 @@ public class Blaster {
         return false;
     }
 
+    private void gunpowderEffect(Block[][] blocks, int row, int col) {
+        blocks[row][col].setType(Block.AIR);
+        blastPlaces.add(0);
+        blastBlocks.add(blocks[row][col]);
+        if (row > 0 && col < 8 && col > 0) {
+            if (blocks[row+1][col].getType() == Block.BOX) {
+                gunpowderEffect(blocks, row+1, col);
+            }
+            if (blocks[row-1][col].getType() == Block.BOX) {
+                gunpowderEffect(blocks, row-1, col);
+            }
+            if (blocks[row][col+1].getType() == Block.BOX) {
+                gunpowderEffect(blocks, row, col+1);
+            }
+            if (blocks[row][col-1].getType() == Block.BOX) {
+                gunpowderEffect(blocks, row, col-1);
+            }
+        }
+    }
+
     // plays all explosion animations when box destroyed
-    public void blastAnim(ArrayList<int[]> blastPlaces, Graphics g) {
-        for (int[] coords : blastPlaces) {
-//            g.drawImage(explosion.get(coords[2]), coords[0], coords[1],null);
+    public void blastAnim(Graphics g, Alan alan) {
+        for (int i = blastPlaces.size()-1; i >= 0; i--) {
+            g.drawImage(explosion.get(blastPlaces.get(i)),blastBlocks.get(i).getX(true),blastBlocks.get(i).getY(true, alan), null);
+            blastPlaces.set(i, blastPlaces.get(i)+1);
+            if (blastPlaces.get(i) == 5) {
+                blastBlocks.remove(i);
+                blastPlaces.remove(i);
+            }
         }
     }
 
