@@ -13,7 +13,6 @@ public class Intro extends JPanel implements KeyListener, ActionListener, MouseL
     private static int tarX, tarY, alpha = 0;
 
     Alan alan;
-    private static EnemyManager enemyManager;
     Background bg;
     Powerups powers;
 
@@ -32,9 +31,6 @@ public class Intro extends JPanel implements KeyListener, ActionListener, MouseL
         powers = new Powerups(2);
 
         alan = new Alan(20, HEIGHT/2+50, new Blaster("Machine Gun", 10,32,13));
-
-        enemyManager = new EnemyManager();
-        enemyManager.generateWorms(MapList.getBlocksWithoutWallImages(), alan);
 
         timer = new Timer(20, this); // manages frames
         timer.start();
@@ -99,7 +95,6 @@ public class Intro extends JPanel implements KeyListener, ActionListener, MouseL
     @Override
     public void paint(Graphics g) {
         bg.draw(g, 0, alan);
-        enemyManager.drawEnemies(g, MapList.getBlocksWithoutWallImages());
         alan.draw(g, keys, GameManager.intromap, powers);
         g.setFont(Util.fontTitle6);
         g.drawString("ALAN'S", 372,400-alan.getOffset()+alan.getScreenOffset());
