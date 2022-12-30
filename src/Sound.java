@@ -7,6 +7,7 @@ Sound loads and contains methods to play music and sound effects
 import javax.swing.*;
 import java.awt.event.*;
 import java.io.*;
+import java.util.ArrayList;
 import javax.sound.sampled.Clip;
 import javax.sound.sampled.AudioSystem;
 
@@ -14,9 +15,12 @@ public class Sound extends JFrame implements ActionListener {
     SoundEffect sound;
     // all soundeffects and music
     private static SoundEffect intromusic;
+    private static ArrayList<SoundEffect> allSounds;
     public Sound() {
+        allSounds = new ArrayList<>();
         // loading all music and sounds
         intromusic = new SoundEffect("src/assets/sounds/bg/intro.wav");
+        allSounds.add(intromusic);
     }
     public void actionPerformed(ActionEvent ae){
         sound.play();
@@ -24,12 +28,18 @@ public class Sound extends JFrame implements ActionListener {
 
     public static void main(String args[]){new Sound().setVisible(true);}
 
+    public static void stopAll() {
+        for (SoundEffect sound : allSounds) {
+            sound.stop();
+        }
+    }
+
     // looping or stopping game music
     public static void introMusic(String s) {
         if (s.equals("STOP")) {
             intromusic.stop();
         } else {
-            intromusic.stop();
+            stopAll();
             intromusic.loop();
         }
     }

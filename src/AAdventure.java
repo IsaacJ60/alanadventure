@@ -12,6 +12,9 @@ public class AAdventure extends JFrame { // frame
 
     Sound sound;
 
+    GameMusic introMusic;
+    GameMusic gameMusic;
+
     private static final int WIDTH = 900, HEIGHT = 700;
     public static int getGameWidth() {return WIDTH;}
     public static int getGameHeight() {return HEIGHT;}
@@ -59,8 +62,17 @@ public class AAdventure extends JFrame { // frame
     public void start(){
         //TODO: request focus only when currpanel changes to avoid constantly requesting
         if (!switchPanel.equals(currPanel)) {
-            if (currPanel.equals("INTRO")) {
-                Sound.introMusic("START");
+            switch (currPanel) {
+                case "INTRO" -> introMusic = new GameMusic("src/assets/sounds/bg/intro.mid");
+                case "GAME" -> gameMusic = new GameMusic("src/assets/sounds/bg/game.mid");
+                case "SETTINGS" -> {
+                    if (gameMusic != null) {
+                        gameMusic.endMidi();
+                    }
+                    if (introMusic != null) {
+                        introMusic.endMidi();
+                    }
+                }
             }
             switchPanel = currPanel;
         }
@@ -71,3 +83,5 @@ public class AAdventure extends JFrame { // frame
         new AAdventure();
     }
 }
+
+

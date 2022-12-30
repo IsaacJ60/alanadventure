@@ -24,7 +24,7 @@ public class LevelClear extends JPanel implements KeyListener, ActionListener, M
         addMouseListener(this);
         addKeyListener(this);
 
-        timer = new Timer(20, this); // manages frames
+        timer = new Timer(25, this); // manages frames
         timer.start();
     }
 

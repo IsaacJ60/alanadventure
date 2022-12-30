@@ -32,7 +32,7 @@ public class Intro extends JPanel implements KeyListener, ActionListener, MouseL
 
         alan = new Alan(20, HEIGHT/2+50, new Blaster("Machine Gun", 10,32,13));
 
-        timer = new Timer(20, this); // manages frames
+        timer = new Timer(25, this); // manages frames
         timer.start();
     }
 
