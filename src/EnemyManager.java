@@ -22,7 +22,7 @@ public class EnemyManager{
         worms.add(new Worm(x,y));
     }
     public void generateWorms(Block[][] blocks, Alan alan){
-        for(int i=1; i<50; i++){
+        for(int i=1; i< blocks.length; i++){
             for(int j=1; j<blocks[i].length-1; j++) {
                 if (blocks[i-1][j].getType() == Block.AIR && blocks[i][j].getType() != Block.AIR && blocks[i][j].getType() != Block.SPIKE) {
                     addWorm(blocks[i][j].getX(true), blocks[i][j].getY(true, alan));
@@ -93,12 +93,11 @@ class Worm{
 
     public void move(Block[][] blocks){
         int grndRow = getY(false)/Util.BLOCKLENGTH+1; // add one to get the row of blocks the worm is standing on
-        int currColL = getX(true)/Util.BLOCKLENGTH;
+        int currColL = (int)Math.ceil(getX(true)/Util.BLOCKLENGTH);
         int currColR = (getX(true)+width)/Util.BLOCKLENGTH;
 
-
         if(dir == LEFT){
-            if(currColL == -1){
+            if(getX(true)<=0){
                 dir = RIGHT;
                 x += 2 * speed;
             }
@@ -112,7 +111,7 @@ class Worm{
             }
         }
         else{
-            if(currColR == 9){
+            if(getX(true)+width >= 9*35){
                 dir = LEFT;
                 x -= 2 * speed;
             }
