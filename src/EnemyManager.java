@@ -22,8 +22,8 @@ public class EnemyManager{
         worms.add(new Worm(x,y));
     }
     public void generateWorms(Block[][] blocks, Alan alan){
-        for(int i=1; i<blocks.length; i++){
-            for(int j=0; j<blocks[i].length; j++) {
+        for(int i=1; i<50; i++){
+            for(int j=1; j<blocks[i].length-1; j++) {
                 if (blocks[i-1][j].getType() == Block.AIR && blocks[i][j].getType() != Block.AIR && blocks[i][j].getType() != Block.SPIKE) {
                     addWorm(blocks[i][j].getX(true), blocks[i][j].getY(true, alan));
                 }
@@ -92,45 +92,37 @@ class Worm{
 
 
     public void move(Block[][] blocks){
-        Block[][] oneIndBlocks = new Block[blocks.length][blocks[0].length+2];
-        int prevCol = getX(true)/Util.BLOCKLENGTH-1+1;
-        int nextCol = getX(true)/Util.BLOCKLENGTH+1+1;
-        int currRow = getY(false)/Util.BLOCKLENGTH;
-        int grndRow = currRow+1; // add one to get the row of blocks the worm is standing on
-        int currCol = getX(true)/Util.BLOCKLENGTH+0+1;
+        int grndRow = getY(false)/Util.BLOCKLENGTH+1; // add one to get the row of blocks the worm is standing on
+        int currColL = getX(true)/Util.BLOCKLENGTH;
+        int currColR = (getX(true)+width)/Util.BLOCKLENGTH;
 
-        for(int i=0; i<blocks.length; i++) {
-            for(int j=0; j<blocks[i].length; j++){
-                oneIndBlocks[i][j+1] = blocks[i][j];
-            }
-            oneIndBlocks[i][0] = new Block(0,0,Block.AIR,Util.NEUTRAL);
-            oneIndBlocks[i][10] = new Block(0,0,Block.AIR,Util.NEUTRAL);
-        }
-
-//        System.out.println(Arrays.toString(blocks[30]));
-//        System.out.println(Arrays.toString(oneIndBlocks[30]));
-//        System.out.println("-------------");
-
-//        System.out.println("prevCol: "+prevCol);
-//        System.out.println("nextCol: "+nextCol);
-//        System.out.println("grndRow: "+grndRow);
-//        System.out.println("currCol: "+currCol);
-//        System.out.println("------------------");
 
         if(dir == LEFT){
-            if (oneIndBlocks[grndRow][currCol].getType() != Block.AIR && oneIndBlocks[currRow][currCol].getType() == Block.AIR) {
-                x-=speed;
-            } else {
+            if(currColL == -1){
                 dir = RIGHT;
-                x+=2*speed;
+                x += 2 * speed;
+            }
+            else{
+                if (blocks[grndRow][currColL].getType() != Block.AIR && blocks[grndRow - 1][currColL].getType() == Block.AIR) {
+                    x -= speed;
+                } else {
+                    dir = RIGHT;
+                    x += 2 * speed;
+                }
             }
         }
         else{
-            if (oneIndBlocks[grndRow][currCol].getType() != Block.AIR && oneIndBlocks[currRow][currCol].getType() == Block.AIR) {
-                x+=speed;
-            } else {
+            if(currColR == 9){
                 dir = LEFT;
-                x-=2*speed;
+                x -= 2 * speed;
+            }
+            else {
+                if (blocks[grndRow][currColR].getType() != Block.AIR && blocks[grndRow - 1][currColR].getType() == Block.AIR) {
+                    x += speed;
+                } else {
+                    dir = LEFT;
+                    x -= 2 * speed;
+                }
             }
         }
     }
