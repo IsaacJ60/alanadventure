@@ -36,6 +36,10 @@ public class EnemyManager{
             }
         }
     }
+    public void clearEnemies(){
+        snakes.clear();
+        bats.clear();
+    }
     public void drawEnemies(Graphics g, Block[][] blocks){
         for(Bat b : bats){
             b.draw(g);
