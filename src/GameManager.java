@@ -57,6 +57,7 @@ public class GameManager {
             AAdventure.setCurrPanel("GAME"); // set to game if on first intro part
         }
         Util.setLevel(l); // setting level to l
+        GamePanel.getEnemyManager().generateWorms(MapList.getBlocksWithoutWallImages(), GamePanel.getAlan());
         //TODO: perhaps make a reset() function in alan to avoid bugs from recreating an instance each level
         GamePanel.setAlan(new Alan(150, HEIGHT/2-50, GamePanel.getAlan().getWeapon())); // resetting alan
     }

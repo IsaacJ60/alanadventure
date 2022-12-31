@@ -1,6 +1,8 @@
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Random;
 
 //TODO: ADD SUBCLASSES TO ENEMY FOR SPECIFIC ENEMIES
 // PRIORITY - LOW
@@ -11,19 +13,145 @@ import java.util.ArrayList;
 // - ENSURE ENEMIES BOUNCE OFF EACH OTHER
 
 public class EnemyManager{
-    private ArrayList<Enemy> enemies = new ArrayList<>();
+    private ArrayList<Flyer> flyers = new ArrayList<>();
+    private ArrayList<Worm> worms = new ArrayList<>();
 
-    public void addEnemy(int x, int y){
-        enemies.add(new Enemy(x,y,30));
+    public void addFlyer(int x, int y){
+        flyers.add(new Flyer(x,y));
     }
-    public void drawEnemies(Graphics g, Alan alan){
-        for(Enemy e : enemies){
-            e.draw(g, alan);
+    public void addWorm(int x, int y){
+        worms.add(new Worm(x,y));
+    }
+    public void generateWorms(Block[][] blocks, Alan alan){
+        Random rand = new Random();
+        for(int i=1; i< blocks.length; i++){
+            for(int j=1; j<blocks[i].length-1; j++) {
+                if (blocks[i-1][j].getType() == Block.AIR && blocks[i][j].getType() != Block.AIR && blocks[i][j].getType() != Block.SPIKE) {
+                    if(rand.nextInt(100)<=20) {
+                        addWorm(blocks[i][j].getX(true), blocks[i][j].getY(true, alan));
+                    }
+                }
+            }
+        }
+    }
+
+    public void drawEnemies(Graphics g, Block[][] blocks){
+        for(Flyer f : flyers){
+            f.draw(g);
+        }
+        for(Worm w: worms){
+            w.draw(g, blocks);
         }
     }
 }
 
-class Enemy {
+class Worm{
+    public static final int LEFT = 0, RIGHT = 1;
+    private final int width, height;
+    private int health;
+    private double x, y;
+    private int dir;
+    private double speed, velX, velY; // the speed and acceleration the enemy has
+    private double animFrame;
+
+    ArrayList<Image> idle = new ArrayList<>();
+
+    public Worm(int x, int y) {
+        this.width = 32;
+        this.height = 18;
+        this.x = x;
+        this.y = y-height+1;
+        dir = RIGHT;
+        this.health = 10;
+        this.speed = 2;
+        animFrame = 0;
+
+        for (int i = 0; i < 4; i++) {
+            idle.add(new ImageIcon("src/assets/enemies/snake/idle/snakeIdle" + i + ".png").getImage());
+            idle.set(i, idle.get(i).getScaledInstance((idle.get(i).getWidth(null)*2), (idle.get(i).getHeight(null)*2), Image.SCALE_DEFAULT));
+        }
+    }
+
+    public void setX(int x) {
+        this.x = x;
+    }
+    public void setY(int y) {
+        this.y = y;
+    }
+    public int getHealth() {
+        return health;
+    }
+    public void setHealth(int health) {
+        this.health = health;
+    }
+    public double getX(boolean adjusted) { // gets x
+        if (adjusted) { // whether you want x relative to the gameplay window
+            return x - Background.getWallLeftPos() - Background.getWallWidth();
+        } else {
+            return x;
+        }
+    }
+    public double getY(boolean adjusted) { // gets y
+        if (adjusted) { // whether you want y relative to the gameplay window
+            return y-GamePanel.getAlan().getOffset()+GamePanel.getAlan().getScreenOffset();
+        } else {
+            return y;
+        }
+    }
+
+    public void move(Block[][] blocks){
+        int currRow = (int)getY(false)/Util.BLOCKLENGTH;
+        int grndRow = currRow+1; // add one to get the row of blocks the worm is standing on
+        int currColL = (int)(getX(true)/Util.BLOCKLENGTH);
+        int currColR = (int)(getX(true)+width)/Util.BLOCKLENGTH;
+
+        if(dir == LEFT){
+            if(getX(true)<=0){
+                dir = RIGHT;
+                x += speed;
+            }
+            else{
+                if (blocks[grndRow][currColL].getType() != Block.AIR && blocks[grndRow - 1][currColL].getType() == Block.AIR) {
+                    x -= speed;
+                } else {
+                    dir = RIGHT;
+                    x += speed;
+                }
+            }
+        }
+        else{
+            if(getX(true)+width >= 9*35){
+                dir = LEFT;
+                x -= speed;
+            }
+            else {
+                if (blocks[grndRow][currColR].getType() != Block.AIR && blocks[grndRow - 1][currColR].getType() == Block.AIR) {
+                    x += speed;
+                } else {
+                    dir = LEFT;
+                    x -= speed;
+                }
+            }
+        }
+    }
+
+    public void draw(Graphics g, Block[][] blocks) {
+        move(blocks);
+
+        if ((int) animFrame == idle.size() - 1) {
+            animFrame = 0;
+        } else {
+            animFrame += 0.2;
+        }
+
+        g.drawImage(idle.get((int) animFrame), (int)x, (int)y-GamePanel.getAlan().getOffset()+GamePanel.getAlan().getScreenOffset(), null);
+
+//        g.setColor(Color.YELLOW);
+//        g.drawRect((int)x, (int)y-GamePanel.getAlan().getOffset()+GamePanel.getAlan().getScreenOffset(), width, height);
+    }
+}
+
+class Flyer {
     public static final int IDLE = 0, FLY = 1;
     private final int state = FLY;
     private final int width, height;
@@ -35,12 +163,12 @@ class Enemy {
     ArrayList<Image> idle = new ArrayList<>();
     ArrayList<Image> fly = new ArrayList<>();
 
-    public Enemy(int x, int y, int health) {
+    public Flyer(int x, int y) {
         this.x = x;
         this.y = y;
         this.width = 36;
         this.height = 26;
-        this.health = health;
+        this.health = 30;
         this.speed = 2;
         this.maxVelX = 4.5;
         this.maxVelY = 4.5;
@@ -49,7 +177,7 @@ class Enemy {
         this.accelFactor = .2;
         animFrame = 0;
         for (int i = 0; i < 6; i++) {
-            idle.add(new ImageIcon("src/assets/enemy/fly/fly" + i + ".png").getImage().getScaledInstance(width, height, Image.SCALE_DEFAULT));
+            idle.add(new ImageIcon("src/assets/enemies/fly/fly" + i + ".png").getImage().getScaledInstance(width, height, Image.SCALE_DEFAULT));
         }
     }
 
@@ -77,11 +205,11 @@ class Enemy {
         this.health = health;
     }
 
-    public void move(Alan alan) {
+    public void move() {
         // distance calculations
-        double distX = x - alan.getX(false);
+        double distX = x - GamePanel.getAlan().getX(false);
         // how far away the enemy is compared to alan
-        double distY = y - alan.getY(false);
+        double distY = y - GamePanel.getAlan().getY(false);
         double distance = Math.sqrt(Math.pow(distX, 2) + Math.pow(distY, 2)); // pythag theorem
         // adding up how many frames movement has been in x direction, capping out at +-20 to limit terminal velocity
         if (distX < 0 && velX < maxVelX) {
@@ -101,12 +229,9 @@ class Enemy {
         y += velY;
     }
 
-    public void moveY(int d) {
-        y -= d;
-    }
 
-    public void draw(Graphics g, Alan alan) {
-        move(alan);
+    public void draw(Graphics g) {
+        move();
 
         if (state == FLY) {
             if ((int) animFrame == idle.size() - 1) {
@@ -114,7 +239,7 @@ class Enemy {
             } else {
                 animFrame += 0.33;
             }
-            g.drawImage(idle.get((int) animFrame), (int) x+Background.getWallLeftPos(), (int) y-alan.getOffset(), null);
+            g.drawImage(idle.get((int) animFrame), (int) x+Background.getWallLeftPos(), (int) y-GamePanel.getAlan().getOffset(), null);
         }
     }
 }
