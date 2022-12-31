@@ -4,14 +4,14 @@ Isaac Jiang
 Sound loads and contains methods to play music and sound effects
  */
 
-import javax.swing.*;
-import java.awt.event.*;
-import java.io.*;
-import java.util.ArrayList;
-import javax.sound.sampled.Clip;
 import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
+import java.util.ArrayList;
 
-public class Sound extends JFrame implements ActionListener {
+public class Sound implements ActionListener {
     SoundEffect sound;
     // all soundeffects and music
     private static SoundEffect intromusic;
@@ -25,8 +25,6 @@ public class Sound extends JFrame implements ActionListener {
     public void actionPerformed(ActionEvent ae){
         sound.play();
     }
-
-    public static void main(String args[]){new Sound().setVisible(true);}
 
     public static void stopAll() {
         for (SoundEffect sound : allSounds) {

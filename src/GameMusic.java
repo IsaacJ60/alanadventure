@@ -1,7 +1,8 @@
+import javax.sound.midi.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.*;
-import javax.sound.midi.*;
+import java.io.File;
+import java.io.IOException;
 
 public class GameMusic implements ActionListener {
 

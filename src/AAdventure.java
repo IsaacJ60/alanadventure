@@ -1,4 +1,3 @@
-import javax.management.monitor.GaugeMonitor;
 import javax.swing.*;
 import java.awt.*;
 
