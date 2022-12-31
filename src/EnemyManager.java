@@ -13,39 +13,41 @@ import java.util.Random;
 // - ENSURE ENEMIES BOUNCE OFF EACH OTHER
 
 public class EnemyManager{
-    private ArrayList<Flyer> flyers = new ArrayList<>();
-    private ArrayList<Worm> worms = new ArrayList<>();
+    private ArrayList<Snake> snakes = new ArrayList<>();
+    private ArrayList<Bat> bats = new ArrayList<>();
 
-    public void addFlyer(int x, int y){
-        flyers.add(new Flyer(x,y));
+    public ArrayList<Snake> getSnakes(){ return snakes;}
+    public ArrayList<Bat> getBats(){ return bats;}
+    public void addSnake(int x, int y){
+        snakes.add(new Snake(x,y));
     }
-    public void addWorm(int x, int y){
-        worms.add(new Worm(x,y));
+    public void addBat(int x, int y){
+        bats.add(new Bat(x,y));
     }
-    public void generateWorms(Block[][] blocks, Alan alan){
+    public void generateSnakes(Block[][] blocks, Alan alan){
         Random rand = new Random();
         for(int i=1; i< blocks.length; i++){
             for(int j=1; j<blocks[i].length-1; j++) {
                 if (blocks[i-1][j].getType() == Block.AIR && blocks[i][j].getType() != Block.AIR && blocks[i][j].getType() != Block.SPIKE) {
                     if(rand.nextInt(100)<=20) {
-                        addWorm(blocks[i][j].getX(true), blocks[i][j].getY(true, alan));
+                        addSnake(blocks[i][j].getX(true), blocks[i][j].getY(true, alan));
                     }
                 }
             }
         }
+        System.out.println(snakes.size());
     }
-
     public void drawEnemies(Graphics g, Block[][] blocks){
-        for(Flyer f : flyers){
-            f.draw(g);
+        for(Bat b : bats){
+            b.draw(g);
         }
-        for(Worm w: worms){
-            w.draw(g, blocks);
+        for(Snake s: snakes){
+            s.draw(g, blocks);
         }
     }
 }
 
-class Worm{
+class Snake{
     public static final int LEFT = 0, RIGHT = 1;
     private final int width, height;
     private int health;
@@ -54,9 +56,10 @@ class Worm{
     private double speed, velX, velY; // the speed and acceleration the enemy has
     private double animFrame;
 
-    ArrayList<Image> idle = new ArrayList<>();
+    ArrayList<Image> idleL = new ArrayList<>();
+    ArrayList<Image> idleR = new ArrayList<>();
 
-    public Worm(int x, int y) {
+    public Snake(int x, int y) {
         this.width = 32;
         this.height = 18;
         this.x = x;
@@ -67,8 +70,12 @@ class Worm{
         animFrame = 0;
 
         for (int i = 0; i < 4; i++) {
-            idle.add(new ImageIcon("src/assets/enemies/snake/idle/snakeIdle" + i + ".png").getImage());
-            idle.set(i, idle.get(i).getScaledInstance((idle.get(i).getWidth(null)*2), (idle.get(i).getHeight(null)*2), Image.SCALE_DEFAULT));
+            idleL.add(new ImageIcon("src/assets/enemies/snake/idle/snakeIdleL" + i + ".png").getImage());
+            idleL.set(i, idleL.get(i).getScaledInstance((idleL.get(i).getWidth(null)*2), (idleL.get(i).getHeight(null)*2), Image.SCALE_DEFAULT));
+        }
+        for (int i = 0; i < 4; i++) {
+            idleR.add(new ImageIcon("src/assets/enemies/snake/idle/snakeIdleR" + i + ".png").getImage());
+            idleR.set(i, idleR.get(i).getScaledInstance((idleR.get(i).getWidth(null)*2), (idleR.get(i).getHeight(null)*2), Image.SCALE_DEFAULT));
         }
     }
 
@@ -98,10 +105,11 @@ class Worm{
             return y;
         }
     }
+    public Rectangle getRect(){return new Rectangle((int)getX(true),(int)y,width,height);}
 
     public void move(Block[][] blocks){
         int currRow = (int)getY(false)/Util.BLOCKLENGTH;
-        int grndRow = currRow+1; // add one to get the row of blocks the worm is standing on
+        int grndRow = currRow+1; // add one to get the row of blocks the snake is standing on
         int currColL = (int)(getX(true)/Util.BLOCKLENGTH);
         int currColR = (int)(getX(true)+width)/Util.BLOCKLENGTH;
 
@@ -138,20 +146,29 @@ class Worm{
     public void draw(Graphics g, Block[][] blocks) {
         move(blocks);
 
-        if ((int) animFrame == idle.size() - 1) {
-            animFrame = 0;
-        } else {
-            animFrame += 0.2;
+        if(dir == LEFT) {
+            if ((int) animFrame == idleL.size() - 1) {
+                animFrame = 0;
+            } else {
+                animFrame += 0.2;
+            }
+            g.drawImage(idleL.get((int) animFrame), (int) x, (int)getY(true), null);
+        }
+        else{
+            if ((int) animFrame == idleR.size() - 1) {
+                animFrame = 0;
+            } else {
+                animFrame += 0.2;
+            }
+            g.drawImage(idleR.get((int) animFrame), (int) x, (int)getY(true), null);
         }
 
-        g.drawImage(idle.get((int) animFrame), (int)x, (int)y-GamePanel.getAlan().getOffset()+GamePanel.getAlan().getScreenOffset(), null);
-
 //        g.setColor(Color.YELLOW);
-//        g.drawRect((int)x, (int)y-GamePanel.getAlan().getOffset()+GamePanel.getAlan().getScreenOffset(), width, height);
+//        g.drawRect((int)x, (int)getY(true), width, height);
     }
 }
 
-class Flyer {
+class Bat{
     public static final int IDLE = 0, FLY = 1;
     private final int state = FLY;
     private final int width, height;
@@ -163,7 +180,7 @@ class Flyer {
     ArrayList<Image> idle = new ArrayList<>();
     ArrayList<Image> fly = new ArrayList<>();
 
-    public Flyer(int x, int y) {
+    public Bat(int x, int y) {
         this.x = x;
         this.y = y;
         this.width = 36;

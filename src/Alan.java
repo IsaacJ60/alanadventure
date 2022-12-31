@@ -1,5 +1,6 @@
 import javax.swing.*;
 import java.awt.*;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 //TODO: MOVEMENT AND OFFSET
@@ -127,7 +128,6 @@ public class Alan {
     public Blaster getWeapon() {return weapon;} // gets current weapon
     public void setWeapon(Blaster weapon) {this.weapon = weapon;} // sets current weapon
     public void setWeaponSpeed(int s) {weapon.setSpeed(s);}
-
     public int getX(boolean adjusted) { // gets x
         if (adjusted) { // whether you want x relative to the gameplay window
             return this.x + Background.getWallLeftPos()+Background.getWallWidth();
@@ -135,7 +135,6 @@ public class Alan {
             return x;
         }
     }
-
     public int getY(boolean adjusted) { // gets y
         if (adjusted) { // whether you want y relative to the gameplay window
             return this.y-offset+screenOffset;
@@ -143,6 +142,7 @@ public class Alan {
             return this.y;
         }
     }
+    public Rectangle getRect(){return new Rectangle(x,y,width,height);}
 
     public void changeState(int MODE, int d, boolean forceChange) { // changes state
         if (state != MODE || d != dir) {

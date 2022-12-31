@@ -68,9 +68,10 @@ public class Blaster {
     // DRAWS ALL BULLETS AND CHECKS FOR COLLISION BETWEEN BLOCK AND BULLET
     public void animation(Graphics g, Alan alan, Map map, Powerups powerups) {
         Block[][] blocks = map.getMap();
-        ArrayList<Bullet> rm = new ArrayList<>(); // removal list
+        ArrayList<Bullet> rm = new ArrayList<>(); // removal list for bullets
         for (Bullet b : bullets) { // go through all bullets
-            if (getCollision(b, blocks, alan, map, powerups)) {
+            // block collisions
+            if (getCollision(b, blocks, alan, map, powerups, GamePanel.getEnemyManager().getSnakes(), GamePanel.getEnemyManager().getBats())) {
                 rm.add(b);
             } else if (b.getY(false,alan) > b.getStartY() + 300) {
                 rm.add(b);
@@ -86,7 +87,17 @@ public class Blaster {
         }
     }
 
-    public boolean getCollision(Bullet b, Block[][] blocks, Alan alan, Map map, Powerups powerups) {
+    public boolean getCollision(Bullet b, Block[][] blocks, Alan alan, Map map, Powerups powerups, ArrayList<Snake> snakes, ArrayList<Bat> bats) {
+        // enemies
+        for(Snake s:snakes){
+            if(s.getRect().intersects(b.getRect())){
+//                System.out.println("bullet X: "+b.getRect().getX());
+//                System.out.println("snake X: "+s.getRect().getX());
+                snakes.remove(s);
+                return true;
+            }
+        }
+        // blocks
         int nextRow = b.getY(false,alan)/Util.BLOCKLENGTH+1;
         for (int r = nextRow-1; r < nextRow+2; r++) {
             for (int i = 0; i < map.getColumns(); i++) {
@@ -143,41 +154,33 @@ public class Blaster {
         }
     }
 
-    public String getName() {
-        return name;
-    }
-
+    public String getName() {return name;}
     public void setName(String name) {
         this.name = name;
     }
-
     public int getDamage() {
         return damage;
     }
-
     public void setDamage(int damage) {
         this.damage = damage;
     }
-
     public int getCapacity() {
         return capacity;
     }
-
     public void setCapacity(int capacity) {
         this.capacity = capacity;
     }
-
     public int getSpeed() {
         return speed;
     }
-
     public void setSpeed(int speed) {
         this.speed = speed;
     }
+    public ArrayList<Bullet> getBullets(){ return bullets;}
 }
 
 class Bullet {
-    private int x, y, startY;
+    private int x, y, startY, width, height;
     private Image img;
     private final Rectangle rect;
 
@@ -186,7 +189,9 @@ class Bullet {
         this.x = x;
         this.y = y;
         this.img = img;
-        this.rect = new Rectangle(x,y,8, 16);
+        width = 8;
+        height = 16;
+        this.rect = new Rectangle(x,y,width, height);
     }
 
     public int getX(boolean adjusted) { // gets x
@@ -204,7 +209,7 @@ class Bullet {
             return y;
         }
     }
-    public Rectangle getRect() {return rect;}
+    public Rectangle getRect(){return rect;}
     public void setX(int x) {this.x = x;}
     public void setY(int y) {
         this.y = y;
