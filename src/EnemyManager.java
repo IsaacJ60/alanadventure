@@ -30,12 +30,11 @@ public class EnemyManager{
             for(int j=1; j<blocks[i].length-1; j++) {
                 if (blocks[i-1][j].getType() == Block.AIR && blocks[i][j].getType() != Block.AIR && blocks[i][j].getType() != Block.SPIKE) {
                     if(rand.nextInt(100)<=20) {
-                        addSnake(blocks[i][j].getX(true), blocks[i][j].getY(true, alan));
+                        addSnake(blocks[i][j].getX(false), blocks[i][j].getY(false, alan));
                     }
                 }
             }
         }
-        System.out.println(snakes.size());
     }
     public void drawEnemies(Graphics g, Block[][] blocks){
         for(Bat b : bats){
@@ -93,7 +92,7 @@ class Snake{
     }
     public double getX(boolean adjusted) { // gets x
         if (adjusted) { // whether you want x relative to the gameplay window
-            return x - Background.getWallLeftPos() - Background.getWallWidth();
+            return x + Background.getWallLeftPos() + Background.getWallWidth();
         } else {
             return x;
         }
@@ -108,13 +107,13 @@ class Snake{
     public Rectangle getRect(){return new Rectangle((int)getX(true),(int)y,width,height);}
 
     public void move(Block[][] blocks){
-        int currRow = (int)getY(false)/Util.BLOCKLENGTH;
+        int currRow = (int)y/Util.BLOCKLENGTH;
         int grndRow = currRow+1; // add one to get the row of blocks the snake is standing on
-        int currColL = (int)(getX(true)/Util.BLOCKLENGTH);
-        int currColR = (int)(getX(true)+width)/Util.BLOCKLENGTH;
+        int currColL = (int)x/Util.BLOCKLENGTH;
+        int currColR = (int)(x+width)/Util.BLOCKLENGTH;
 
         if(dir == LEFT){
-            if(getX(true)<=0){
+            if(x<=0){
                 dir = RIGHT;
                 x += speed;
             }
@@ -128,7 +127,7 @@ class Snake{
             }
         }
         else{
-            if(getX(true)+width >= 9*35){
+            if(x+width >= 9*35){
                 dir = LEFT;
                 x -= speed;
             }
@@ -152,7 +151,7 @@ class Snake{
             } else {
                 animFrame += 0.2;
             }
-            g.drawImage(idleL.get((int) animFrame), (int) x, (int)getY(true), null);
+            g.drawImage(idleL.get((int) animFrame), (int) getX(true), (int)getY(true), null);
         }
         else{
             if ((int) animFrame == idleR.size() - 1) {
@@ -160,11 +159,11 @@ class Snake{
             } else {
                 animFrame += 0.2;
             }
-            g.drawImage(idleR.get((int) animFrame), (int) x, (int)getY(true), null);
+            g.drawImage(idleR.get((int) animFrame), (int) getX(true), (int)getY(true), null);
         }
 
 //        g.setColor(Color.YELLOW);
-//        g.drawRect((int)x, (int)getY(true), width, height);
+//        g.drawRect((int)getX(true), (int)getY(true), width, height);
     }
 }
 
