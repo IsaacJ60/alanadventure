@@ -2,6 +2,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Random;
 
 //TODO: ADD SUBCLASSES TO ENEMY FOR SPECIFIC ENEMIES
 // PRIORITY - LOW
@@ -22,10 +23,13 @@ public class EnemyManager{
         worms.add(new Worm(x,y));
     }
     public void generateWorms(Block[][] blocks, Alan alan){
+        Random rand = new Random();
         for(int i=1; i< blocks.length; i++){
             for(int j=1; j<blocks[i].length-1; j++) {
                 if (blocks[i-1][j].getType() == Block.AIR && blocks[i][j].getType() != Block.AIR && blocks[i][j].getType() != Block.SPIKE) {
-                    addWorm(blocks[i][j].getX(true), blocks[i][j].getY(true, alan));
+                    if(rand.nextInt(100)<=20) {
+                        addWorm(blocks[i][j].getX(true), blocks[i][j].getY(true, alan));
+                    }
                 }
             }
         }
@@ -45,7 +49,7 @@ class Worm{
     public static final int LEFT = 0, RIGHT = 1;
     private final int width, height;
     private int health;
-    private int x, y;
+    private double x, y;
     private int dir;
     private double speed, velX, velY; // the speed and acceleration the enemy has
     private double animFrame;
@@ -53,14 +57,19 @@ class Worm{
     ArrayList<Image> idle = new ArrayList<>();
 
     public Worm(int x, int y) {
-        this.width = 25;
-        this.height = 12;
+        this.width = 32;
+        this.height = 18;
         this.x = x;
-        this.y = y-height;
+        this.y = y-height+1;
         dir = RIGHT;
         this.health = 10;
         this.speed = 2;
         animFrame = 0;
+
+        for (int i = 0; i < 4; i++) {
+            idle.add(new ImageIcon("src/assets/enemies/snake/idle/snakeIdle" + i + ".png").getImage());
+            idle.set(i, idle.get(i).getScaledInstance((idle.get(i).getWidth(null)*2), (idle.get(i).getHeight(null)*2), Image.SCALE_DEFAULT));
+        }
     }
 
     public void setX(int x) {
@@ -75,14 +84,14 @@ class Worm{
     public void setHealth(int health) {
         this.health = health;
     }
-    public int getX(boolean adjusted) { // gets x
+    public double getX(boolean adjusted) { // gets x
         if (adjusted) { // whether you want x relative to the gameplay window
             return x - Background.getWallLeftPos() - Background.getWallWidth();
         } else {
             return x;
         }
     }
-    public int getY(boolean adjusted) { // gets y
+    public double getY(boolean adjusted) { // gets y
         if (adjusted) { // whether you want y relative to the gameplay window
             return y-GamePanel.getAlan().getOffset()+GamePanel.getAlan().getScreenOffset();
         } else {
@@ -90,37 +99,37 @@ class Worm{
         }
     }
 
-
     public void move(Block[][] blocks){
-        int grndRow = getY(false)/Util.BLOCKLENGTH+1; // add one to get the row of blocks the worm is standing on
-        int currColL = (int)Math.ceil(getX(true)/Util.BLOCKLENGTH);
-        int currColR = (getX(true)+width)/Util.BLOCKLENGTH;
+        int currRow = (int)getY(false)/Util.BLOCKLENGTH;
+        int grndRow = currRow+1; // add one to get the row of blocks the worm is standing on
+        int currColL = (int)(getX(true)/Util.BLOCKLENGTH);
+        int currColR = (int)(getX(true)+width)/Util.BLOCKLENGTH;
 
         if(dir == LEFT){
             if(getX(true)<=0){
                 dir = RIGHT;
-                x += 2 * speed;
+                x += speed;
             }
             else{
                 if (blocks[grndRow][currColL].getType() != Block.AIR && blocks[grndRow - 1][currColL].getType() == Block.AIR) {
                     x -= speed;
                 } else {
                     dir = RIGHT;
-                    x += 2 * speed;
+                    x += speed;
                 }
             }
         }
         else{
             if(getX(true)+width >= 9*35){
                 dir = LEFT;
-                x -= 2 * speed;
+                x -= speed;
             }
             else {
                 if (blocks[grndRow][currColR].getType() != Block.AIR && blocks[grndRow - 1][currColR].getType() == Block.AIR) {
                     x += speed;
                 } else {
                     dir = LEFT;
-                    x -= 2 * speed;
+                    x -= speed;
                 }
             }
         }
@@ -128,8 +137,17 @@ class Worm{
 
     public void draw(Graphics g, Block[][] blocks) {
         move(blocks);
-        g.setColor(Color.YELLOW);
-        g.drawRect(x, y-GamePanel.getAlan().getOffset()+GamePanel.getAlan().getScreenOffset(), width, height);
+
+        if ((int) animFrame == idle.size() - 1) {
+            animFrame = 0;
+        } else {
+            animFrame += 0.2;
+        }
+
+        g.drawImage(idle.get((int) animFrame), (int)x, (int)y-GamePanel.getAlan().getOffset()+GamePanel.getAlan().getScreenOffset(), null);
+
+//        g.setColor(Color.YELLOW);
+//        g.drawRect((int)x, (int)y-GamePanel.getAlan().getOffset()+GamePanel.getAlan().getScreenOffset(), width, height);
     }
 }
 
@@ -159,7 +177,7 @@ class Flyer {
         this.accelFactor = .2;
         animFrame = 0;
         for (int i = 0; i < 6; i++) {
-            idle.add(new ImageIcon("src/assets/enemy/fly/fly" + i + ".png").getImage().getScaledInstance(width, height, Image.SCALE_DEFAULT));
+            idle.add(new ImageIcon("src/assets/enemies/fly/fly" + i + ".png").getImage().getScaledInstance(width, height, Image.SCALE_DEFAULT));
         }
     }
 
