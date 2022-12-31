@@ -1,6 +1,5 @@
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
 import java.util.ArrayList;
 
 //TODO: MOVEMENT AND OFFSET
@@ -68,10 +67,10 @@ public class Alan {
         width = 20;
         height = 30;
         this.health = 4;
-        this.maxVelX = 10;
-        this.maxVelY = 15;
+        this.maxVelX = 7;
+        this.maxVelY = 13;
         this.accelY = 1.0;
-        this.accelX = 1.0;
+        this.accelX = 0.7;
         this.animFrame = 0;
         this.weapon = weapon;
 
