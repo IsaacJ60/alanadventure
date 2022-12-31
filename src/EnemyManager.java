@@ -104,7 +104,7 @@ class Snake{
             return y;
         }
     }
-    public Rectangle getRect(){return new Rectangle((int)getX(true),(int)y,width,height);}
+    public Rectangle getRect(){return new Rectangle((int)x,(int)y,width,height);}
 
     public void move(Block[][] blocks){
         int currRow = (int)y/Util.BLOCKLENGTH;
