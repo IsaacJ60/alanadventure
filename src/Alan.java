@@ -1,6 +1,5 @@
 import javax.swing.*;
 import java.awt.*;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 //TODO: MOVEMENT AND OFFSET
@@ -154,7 +153,7 @@ public class Alan {
         }
     }
 
-    public void move(boolean[] keys, Graphics g, Map map, Powerups powerups) {
+    public void move(boolean[] keys, Graphics g, Map map, Powerups powerups, EnemyManager enemies) {
         getCollision(g,this, map); // getting collision between player and blocks
         alanRect.setLocation(x+5,y); // setting rect location
 
@@ -232,7 +231,7 @@ public class Alan {
             changeState(FALL, dir, true); // just to reset animframe
             velY-=velY*1.2;
         }
-        weapon.animation(g,this, map, powerups);
+        weapon.animation(g,this, map, powerups, enemies);
     }
 
     public void jump() {
@@ -403,9 +402,9 @@ public class Alan {
     }
 
     // drawing alan in different states and directions
-    public void draw(Graphics g, boolean[] keys, Map map, Powerups powerups) { //
+    public void draw(Graphics g, boolean[] keys, Map map, Powerups powerups, EnemyManager enemies) { //
 
-        move(keys, g, map, powerups);
+        move(keys, g, map, powerups, enemies);
 
         if (weapon.isAlanShoot()) {
             if ((int) animFrame == shoot.size()-1) {

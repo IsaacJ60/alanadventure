@@ -66,12 +66,14 @@ public class Blaster {
     }
 
     // DRAWS ALL BULLETS AND CHECKS FOR COLLISION BETWEEN BLOCK AND BULLET
-    public void animation(Graphics g, Alan alan, Map map, Powerups powerups) {
+    public void animation(Graphics g, Alan alan, Map map, Powerups powerups, EnemyManager enemies) {
         Block[][] blocks = map.getMap();
         ArrayList<Bullet> rm = new ArrayList<>(); // removal list for bullets
         for (Bullet b : bullets) { // go through all bullets
+            // enemy collisions
+            getCollision(b, enemies.getSnakes(), enemies.getBats());
             // block collisions
-            if (getCollision(b, blocks, alan, map, powerups, GamePanel.getEnemyManager().getSnakes(), GamePanel.getEnemyManager().getBats())) {
+            if (getCollision(b, blocks, alan, map, powerups)) {
                 rm.add(b);
             } else if (b.getY(false,alan) > b.getStartY() + 300) {
                 rm.add(b);
@@ -87,23 +89,24 @@ public class Blaster {
         }
     }
 
-    public boolean getCollision(Bullet b, Block[][] blocks, Alan alan, Map map, Powerups powerups, ArrayList<Snake> snakes, ArrayList<Bat> bats) {
-        // enemies
+    public boolean getCollision(Bullet b, ArrayList<Snake> snakes, ArrayList<Bat> bats) {
         for(Snake s:snakes){
             if(s.getRect().intersects(b.getRect())){
-//                System.out.println("bullet X: "+b.getRect().getX());
-//                System.out.println("snake X: "+s.getRect().getX());
                 snakes.remove(s);
                 return true;
             }
         }
+        return false;
+    }
+
+    public boolean getCollision(Bullet b, Block[][] blocks, Alan alan, Map map, Powerups powerups) {
         // blocks
         int nextRow = b.getY(false,alan)/Util.BLOCKLENGTH+1;
         for (int r = nextRow-1; r < nextRow+2; r++) {
             for (int i = 0; i < map.getColumns(); i++) {
                 int blockType = blocks[r][i].getType();
                 if (blockType != Block.AIR) {
-                    if ((blockType == Block.WALL || blockType == Block.BOX || blockType == Block.PLAT)) {
+                    if ((blockType == Block.WALL || blockType == Block.BOX)) {
                         if (blocks[r][i].collide(b.getRect())) {
                             if (blockType == Block.BOX) {
                                 blocks[r][i].setType(Block.AIR);

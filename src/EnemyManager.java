@@ -1,7 +1,6 @@
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Random;
 
 //TODO: ADD SUBCLASSES TO ENEMY FOR SPECIFIC ENEMIES
@@ -13,17 +12,15 @@ import java.util.Random;
 // - ENSURE ENEMIES BOUNCE OFF EACH OTHER
 
 public class EnemyManager{
-    private ArrayList<Snake> snakes = new ArrayList<>();
-    private ArrayList<Bat> bats = new ArrayList<>();
+    private final ArrayList<Snake> snakes = new ArrayList<>();
+    private final ArrayList<Bat> bats = new ArrayList<>();
 
-    public ArrayList<Snake> getSnakes(){ return snakes;}
-    public ArrayList<Bat> getBats(){ return bats;}
-    public void addSnake(int x, int y){
-        snakes.add(new Snake(x,y));
-    }
-    public void addBat(int x, int y){
-        bats.add(new Bat(x,y));
-    }
+    public ArrayList<Snake> getSnakes() {return snakes;}
+    public ArrayList<Bat> getBats() {return bats;}
+
+    private void addSnake(int x, int y) {snakes.add(new Snake(x,y));}
+    private void addBat(int x, int y) {bats.add(new Bat(x,y));}
+
     public void generateSnakes(Block[][] blocks, Alan alan){
         Random rand = new Random();
         for(int i=1; i< blocks.length; i++){
@@ -36,22 +33,23 @@ public class EnemyManager{
             }
         }
     }
+
     public void clearEnemies(){
         snakes.clear();
         bats.clear();
     }
+
     public void drawEnemies(Graphics g, Block[][] blocks){
         for(Bat b : bats){
             b.draw(g);
         }
-        for(Snake s: snakes){
+        for(Snake s : snakes){
             s.draw(g, blocks);
         }
     }
 }
 
-class Snake{
-    public static final int LEFT = 0, RIGHT = 1;
+class Snake {
     private final int width, height;
     private int health;
     private double x, y;
@@ -59,15 +57,15 @@ class Snake{
     private double speed, velX, velY; // the speed and acceleration the enemy has
     private double animFrame;
 
-    ArrayList<Image> idleL = new ArrayList<>();
-    ArrayList<Image> idleR = new ArrayList<>();
+    private final ArrayList<Image> idleL = new ArrayList<>();
+    private final ArrayList<Image> idleR = new ArrayList<>();
 
     public Snake(int x, int y) {
         this.width = 32;
         this.height = 18;
         this.x = x;
         this.y = y-height+1;
-        dir = RIGHT;
+        dir = Util.RIGHT;
         this.health = 10;
         this.speed = 2;
         animFrame = 0;
@@ -116,30 +114,30 @@ class Snake{
         int currColL = (int)x/Util.BLOCKLENGTH;
         int currColR = (int)(x+width)/Util.BLOCKLENGTH;
 
-        if(dir == LEFT){
+        if(dir == Util.LEFT){
             if(x<=0){
-                dir = RIGHT;
+                dir = Util.RIGHT;
                 x += speed;
             }
             else{
                 if (blocks[grndRow][currColL].getType() != Block.AIR && blocks[grndRow - 1][currColL].getType() == Block.AIR) {
                     x -= speed;
                 } else {
-                    dir = RIGHT;
+                    dir = Util.RIGHT;
                     x += speed;
                 }
             }
         }
         else{
             if(x+width >= 9*35){
-                dir = LEFT;
+                dir = Util.LEFT;
                 x -= speed;
             }
             else {
                 if (blocks[grndRow][currColR].getType() != Block.AIR && blocks[grndRow - 1][currColR].getType() == Block.AIR) {
                     x += speed;
                 } else {
-                    dir = LEFT;
+                    dir = Util.LEFT;
                     x -= speed;
                 }
             }
@@ -149,7 +147,7 @@ class Snake{
     public void draw(Graphics g, Block[][] blocks) {
         move(blocks);
 
-        if(dir == LEFT) {
+        if(dir == Util.LEFT) {
             if ((int) animFrame == idleL.size() - 1) {
                 animFrame = 0;
             } else {
@@ -173,7 +171,7 @@ class Snake{
 
 class Bat{
     public static final int IDLE = 0, FLY = 1;
-    private final int state = FLY;
+    private final int state;
     private final int width, height;
     private int health;
     private double x, y;
@@ -195,6 +193,7 @@ class Bat{
         this.accelX = 0;
         this.accelY = 0;
         this.accelFactor = .2;
+        state = FLY;
         animFrame = 0;
         for (int i = 0; i < 6; i++) {
             idle.add(new ImageIcon("src/assets/enemies/fly/fly" + i + ".png").getImage().getScaledInstance(width, height, Image.SCALE_DEFAULT));

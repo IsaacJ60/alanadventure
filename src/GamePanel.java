@@ -113,7 +113,7 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener, Mo
         requestFocus();
         bg.draw(g, Util.getLevel(), alan);
         enemyManager.drawEnemies(g, MapList.getBlocksWithoutWallImages());
-        alan.draw(g, keys, MapList.getAllMaps().get(Util.getLevel()), powers);
+        alan.draw(g, keys, MapList.getAllMaps().get(Util.getLevel()), powers, enemyManager);
         powers.usePowers(alan);
 
         alpha = Util.increaseOpacity(alpha, false);
