@@ -44,8 +44,8 @@ public class Alan {
 
     // ANIMATIONS
     private double animFrame; // the frame of the current animation being played
-    ArrayList<Image> walk = new ArrayList<>();
-    ArrayList<Image> rwalk = new ArrayList<>();
+    ArrayList<Image> runL = new ArrayList<>();
+    ArrayList<Image> runR = new ArrayList<>();
     ArrayList<Image> idle = new ArrayList<>();
     ArrayList<Image> ridle = new ArrayList<>();
     ArrayList<Image> fall = new ArrayList<>();
@@ -87,10 +87,10 @@ public class Alan {
             ridle.add(new ImageIcon("src/assets/alan/idle/m_idle" + i + ".png").getImage().getScaledInstance(30, height,Image.SCALE_DEFAULT));
         }
         for (int i = 0; i < 7; i++) {
-            walk.add(new ImageIcon("src/assets/alan/walk/walk" + i + ".png").getImage().getScaledInstance(30, height,Image.SCALE_DEFAULT));
+            runL.add(new ImageIcon("src/assets/alan/run/walk" + i + ".png").getImage().getScaledInstance(30, height,Image.SCALE_DEFAULT));
         }
         for (int i = 0; i < 7; i++) {
-            rwalk.add(new ImageIcon("src/assets/alan/walk/m_walk" + i + ".png").getImage().getScaledInstance(30, height,Image.SCALE_DEFAULT));
+            runR.add(new ImageIcon("src/assets/alan/run/m_walk" + i + ".png").getImage().getScaledInstance(30, height,Image.SCALE_DEFAULT));
         }
         for (int i = 0; i < 5; i++) {
             jump.add(new ImageIcon("src/assets/alan/jump/jump" + i + ".png").getImage().getScaledInstance(30, height,Image.SCALE_DEFAULT));
@@ -105,8 +105,8 @@ public class Alan {
         }
         allAnims.add(idle);
         allAnims.add(ridle);
-        allAnims.add(walk);
-        allAnims.add(rwalk);
+        allAnims.add(runL);
+        allAnims.add(runR);
         allAnims.add(jump);
         allAnims.add(jump);
         allAnims.add(fall);
@@ -421,7 +421,7 @@ public class Alan {
                 animFrame+=0.2; // frame should update every 1/5 ticks
             }
         } else if (state == WALK) {
-            if ((int) animFrame == walk.size()-1) {
+            if ((int) animFrame == runL.size()-1) {
                 animFrame = 0;
             } else {
                 animFrame += 0.4; // frame should update every 2/5 ticks
