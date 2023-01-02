@@ -1,5 +1,7 @@
 import java.awt.event.KeyEvent;
 
+//TODO: RESTART GAME FUNCTIONALITY
+
 public class GameManager {
 
     private static final int WIDTH = AAdventure.getGameWidth(), HEIGHT = AAdventure.getGameHeight();
@@ -7,9 +9,16 @@ public class GameManager {
     private static MapList maplist;
     public static MapList getMaplist() {return maplist;}
 
-    public static Block[][] introblocks;
+    private static Gems gemManager;
+    public static Gems getGemManager() {return gemManager;}
 
+    public static Block[][] introblocks;
     public static Map intromap;
+
+    public static void loadGems() {
+        gemManager = new Gems();
+        //TODO: get total gems from file
+    }
 
     public static void loadLevels() {
         maplist = new MapList();
@@ -50,19 +59,26 @@ public class GameManager {
     }
 
     // changing level
-    public static void toLevel(int l) {
-        if (l != 1) {
-            AAdventure.setCurrPanel("LEVELCLEAR"); // changing panel to level clear panel
+    public static void toLevel(int l, boolean restart) {
+        if (restart) {
+            AAdventure.setCurrPanel("INTRO");
+            Util.setLevel(l);
+            Intro.getEnemyManager().clearEnemies();
+            Intro.setAlan(new Alan(20, HEIGHT/2+50, GamePanel.getAlan().getWeapon())); // resetting alan
+            Intro.setAlpha(0);
+            GamePanel.setAlpha(255);
         } else {
-            AAdventure.setCurrPanel("GAME"); // set to game if on first intro part
+            if (l != 1) {
+                AAdventure.setCurrPanel("LEVELCLEAR"); // changing panel to level clear panel
+            } else {
+                AAdventure.setCurrPanel("GAME"); // set to game if on first intro part
+            }
+            Util.setLevel(l); // setting level to l
+            GamePanel.getEnemyManager().clearEnemies();
+            GamePanel.getEnemyManager().generateSnakes(MapList.getBlocksWithoutWallImages(), GamePanel.getAlan());
+            //TODO: perhaps make a reset() function in alan to avoid bugs from recreating an instance each level
+            GamePanel.setAlan(new Alan(150, HEIGHT/2-50, GamePanel.getAlan().getWeapon())); // resetting alan
         }
-        Util.setLevel(l); // setting level to l
-//        GamePanel.getEnemyManager().addBat(400,400);
-//        GamePanel.getEnemyManager().addSnake(400,1000);
-        GamePanel.getEnemyManager().clearEnemies();
-        GamePanel.getEnemyManager().generateSnakes(MapList.getBlocksWithoutWallImages(), GamePanel.getAlan());
-        //TODO: perhaps make a reset() function in alan to avoid bugs from recreating an instance each level
-        GamePanel.setAlan(new Alan(150, HEIGHT/2-50, GamePanel.getAlan().getWeapon())); // resetting alan
     }
 
     public static void requestSettings(boolean[] keys) {

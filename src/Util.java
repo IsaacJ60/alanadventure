@@ -5,13 +5,7 @@ import java.io.InputStream;
 
 public class Util {
     // GAME FONTS
-    static Font fontTitle;
-    static Font fontTitle1;
-    static Font fontTitle2;
-    static Font fontTitle3;
-    static Font fontTitle4;
-    static Font fontTitle5;
-    static Font fontTitle6;
+    static Font fontTitle6, fontText;
 
     // GAME VARIABLES
     private static int level = 0;
@@ -68,68 +62,11 @@ public class Util {
     // loading all fonts
     public static void loadFonts() {
         // normal-sized font
-        String fName = "Low Budget.ttf";
-        InputStream is = GamePanel.class.getResourceAsStream(fName);
-        try {
-            assert is != null;
-            fontTitle = Font.createFont(Font.TRUETYPE_FONT, is).deriveFont(48f);
-        } catch(IOException ex){
-            System.out.println(ex + "title font");
-        } catch (FontFormatException e) {
-            throw new RuntimeException(e);
-        }
-
-        String fName1 = "Bing Bam Boum.ttf";
-        InputStream is1 = GamePanel.class.getResourceAsStream(fName1);
-        try {
-            assert is1 != null;
-            fontTitle1 = Font.createFont(Font.TRUETYPE_FONT, is1).deriveFont(48f);
-        } catch(IOException ex){
-            System.out.println(ex + "title font");
-        } catch (FontFormatException e) {
-            throw new RuntimeException(e);
-        }
-
-        String fName2 = "BLOBBYCHUG.ttf";
-        InputStream is2 = GamePanel.class.getResourceAsStream(fName2);
-        try {
-            assert is2 != null;
-            fontTitle2 = Font.createFont(Font.TRUETYPE_FONT, is2).deriveFont(48f);
-        } catch(IOException ex){
-            System.out.println(ex + "title font");
-        } catch (FontFormatException e) {
-            throw new RuntimeException(e);
-        }
-
         String fName3 = "Youtube Star.ttf";
         InputStream is3 = GamePanel.class.getResourceAsStream(fName3);
         try {
             assert is3 != null;
-            fontTitle3 = Font.createFont(Font.TRUETYPE_FONT, is3).deriveFont(48f);
-        } catch(IOException ex){
-            System.out.println(ex + "title font");
-        } catch (FontFormatException e) {
-            throw new RuntimeException(e);
-        }
-
-        // HINT: i likie
-        String fName4 = "Fluo Gums.ttf";
-        InputStream is4 = GamePanel.class.getResourceAsStream(fName4);
-        try {
-            assert is4 != null;
-            fontTitle4 = Font.createFont(Font.TRUETYPE_FONT, is4).deriveFont(24f);
-        } catch(IOException ex){
-            System.out.println(ex + "title font");
-        } catch (FontFormatException e) {
-            throw new RuntimeException(e);
-        }
-
-        // HINT: i also likie
-        String fName5 = "Mystery.ttf";
-        InputStream is5 = GamePanel.class.getResourceAsStream(fName5);
-        try {
-            assert is5 != null;
-            fontTitle5 = Font.createFont(Font.TRUETYPE_FONT, is5).deriveFont(24f);
+            fontText = Font.createFont(Font.TRUETYPE_FONT, is3).deriveFont(24f);
         } catch(IOException ex){
             System.out.println(ex + "title font");
         } catch (FontFormatException e) {

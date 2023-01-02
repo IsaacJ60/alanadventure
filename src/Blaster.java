@@ -67,13 +67,12 @@ public class Blaster {
 
     // DRAWS ALL BULLETS AND CHECKS FOR COLLISION BETWEEN BLOCK AND BULLET
     public void animation(Graphics g, Alan alan, Map map, Powerups powerups, EnemyManager enemies) {
-        Block[][] blocks = map.getMap();
         ArrayList<Bullet> rm = new ArrayList<>(); // removal list for bullets
         for (Bullet b : bullets) { // go through all bullets
             // enemy collisions
             getCollision(b, enemies.getSnakes(), enemies.getBats());
             // block collisions
-            if (getCollision(b, blocks, alan, map, powerups)) {
+            if (getCollision(b, alan, map, powerups)) {
                 rm.add(b);
             } else if (b.getY(false,alan) > b.getStartY() + 300) {
                 rm.add(b);
@@ -89,18 +88,20 @@ public class Blaster {
         }
     }
 
-    public boolean getCollision(Bullet b, ArrayList<Snake> snakes, ArrayList<Bat> bats) {
-        for(Snake s:snakes){
-            if(s.getRect().intersects(b.getRect())){
+    public Snake getCollision(Bullet b, ArrayList<Snake> snakes, ArrayList<Bat> bats) {
+        for (Snake s:snakes) {
+            if (s.getRect().intersects(b.getRect())) {
                 snakes.remove(s);
-                return true;
+                GameManager.getGemManager().spawnGems((int)s.getX(false),(int)s.getY(false), 3);
+                return s;
             }
         }
-        return false;
+        return null;
     }
 
-    public boolean getCollision(Bullet b, Block[][] blocks, Alan alan, Map map, Powerups powerups) {
+    public boolean getCollision(Bullet b, Alan alan, Map map, Powerups powerups) {
         // blocks
+        Block[][] blocks = map.getMap();
         int nextRow = b.getY(false,alan)/Util.BLOCKLENGTH+1;
         for (int r = nextRow-1; r < nextRow+2; r++) {
             for (int i = 0; i < map.getColumns(); i++) {
@@ -226,3 +227,4 @@ class Bullet {
         g.drawImage(img, x, y, null);
     }
 }
+

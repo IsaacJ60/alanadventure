@@ -259,7 +259,7 @@ public class Alan {
         //HINT: CHANGING LEVELS HERE
         // USE GAMEMANAGER TO SWITCH TO NEXT LEVEL WHEN ALAN REACHES CERTAIN POINT
         if (nextRow == map.getRows()-15) {
-            GameManager.toLevel(Util.getLevel()+1);
+            GameManager.toLevel(Util.getLevel()+1, false);
         }
 
         // variables to track the nearest block distances
@@ -348,7 +348,7 @@ public class Alan {
         // differences:
         // - checks multiple rows, player able to collide with multiple rows of block
         // - checks on y-axis instead of x
-        // - snapping to x-axis isn't as bug prone as snapping to y because no offset
+        // - snapping to x-axis not bug prone vs snapping to y because no offset
         for (int r = nextRow-2; r < (state != WALK ? nextRow+1 : nextRow); r++) {
             for (int i = map.getColumns()-1; i >= 0; i--) {
                 Block block = blocks[r][i];

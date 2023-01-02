@@ -58,6 +58,7 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener, Mo
     public static void setAlan(Alan a) {alan = a;}
     public static void setAlanCoords(int x, int y) {alan.setX(x); alan.setY(y);}
     public static EnemyManager getEnemyManager(){return enemyManager;}
+    public static void setAlpha(int a) {alpha = a;}
 
     // MouseListener
     @Override
@@ -113,8 +114,11 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener, Mo
         requestFocus();
         bg.draw(g, Util.getLevel(), alan);
         enemyManager.drawEnemies(g, MapList.getBlocksWithoutWallImages());
-        alan.draw(g, keys, MapList.getAllMaps().get(Util.getLevel()), powers, enemyManager);
+        GameManager.getGemManager().displayGems(g,false,true);
+        GameManager.getGemManager().drawGems(g, alan, MapList.getAllMaps().get(Util.getLevel()));
         powers.usePowers(alan);
+
+        alan.draw(g, keys, MapList.getAllMaps().get(Util.getLevel()), powers, enemyManager);
 
         alpha = Util.increaseOpacity(alpha, false);
         Util.overlay(g,0,0,0,alpha);

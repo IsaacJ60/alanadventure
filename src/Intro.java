@@ -12,10 +12,10 @@ public class Intro extends JPanel implements KeyListener, ActionListener, MouseL
     private static int WIDTH = AAdventure.getGameWidth(), HEIGHT = AAdventure.getGameHeight();
     private static int tarX, tarY, alpha = 0;
 
-    Alan alan;
+    private static Alan alan;
     Background bg;
     Powerups powers;
-    EnemyManager enemyManager;
+    private static EnemyManager enemyManager;
 
     public Intro(AAdventure a) {
         mainFrame = a;
@@ -46,6 +46,10 @@ public class Intro extends JPanel implements KeyListener, ActionListener, MouseL
     public static void setWIDTH(int w) {WIDTH = w;}
     public static int getHEIGHT() {return HEIGHT;}
     public static void setHEIGHT(int h) {HEIGHT = h;}
+    public static EnemyManager getEnemyManager(){return enemyManager;}
+    public static Alan getAlan() {return alan;}
+    public static void setAlan(Alan a) {alan = a;}
+    public static void setAlpha(int a) {alpha = a;}
 
     // MouseListener
     @Override
@@ -102,6 +106,7 @@ public class Intro extends JPanel implements KeyListener, ActionListener, MouseL
         g.setFont(Util.fontTitle6);
         g.drawString("ALAN'S", 372,400-alan.getOffset()+alan.getScreenOffset());
         g.drawString("ADVENTURE", 322,455-alan.getOffset()+alan.getScreenOffset());
+        GameManager.getGemManager().displayGems(g,true,false);
 
         // opacity decrease
         if (alan.getY(false) > 25*Util.BLOCKLENGTH) {
