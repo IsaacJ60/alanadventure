@@ -43,15 +43,16 @@ public class Alan {
 
     // ANIMATIONS
     private double animFrame; // the frame of the current animation being played
-    ArrayList<Image> walk = new ArrayList<>();
-    ArrayList<Image> rwalk = new ArrayList<>();
-    ArrayList<Image> idle = new ArrayList<>();
-    ArrayList<Image> ridle = new ArrayList<>();
-    ArrayList<Image> fall = new ArrayList<>();
-    ArrayList<Image> rfall = new ArrayList<>();
-    ArrayList<Image> jump = new ArrayList<>();
-    ArrayList<Image> shoot = new ArrayList<>();
-    ArrayList<Image> rshoot = new ArrayList<>();
+    ArrayList<Image> idleL = new ArrayList<>();
+    ArrayList<Image> idleR = new ArrayList<>();
+    ArrayList<Image> runL = new ArrayList<>();
+    ArrayList<Image> runR = new ArrayList<>();
+    ArrayList<Image> fallL = new ArrayList<>();
+    ArrayList<Image> fallR = new ArrayList<>();
+    ArrayList<Image> airL = new ArrayList<>();
+    ArrayList<Image> airR = new ArrayList<>();
+    ArrayList<Image> shootL = new ArrayList<>();
+    ArrayList<Image> shootR = new ArrayList<>();
     // all animations
     ArrayList<ArrayList<Image>> allAnims = new ArrayList<>();
 
@@ -79,39 +80,53 @@ public class Alan {
 
         this.alanRect = new Rectangle(x+5,y,width,height); // adding 5 because the frames for alan's animation has transparency on the sides
 
-        for (int i = 0; i < 7; i++) { // adding all frames for each animation and scaling all images to 30x30 for 1:1 aspect ratio
-            idle.add(new ImageIcon("src/assets/alan/idle/idle" + i + ".png").getImage().getScaledInstance(30, height,Image.SCALE_DEFAULT));
+        // adding all frames for each animation and scaling all images for 1:1 asprect ratio
+        for (int i = 0; i < 4; i++) { // left idle
+            idleL.add(new ImageIcon("src/assets/alan/idle/alanIdleL" + i + ".png").getImage());
+            idleL.set(i, idleL.get(i).getScaledInstance((idleL.get(i).getWidth(null)*2), (idleL.get(i).getHeight(null)*2), Image.SCALE_DEFAULT));
         }
-        for (int i = 0; i < 7; i++) {
-            ridle.add(new ImageIcon("src/assets/alan/idle/m_idle" + i + ".png").getImage().getScaledInstance(30, height,Image.SCALE_DEFAULT));
+        for (int i = 0; i < 4; i++) { // right side
+            idleR.add(new ImageIcon("src/assets/alan/idle/alanIdleR" + i + ".png").getImage());
+            idleR.set(i, idleR.get(i).getScaledInstance((idleR.get(i).getWidth(null)*2), (idleR.get(i).getHeight(null)*2), Image.SCALE_DEFAULT));
         }
-        for (int i = 0; i < 7; i++) {
-            walk.add(new ImageIcon("src/assets/alan/walk/walk" + i + ".png").getImage().getScaledInstance(30, height,Image.SCALE_DEFAULT));
+        for (int i = 0; i < 8; i++) { // left run
+            runL.add(new ImageIcon("src/assets/alan/run/alanRunL" + i + ".png").getImage());
+            runL.set(i, runL.get(i).getScaledInstance((runL.get(i).getWidth(null)*2), (runL.get(i).getHeight(null)*2), Image.SCALE_DEFAULT));
         }
-        for (int i = 0; i < 7; i++) {
-            rwalk.add(new ImageIcon("src/assets/alan/walk/m_walk" + i + ".png").getImage().getScaledInstance(30, height,Image.SCALE_DEFAULT));
+        for (int i = 0; i < 8; i++) { // right run
+            runR.add(new ImageIcon("src/assets/alan/run/alanRunR" + i + ".png").getImage());
+            runR.set(i, runR.get(i).getScaledInstance((runR.get(i).getWidth(null)*2), (runR.get(i).getHeight(null)*2), Image.SCALE_DEFAULT));
         }
-        for (int i = 0; i < 5; i++) {
-            jump.add(new ImageIcon("src/assets/alan/jump/jump" + i + ".png").getImage().getScaledInstance(30, height,Image.SCALE_DEFAULT));
+        for (int i = 0; i < 5; i++) { // left air
+            airL.add(new ImageIcon("src/assets/alan/air/alanAirL" + i + ".png").getImage());
+            airL.set(i, airL.get(i).getScaledInstance((airL.get(i).getWidth(null)*2), (airL.get(i).getHeight(null)*2), Image.SCALE_DEFAULT));
         }
-        fall.add(new ImageIcon("src/assets/alan/jump/jump4.png").getImage().getScaledInstance(30,height,Image.SCALE_DEFAULT));
-        rfall.add(new ImageIcon("src/assets/alan/jump/m_jump4.png").getImage().getScaledInstance(30,height,Image.SCALE_DEFAULT));
-        for (int i = 0; i < 6; i++) {
-            shoot.add(new ImageIcon("src/assets/alan/shoot/shoot" + i + ".png").getImage().getScaledInstance(30, height,Image.SCALE_DEFAULT));
+        for (int i = 0; i < 5; i++) { // right air
+            airR.add(new ImageIcon("src/assets/alan/air/alanAirR" + i + ".png").getImage());
+            airR.set(i, airR.get(i).getScaledInstance((airR.get(i).getWidth(null)*2), (airR.get(i).getHeight(null)*2), Image.SCALE_DEFAULT));
         }
-        for (int i = 0; i < 6; i++) {
-            rshoot.add(new ImageIcon("src/assets/alan/shoot/m_shoot" + i + ".png").getImage().getScaledInstance(30, height,Image.SCALE_DEFAULT));
+        fallL.add(new ImageIcon("src/assets/alan/air/alanAirL4.png").getImage());
+        fallL.set(0, fallL.get(0).getScaledInstance((fallL.get(0).getWidth(null)*2), (fallL.get(0).getHeight(null)*2), Image.SCALE_DEFAULT));
+        fallR.add(new ImageIcon("src/assets/alan/air/alanAirR4.png").getImage());
+        fallR.set(0, fallR.get(0).getScaledInstance((fallR.get(0).getWidth(null)*2), (fallR.get(0).getHeight(null)*2), Image.SCALE_DEFAULT));
+        for (int i = 0; i < 4; i++) { // left shoot
+            shootL.add(new ImageIcon("src/assets/alan/shoot/alanShootL" + i + ".png").getImage());
+            shootL.set(i, shootL.get(i).getScaledInstance((shootL.get(i).getWidth(null)*2), (shootL.get(i).getHeight(null)*2), Image.SCALE_DEFAULT));
         }
-        allAnims.add(idle);
-        allAnims.add(ridle);
-        allAnims.add(walk);
-        allAnims.add(rwalk);
-        allAnims.add(jump);
-        allAnims.add(jump);
-        allAnims.add(fall);
-        allAnims.add(rfall);
-        allAnims.add(shoot);
-        allAnims.add(rshoot);
+        for (int i = 0; i < 4; i++) { // right shoot
+            shootR.add(new ImageIcon("src/assets/alan/shoot/alanShootR" + i + ".png").getImage());
+            shootR.set(i, shootR.get(i).getScaledInstance((shootR.get(i).getWidth(null)*2), (shootR.get(i).getHeight(null)*2), Image.SCALE_DEFAULT));
+        }
+        allAnims.add(idleL);
+        allAnims.add(idleR);
+        allAnims.add(runL);
+        allAnims.add(runR);
+        allAnims.add(airL);
+        allAnims.add(airR);
+        allAnims.add(fallL);
+        allAnims.add(fallR);
+        allAnims.add(shootL);
+        allAnims.add(shootR);
     }
 
     public int getDir() {return dir;}
@@ -403,31 +418,33 @@ public class Alan {
 
     // drawing alan in different states and directions
     public void draw(Graphics g, boolean[] keys, Map map, Powerups powerups, EnemyManager enemies) { //
-
         move(keys, g, map, powerups, enemies);
 
+        g.setColor(Color.YELLOW);
+        g.drawRect((int)getX(true), (int)getY(true), width, height);
+
         if (weapon.isAlanShoot()) {
-            if ((int) animFrame == shoot.size()-1) {
+            if ((int) animFrame == shootL.size()-1) {
                 animFrame = 0;
                 weapon.setAlanShoot(false);
             } else {
                 animFrame+=0.8; // frame should update every 1/5 ticks
             }
         } else if (state == IDLE) {
-            if ((int) animFrame == idle.size()-1) {
+            if ((int) animFrame == idleL.size()-1) {
                 animFrame = 0;
             } else {
-                animFrame+=0.2; // frame should update every 1/5 ticks
+                animFrame+=0.15; // frame should update every 1/5 ticks
             }
         } else if (state == WALK) {
-            if ((int) animFrame == walk.size()-1) {
+            if ((int) animFrame == runL.size()-1) {
                 animFrame = 0;
             } else {
                 animFrame += 0.4; // frame should update every 2/5 ticks
             }
         }
         else if (state == JUMP) {
-            if ((int) animFrame == jump.size()-1) {
+            if ((int) animFrame == airL.size()-1) {
                 animFrame = 0;
             } else {
                 animFrame += 0.6; // frame should update every 2/5 ticks
@@ -437,27 +454,17 @@ public class Alan {
         // drawing animation based on direction
         if (dir == LEFT) {
             if (weapon.isAlanShoot()) {
-                g.drawImage(rshoot.get((int)animFrame),getX(true)-5,getY(true)+3,null);
-            } else {
-                g.drawImage(allAnims.get(state*2+1).get((int)animFrame),getX(true)-5,getY(true)+3,null);
-            }
-        } else {
-            if (weapon.isAlanShoot()) {
-                g.drawImage(shoot.get((int)animFrame),getX(true)-5,getY(true)+3,null);
+                g.drawImage(shootL.get((int)animFrame),getX(true)-5,getY(true)+3,null);
             } else {
                 g.drawImage(allAnims.get(state*2).get((int)animFrame),getX(true)-5,getY(true)+3,null);
             }
+        } else {
+            if (weapon.isAlanShoot()) {
+                g.drawImage(shootR.get((int)animFrame),getX(true)-5,getY(true)+3,null);
+            } else {
+                g.drawImage(allAnims.get(state*2+1).get((int)animFrame),getX(true)-5,getY(true)+3,null);
+            }
         }
-
-        /*
-        code to draw hitboxes
-        g.setColor(Color.RED);
-        g.drawLine(0,getY(true),GamePanel.getWIDTH(),getY(true));
-        g.drawLine(0,getY(true)+height,GamePanel.getWIDTH(),getY(true)+height);
-        g.drawRect((int) alanRect.getX()+Background.getWallLeftPos()+Background.getWallWidth(), (int) alanRect.getY()-offset+screenOffset, alanRect.width, height);
-        g.setColor(Color.YELLOW);
-        g.drawLine(0,GamePanel.getHEIGHT()/2-50+height,900,GamePanel.getHEIGHT()/2-50+height);
-        */
     }
 }
 
