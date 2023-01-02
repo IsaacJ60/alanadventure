@@ -77,6 +77,10 @@ public class Gems {
                 gems += activeGem.getSize();
                 activeGems.remove(i);
             }
+            //TODO: "500*Util.BLOCKLENGTH" -> ASCAP
+            if (activeGem.getGemTimer().getElapsedTime() > 10 || activeGem.getY(false, alan) > 500*Util.BLOCKLENGTH) {
+                activeGems.remove(i);
+            }
             activeGem.draw(g, alan, map);
         }
     }
@@ -92,6 +96,8 @@ class Gem {
     private boolean claimed;
     private final Rectangle rect;
     private ArrayList<Image> anim;
+
+    private Util.CustomTimer gemTimer = new Util.CustomTimer();
 
     Gem(int x, int y, int initialX, int initialY) {
         // random gem size
@@ -121,8 +127,10 @@ class Gem {
         this.accelX = 0.1;
         this.accelY = 0.5;
         this.rect = new Rectangle(x,y,width,height);
+        gemTimer.start();
     }
 
+    public Util.CustomTimer getGemTimer() {return gemTimer;}
     public boolean isClaimed() {return claimed;}
     public int getSize() {return size;}
     public int getX(boolean adjusted) { // gets x
@@ -151,6 +159,8 @@ class Gem {
     public void move(Alan alan, Map map, Graphics g) {
         getCollision(alan, map, g);
         x += (int)velX;
+        x = Math.min(Background.getWallRightPos()-(Background.getWallLeftPos()+Background.getWallWidth())-width, x);
+        x = Math.max(0, x);
         y += (int)velY;
         if (velY < maxY) {
             velY+=accelY;
@@ -166,12 +176,9 @@ class Gem {
     public void getCollision(Alan alan, Map map, Graphics g) {
         // PLAYER COLLISION
         if (rect.intersects(alan.getRect())) {
-            //TODO: check this...
             claimed = true; // claim gem!
         }
 
-        // TODO: implement safeguard against gem falling all the way down and causing an index out of bounds exception
-        //  - just destroy gem after timer or at certain height
         // BLOCK COLLISION
         Block[][] blocks = map.getMap();
         int nextRow = getY(false,alan)/Util.BLOCKLENGTH+1;
@@ -198,8 +205,6 @@ class Gem {
                 if (b.getX(false) < x) {
                     if (blockType != Block.AIR) {
                         if (blockType == Block.BOX || blockType == Block.WALL) {
-                            g.setColor(Color.CYAN);
-                            g.drawRect(b.getX(true),b.getY(true,alan),Util.BLOCKLENGTH,Util.BLOCKLENGTH);
                             if (rect.intersectsLine(b.getX(false), b.getY(false, alan), b.getX(false), b.getY(false, alan)+Util.BLOCKLENGTH)) {
                                 x = b.getX(false)-width-1;
                                 velX = -1 * velX;
