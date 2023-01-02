@@ -53,12 +53,12 @@ public class Blaster {
     // SHOOT - CHECKS IF PLAYER WANTS TO SHOOT AND IF TIMER ALLOWS, ADDS BULLET IF ALLOWED
     public boolean shoot(boolean[] keys, int velY, Graphics g, Alan alan) {
         blastAnim(g, alan);
-        if (alan.getState() == Alan.FALL && keys[Util.space] && shootTimer.getElapsedTime() > 0.18 && velY > 0) {
+        if (alan.getState() == Alan.FALL && keys[Util.space] && shootTimer.getElapsedTime() > 0.12 && velY > 0) {
             shootTimer.restart();
             // add bullet
             bullets.add(new Bullet(alan.getX(false) + (alan.getDir() == Alan.LEFT ? 2 : 8), alan.getY(false) + alan.getVelY() + 10,
                     alan.getY(false) + alan.getVelY() + 10,
-                    defaultBullet));
+                    defaultBullet, Util.rand.nextDouble(-1,1)));
             alanShoot = true;
             return true;
         }
@@ -79,8 +79,9 @@ public class Blaster {
             } else if (alan.getNearestY() < 10) {
                 rm.add(b);
             } else {
-                g.drawImage(b.getImg(), b.getX(true), b.getY(true,alan), null);
+                g.drawImage(b.getImg(), (int)b.getX(true), b.getY(true,alan), null);
                 b.setY(b.getY(false,alan) + speed);
+                b.setX((int) (b.getX(false)+b.getVelX()));
             }
         }
         for (Bullet b : rm) {
@@ -183,12 +184,15 @@ public class Blaster {
     public ArrayList<Bullet> getBullets(){ return bullets;}
 }
 
+// BULLET CLASS
 class Bullet {
-    private int x, y, startY, width, height;
+    private int y, startY, width, height;
+    private double x, velX;
     private Image img;
     private final Rectangle rect;
 
-    Bullet(int x, int y, int startY, Image img) {
+    Bullet(int x, int y, int startY, Image img, double velX) {
+        this.velX = velX;
         this.startY = startY;
         this.x = x;
         this.y = y;
@@ -198,7 +202,7 @@ class Bullet {
         this.rect = new Rectangle(x,y,width, height);
     }
 
-    public int getX(boolean adjusted) { // gets x
+    public double getX(boolean adjusted) { // gets x
         if (adjusted) { // whether you want x relative to the gameplay window
             return x + Background.getWallLeftPos()+Background.getWallWidth();
         } else {
@@ -208,7 +212,7 @@ class Bullet {
 
     public int getY(boolean adjusted, Alan alan) { // gets y
         if (adjusted) { // whether you want y relative to the gameplay window
-            return y- alan.getOffset() + alan.getScreenOffset();
+            return y-alan.getOffset() + alan.getScreenOffset();
         } else {
             return y;
         }
@@ -217,14 +221,15 @@ class Bullet {
     public void setX(int x) {this.x = x;}
     public void setY(int y) {
         this.y = y;
-        this.rect.setLocation(this.x, this.y);
+        this.rect.setLocation((int)this.x, this.y);
     }
     public Image getImg() {return img;}
     public void setImg(Image img) {this.img = img;}
     public int getStartY() {return startY;}
+    public double getVelX() {return velX;}
 
     public void draw(Graphics g) {
-        g.drawImage(img, x, y, null);
+        g.drawImage(img, (int)x, y, null);
     }
 }
 

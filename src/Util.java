@@ -2,6 +2,7 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Random;
 
 public class Util {
     // GAME FONTS
@@ -24,6 +25,9 @@ public class Util {
 
     // KEYBOARD CONSTANTS
     public static final int a = KeyEvent.VK_A, d = KeyEvent.VK_D, space = KeyEvent.VK_SPACE; // constants for keyboard input
+
+    //
+    static Random rand = new Random();
 
     static class CustomTimer {
         private long startTime;

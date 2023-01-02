@@ -189,7 +189,7 @@ class Gem {
                 if (blockType != Block.AIR) {
                     if ((blockType == Block.WALL || blockType == Block.BOX || blockType == Block.PLAT)) {
                         if (rect.intersectsLine(b.getX(false), b.getY(false, alan), b.getX(false)+Util.BLOCKLENGTH, b.getY(false, alan))) {
-                            velY = 0;
+                            velY = -1 * (velY/2);
                             y = b.getY(false,alan)-height-1;
                             break;
                         }
