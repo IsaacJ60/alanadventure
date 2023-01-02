@@ -21,7 +21,7 @@ public class EnemyManager{
     private void addSnake(int x, int y) {snakes.add(new Snake(x,y));}
     private void addBat(int x, int y) {bats.add(new Bat(x,y));}
 
-    public void generateSnakes(Block[][] blocks, Alan alan){
+    public void generateSnakes(Block[][] blocks, Alan alan) {
         Random rand = new Random();
         for(int i=1; i< blocks.length; i++){
             for(int j=1; j<blocks[i].length-1; j++) {

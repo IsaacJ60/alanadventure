@@ -420,9 +420,6 @@ public class Alan {
     public void draw(Graphics g, boolean[] keys, Map map, Powerups powerups, EnemyManager enemies) { //
         move(keys, g, map, powerups, enemies);
 
-        g.setColor(Color.YELLOW);
-        g.drawRect((int)getX(true), (int)getY(true), width, height);
-
         if (weapon.isAlanShoot()) {
             if ((int) animFrame == shootL.size()-1) {
                 animFrame = 0;
