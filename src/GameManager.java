@@ -64,7 +64,8 @@ public class GameManager {
             AAdventure.setCurrPanel("INTRO");
             Util.setLevel(l);
             Intro.getEnemyManager().clearEnemies();
-            Intro.setAlan(new Alan(20, HEIGHT/2+50, GamePanel.getAlan().getWeapon())); // resetting alan
+            Intro.setAlan(new Alan(20, HEIGHT/2+50, GamePanel.getAlan().getWeapon(), 4, GamePanel.getAlan().getMaxHealth(), GamePanel.getAlan().getHealthProgress())); // resetting alan
+            GamePanel.setAlan(new Alan(150, HEIGHT/2-50, GamePanel.getAlan().getWeapon(), 4, GamePanel.getAlan().getMaxHealth(), GamePanel.getAlan().getHealthProgress())); // resetting alan
             Intro.setAlpha(0);
             GamePanel.setAlpha(255);
         } else {
@@ -77,8 +78,12 @@ public class GameManager {
             GamePanel.getEnemyManager().clearEnemies();
             GamePanel.getEnemyManager().generateSnakes(MapList.getBlocksWithoutWallImages(), GamePanel.getAlan());
             //TODO: perhaps make a reset() function in alan to avoid bugs from recreating an instance each level
-            GamePanel.setAlan(new Alan(150, HEIGHT/2-50, GamePanel.getAlan().getWeapon())); // resetting alan
+            GamePanel.setAlan(new Alan(150, HEIGHT/2-50, GamePanel.getAlan().getWeapon(), GamePanel.getAlan().getHealth(), GamePanel.getAlan().getMaxHealth(), GamePanel.getAlan().getHealthProgress())); // resetting alan
         }
+    }
+
+    public static void gameOver(){
+        AAdventure.setCurrPanel("GAMEOVER");
     }
 
     public static void requestSettings(boolean[] keys) {

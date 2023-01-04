@@ -35,7 +35,7 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener, Mo
         //TODO: create bullet manager class
         mgun = new Blaster("Machine Gun", 10,32,13);
 
-        alan = new Alan(150, HEIGHT/2-50, mgun);
+        alan = new Alan(150, HEIGHT/2-50, mgun, 4, 4, 0);
 
         powers = new Powerups(2);
 

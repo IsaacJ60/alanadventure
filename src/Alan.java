@@ -21,6 +21,7 @@ public class Alan {
     // STATES
     private int state = IDLE; // current state (e.g., idle, walk, fall, shoot) to change what animation is playing
     private int dir = RIGHT; // the direction alan is facing
+    private boolean invul;
 
     // PLAYER INFO AND STATS
     private static int width, height; // dimensions
@@ -58,16 +59,20 @@ public class Alan {
 
     // TIMERS
     Util.CustomTimer jumpTimer = new Util.CustomTimer();
+    Util.CustomTimer invulTimer = new Util.CustomTimer();
 
-    public Alan(int posX, int posY, Blaster weapon) {
+    public Alan(int posX, int posY, Blaster weapon, int health, int maxHealth, int healthProgress) {
         x = posX;
         y = posY;
+        this.health = health;
+        this.maxHealth = maxHealth;
+        this.healthProgress = healthProgress;
+        invul = false;
         velX = 0;
         velY = 0;
         jerk = 0.2;
         width = 20;
         height = 30;
-        this.health = 4;
         this.maxVelX = 7;
         this.maxVelY = 13;
         this.accelY = 1.0;
@@ -136,7 +141,8 @@ public class Alan {
     public int getVelY() {return (int)velY;}
     public int getState() {return state;}
     public int getHealth() {return health;} // gets hp
-    public void setHealth(int health) {this.health = health;} // sets hp
+    public int getMaxHealth() {return maxHealth;} // sets hp
+    public int getHealthProgress() {return healthProgress;}
     public int getOffset() {return offset;} // gets offset
     public int getScreenOffset() {return screenOffset;} // gets screenOffset
     public Blaster getWeapon() {return weapon;} // gets current weapon
@@ -169,6 +175,7 @@ public class Alan {
     }
 
     public void move(boolean[] keys, Graphics g, Map map, Powerups powerups, EnemyManager enemies) {
+        getSnakeCollision(GamePanel.getEnemyManager().getSnakes()); // collision between alan and snakes
         getCollision(g,this, map); // getting collision between player and blocks
         alanRect.setLocation(x+5,y); // setting rect location
 
@@ -260,12 +267,39 @@ public class Alan {
         }
     }
 
+    public Snake getSnakeCollision(ArrayList<Snake> snakes) {
+        for (Snake s:snakes) {
+            if (getRect().intersects(s.getRect())) {
+                if(velY > 0 && y+height > s.getY(false)){
+                    snakes.remove(s);
+                    GameManager.getGemManager().spawnGems((int)s.getX(false),(int)s.getY(false), 3);
+                    return s;
+                }
+                else{
+                    if (invulTimer.getElapsedTime() >= 2) {
+                        System.out.println("-1 hp");
+                        health--;
+                        invulTimer.restart();
+                    } else {
+                        System.out.print(".");
+                    }
+                }
+            }
+        }
+
+        if(health == 0){
+            GameManager.gameOver();
+        }
+        return null;
+    }
+
     // get collision on 4 sides of blocks
     // instead of scanning through all blocks or a general area of blocks,
     // getCollision instead runs through specific rows of blocks that narrow
     // down the search field tremendously
     // each check for each side of blocks is performed separately
     public void getCollision(Graphics g, Alan alan, Map map) {
+        // BLOCK COLLISION
         Block[][] blocks = map.getMap();
         // getting rows with same y values as player
         int prevRow = getY(false)/Util.BLOCKLENGTH;
@@ -419,6 +453,12 @@ public class Alan {
     // drawing alan in different states and directions
     public void draw(Graphics g, boolean[] keys, Map map, Powerups powerups, EnemyManager enemies) { //
         move(keys, g, map, powerups, enemies);
+        // health ui
+        g.setFont(Util.fontText);
+        g.drawString("hp: " + health +"/"+ maxHealth, 20, 60);
+
+//        g.setColor(Color.YELLOW);
+//        g.drawRect((int)getX(true), (int)getY(true), width, height);
 
         if (weapon.isAlanShoot()) {
             if ((int) animFrame == shootL.size()-1) {
@@ -451,15 +491,15 @@ public class Alan {
         // drawing animation based on direction
         if (dir == LEFT) {
             if (weapon.isAlanShoot()) {
-                g.drawImage(shootL.get((int)animFrame),getX(true)-5,getY(true)+3,null);
+                g.drawImage(shootL.get((int) animFrame), getX(true) - 5, getY(true) + 3, null);
             } else {
-                g.drawImage(allAnims.get(state*2).get((int)animFrame),getX(true)-5,getY(true)+3,null);
+                g.drawImage(allAnims.get(state * 2).get((int) animFrame), getX(true) - 5, getY(true) + 3, null);
             }
         } else {
             if (weapon.isAlanShoot()) {
-                g.drawImage(shootR.get((int)animFrame),getX(true)-5,getY(true)+3,null);
+                g.drawImage(shootR.get((int) animFrame), getX(true) - 5, getY(true) + 3, null);
             } else {
-                g.drawImage(allAnims.get(state*2+1).get((int)animFrame),getX(true)-5,getY(true)+3,null);
+                g.drawImage(allAnims.get(state * 2 + 1).get((int) animFrame), getX(true) - 5, getY(true) + 3, null);
             }
         }
     }
