@@ -54,7 +54,7 @@ class Snake {
     private int health;
     private double x, y;
     private int dir;
-    private double speed, velX, velY; // the speed and acceleration the enemy has
+    private double speed, velX, velY, accelY; // the speed and acceleration the enemy has
     private double animFrame;
 
     private final ArrayList<Image> idleL = new ArrayList<>();
@@ -112,14 +112,14 @@ class Snake {
         int currRow = (int)y/Util.BLOCKLENGTH;
         int grndRow = currRow+1; // add one to get the row of blocks the snake is standing on
         int currColL = (int)x/Util.BLOCKLENGTH;
+        int currColC = (int)(x+width/2)/Util.BLOCKLENGTH;
         int currColR = (int)(x+width)/Util.BLOCKLENGTH;
 
-        if(dir == Util.LEFT){
-            if(x<=0){
+        if (dir == Util.LEFT) {
+            if (x <= 0) {
                 dir = Util.RIGHT;
                 x += speed;
-            }
-            else{
+            } else {
                 if (blocks[grndRow][currColL].getType() != Block.AIR && blocks[grndRow - 1][currColL].getType() == Block.AIR) {
                     x -= speed;
                 } else {
@@ -127,13 +127,11 @@ class Snake {
                     x += speed;
                 }
             }
-        }
-        else{
-            if(x+width >= 9*35){
+        } else {
+            if (x + width >= 9 * Util.BLOCKLENGTH) {
                 dir = Util.LEFT;
                 x -= speed;
-            }
-            else {
+            } else {
                 if (blocks[grndRow][currColR].getType() != Block.AIR && blocks[grndRow - 1][currColR].getType() == Block.AIR) {
                     x += speed;
                 } else {

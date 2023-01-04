@@ -70,7 +70,7 @@ public class Blaster {
         ArrayList<Bullet> rm = new ArrayList<>(); // removal list for bullets
         for (Bullet b : bullets) { // go through all bullets
             // enemy collisions
-            getCollision(b, enemies.getSnakes(), enemies.getBats());
+            getCollision(b, enemies.getSnakes());
             // block collisions
             if (getCollision(b, alan, map, powerups)) {
                 rm.add(b);
@@ -89,7 +89,7 @@ public class Blaster {
         }
     }
 
-    public Snake getCollision(Bullet b, ArrayList<Snake> snakes, ArrayList<Bat> bats) {
+    public Snake getCollision(Bullet b, ArrayList<Snake> snakes) {
         for (Snake s:snakes) {
             if (s.getRect().intersects(b.getRect())) {
                 snakes.remove(s);

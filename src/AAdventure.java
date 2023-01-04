@@ -8,6 +8,7 @@ public class AAdventure extends JFrame { // frame
     private Intro intro;
     private LevelClear levelClear;
     private Settings settings;
+    private GameOver gameOver;
 
     Sound sound;
 
@@ -51,6 +52,9 @@ public class AAdventure extends JFrame { // frame
 
         settings = new Settings(this);
         add("SETTINGS", settings);
+
+        gameOver = new GameOver(this);
+        add("GAMEOVER", gameOver);
 
         pack();
 
