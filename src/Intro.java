@@ -13,9 +13,11 @@ public class Intro extends JPanel implements KeyListener, ActionListener, MouseL
     private static int tarX, tarY, alpha = 0;
 
     private static Alan alan;
-    Background bg;
-    Powerups powers;
+    private final Background bg;
+    private final Powerups powers;
     private static EnemyManager enemyManager;
+
+    private final Story story;
 
     public Intro(AAdventure a) {
         mainFrame = a;
@@ -31,9 +33,11 @@ public class Intro extends JPanel implements KeyListener, ActionListener, MouseL
 
         powers = new Powerups(2);
 
-        alan = new Alan(20, HEIGHT/2+50, new Blaster("Machine Gun", 10,32,13), 4, 4, 0);
+        alan = new Alan(20, HEIGHT/2+50, new Blaster("Machine Gun", 10,-1,13), 4, 4, 0);
 
         enemyManager = new EnemyManager();
+
+        story = new Story();
 
         timer = new Timer(25, this); // manages frames
         timer.start();
@@ -105,9 +109,10 @@ public class Intro extends JPanel implements KeyListener, ActionListener, MouseL
         alan.draw(g, keys, GameManager.intromap, powers, enemyManager);
         UI.displayAll(g, alan, powers);
         g.setFont(Util.fontTitle6);
-        g.drawString("ALAN'S", 372,400-alan.getOffset()+alan.getScreenOffset());
-        g.drawString("ADVENTURE", 322,455-alan.getOffset()+alan.getScreenOffset());
+        g.drawString("ALAN'S", 372,380-alan.getOffset()+alan.getScreenOffset());
+        g.drawString("ADVENTURE", 322,435-alan.getOffset()+alan.getScreenOffset());
         GameManager.getGemManager().displayGems(g,true,false);
+        story.display(g);
 
         // opacity decrease
         if (alan.getY(false) > 25*Util.BLOCKLENGTH) {
@@ -116,5 +121,4 @@ public class Intro extends JPanel implements KeyListener, ActionListener, MouseL
         }
     }
 }
-
 

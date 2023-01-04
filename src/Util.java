@@ -6,7 +6,7 @@ import java.util.Random;
 
 public class Util {
     // GAME FONTS
-    static Font fontTitle6, fontText;
+    static Font fontTitle6, fontText, fontTextSmall;
 
     // GAME VARIABLES
     private static int level = 0;
@@ -66,13 +66,24 @@ public class Util {
     // loading all fonts
     public static void loadFonts() {
         // normal-sized font
-        String fName3 = "Youtube Star.ttf";
+        String fName3 = "arcadeFont.ttf";
         InputStream is3 = GamePanel.class.getResourceAsStream(fName3);
         try {
             assert is3 != null;
-            fontText = Font.createFont(Font.TRUETYPE_FONT, is3).deriveFont(24f);
+            fontText = Font.createFont(Font.TRUETYPE_FONT, is3).deriveFont(26f);
         } catch(IOException ex){
-            System.out.println(ex + "title font");
+            System.out.println(ex + "text font");
+        } catch (FontFormatException e) {
+            throw new RuntimeException(e);
+        }
+
+        String fName4 = "arcadeFont.ttf";
+        InputStream is4 = GamePanel.class.getResourceAsStream(fName4);
+        try {
+            assert is4 != null;
+            fontTextSmall = Font.createFont(Font.TRUETYPE_FONT, is4).deriveFont(15f);
+        } catch(IOException ex){
+            System.out.println(ex + "text font small");
         } catch (FontFormatException e) {
             throw new RuntimeException(e);
         }

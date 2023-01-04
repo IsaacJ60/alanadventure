@@ -33,7 +33,7 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener, Mo
         bg = new Background(); // background exclusive to game class
 
         //TODO: create bullet manager class
-        mgun = new Blaster("Machine Gun", 10,32,13);
+        mgun = new Blaster("Machine Gun", 10,8,13);
 
         alan = new Alan(150, HEIGHT/2-50, mgun, 4, 4, 0);
 

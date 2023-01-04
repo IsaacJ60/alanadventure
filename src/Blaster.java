@@ -7,7 +7,7 @@ import java.util.ArrayList;
 
 public class Blaster {
     String name;
-    int damage, capacity, speed, lastX, lastY;
+    int damage, capacity, speed, lastX, lastY, ammo;
     private Image defaultBullet;
 
     private boolean alanShoot;
@@ -18,14 +18,19 @@ public class Blaster {
     Util.CustomTimer shootTimer;
 
     public Blaster(String name, int damage, int capacity, int speed) {
+        if (capacity == -1) {
+            this.capacity = 2023;
+        } else {
+            this.capacity = capacity;
+        }
         bullets = new ArrayList<>();
         blastPlaces = new ArrayList<>();
         blastBlocks = new ArrayList<>();
         explosion = new ArrayList<>();
         this.name = name;
         this.damage = damage;
-        this.capacity = capacity;
         this.speed = speed;
+        this.ammo = this.capacity;
         lastX = 0; lastY = 0;
         alanShoot = false;
         defaultBullet = new ImageIcon("src/assets/alan/shoot/bullets/bullet.png").getImage().getScaledInstance(16,28,Image.SCALE_DEFAULT);
@@ -45,22 +50,37 @@ public class Blaster {
     public boolean isAlanShoot() {
         return alanShoot;
     }
+    public int getAmmo() {return ammo;}
+    public void setAmmo(int a) {this.ammo = a;}
 
     public void setAlanShoot(boolean alanShoot) {
         this.alanShoot = alanShoot;
+    }
+
+    public boolean useAmmo() {
+        if (ammo > 0) {
+            if (capacity != 2023) {
+                ammo--;
+            }
+            return true;
+        } else {
+            return false;
+        }
     }
 
     // SHOOT - CHECKS IF PLAYER WANTS TO SHOOT AND IF TIMER ALLOWS, ADDS BULLET IF ALLOWED
     public boolean shoot(boolean[] keys, int velY, Graphics g, Alan alan) {
         blastAnim(g, alan);
         if (alan.getState() == Alan.FALL && keys[Util.space] && shootTimer.getElapsedTime() > 0.12 && velY > 0) {
-            shootTimer.restart();
-            // add bullet
-            bullets.add(new Bullet(alan.getX(false) + (alan.getDir() == Alan.LEFT ? 2 : 8), alan.getY(false) + alan.getVelY() + 10,
-                    alan.getY(false) + alan.getVelY() + 10,
-                    defaultBullet, Util.rand.nextDouble(-1,1)));
-            alanShoot = true;
-            return true;
+            if (useAmmo()) {
+                shootTimer.restart();
+                // add bullet
+                bullets.add(new Bullet(alan.getX(false) + (alan.getDir() == Alan.LEFT ? 2 : 8), alan.getY(false) + alan.getVelY() + 10,
+                        alan.getY(false) + alan.getVelY() + 10,
+                        defaultBullet, Util.rand.nextDouble(-1,1)));
+                alanShoot = true;
+                return true;
+            }
         }
         return false;
     }
@@ -92,6 +112,7 @@ public class Blaster {
     public Snake getCollision(Bullet b, ArrayList<Snake> snakes) {
         for (Snake s:snakes) {
             if (s.getRect().intersects(b.getRect())) {
+                setAmmo(getCapacity());
                 snakes.remove(s);
                 GameManager.getGemManager().spawnGems((int)s.getX(false),(int)s.getY(false), 3);
                 return s;

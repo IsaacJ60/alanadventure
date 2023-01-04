@@ -355,6 +355,7 @@ public class Alan {
 
             // if originally falling, change state to idle now that player is grounded
             if (state == FALL) {
+                weapon.setAmmo(weapon.getCapacity());
                 changeState(IDLE, dir, false);
             }
         } else { // in the case that the player has not reached block/ground

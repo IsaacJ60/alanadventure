@@ -53,14 +53,15 @@ public class Gems {
     public static ArrayList<Image> getGemL() {return gemL;}
 
     public void displayGems(Graphics g, boolean total, boolean current) {
-        g.setFont(Util.fontText);
+        int xPos = 25;
+        g.setFont(Util.fontTextSmall);
         if (total && !current) { // display total gems
-            g.drawString("Total Gems: " + totalGems, 20, 30);
+            g.drawString("ALL GEMS: " + totalGems, xPos, 90);
         } else if (current && !total) { // display current run gems
-            g.drawString("Current Gems: " + gems, 20, 30);
+            g.drawString("GEMS: " + gems, xPos, 90);
         } else {
-            g.drawString("Total Gems: " + totalGems, 20, 30);
-            g.drawString("Current Gems: " + gems, 20, 60);
+            g.drawString("ALL GEMS: " + totalGems, xPos, 90);
+            g.drawString("GEMS: " + gems, xPos, 120);
         }
     }
 

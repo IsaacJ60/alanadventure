@@ -1,4 +1,3 @@
-import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Random;
@@ -67,8 +66,8 @@ public class MapList {
         for (int i = firstVisibleRow; i < lastVisibleRow; i++) {
 
             // TMP CODE TO DISPLAY ROW NUMBERS
-            g.setColor(Color.WHITE);
-            g.drawString(String.valueOf(i), 230, blocks[i][0].getY(true, alan)+20);
+//            g.setColor(Color.WHITE);
+//            g.drawString(String.valueOf(i), 230, blocks[i][0].getY(true, alan)+20);
 
             g.drawImage(wallImgLeft.getImg(), Background.getWallLeftPos()-15, blocks[i][0].getY(true, alan),null);
             g.drawImage(wallImgRight.getImg(), Background.getWallRightPos(), blocks[i][0].getY(true, alan),null);
