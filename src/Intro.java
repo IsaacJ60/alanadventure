@@ -103,6 +103,7 @@ public class Intro extends JPanel implements KeyListener, ActionListener, MouseL
     public void paint(Graphics g) {
         bg.draw(g, 0, alan);
         alan.draw(g, keys, GameManager.intromap, powers, enemyManager);
+        UI.displayAll(g, alan, powers);
         g.setFont(Util.fontTitle6);
         g.drawString("ALAN'S", 372,400-alan.getOffset()+alan.getScreenOffset());
         g.drawString("ADVENTURE", 322,455-alan.getOffset()+alan.getScreenOffset());

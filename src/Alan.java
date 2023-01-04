@@ -453,9 +453,6 @@ public class Alan {
     // drawing alan in different states and directions
     public void draw(Graphics g, boolean[] keys, Map map, Powerups powerups, EnemyManager enemies) { //
         move(keys, g, map, powerups, enemies);
-        // health ui
-        g.setFont(Util.fontText);
-        g.drawString("hp: " + health +"/"+ maxHealth, 20, 60);
 
 //        g.setColor(Color.YELLOW);
 //        g.drawRect((int)getX(true), (int)getY(true), width, height);

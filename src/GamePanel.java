@@ -114,6 +114,7 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener, Mo
         requestFocus();
         bg.draw(g, Util.getLevel(), alan);
         enemyManager.drawEnemies(g, MapList.getBlocksWithoutWallImages());
+        UI.displayAll(g, alan, powers);
         GameManager.getGemManager().displayGems(g,false,true);
         GameManager.getGemManager().drawGems(g, alan, MapList.getAllMaps().get(Util.getLevel()));
         powers.usePowers(alan);
