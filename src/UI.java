@@ -13,30 +13,32 @@ public class UI {
     }
 
     public static void healthUI(Graphics g, Alan alan) {
-        healthBar(g, alan);
+        int healthOffsetX = 54 + Background.getWallRightPos();
+        int healthOffsetY = alan.getScreenOffset()/5 + 26;
+        healthBar(g, alan, healthOffsetX, healthOffsetY);
         g.setFont(Util.fontText);
         g.setColor(Color.BLACK);
-        g.drawString(alan.getHealth() + "/" + alan.getMaxHealth(), 90, 59);
+        g.drawString(alan.getHealth() + "/" + alan.getMaxHealth(), 66+healthOffsetX, healthOffsetY+33);
         g.drawString("/", 113, 59);
         g.setColor(Color.WHITE);
-        g.drawString(alan.getHealth() + "/" + alan.getMaxHealth(), 87, 57);
+        g.drawString(alan.getHealth() + "/" + alan.getMaxHealth(), 63+healthOffsetX, healthOffsetY+31);
     }
 
-    public static void healthBar(Graphics g, Alan alan) {
-        g.setColor(new Color(231,9,3));
+    public static void healthBar(Graphics g, Alan alan, int healthOffsetX, int healthOffsetY) {
+        g.setColor(new Color(204, 0, 1));
         for (int i = 0; i < alan.getHealth(); i++) {
-            g.fillRect(i*200/alan.getMaxHealth() + 28, 35, 200/alan.getMaxHealth(), 19);
+            g.fillRect(i*200/alan.getMaxHealth()+4+healthOffsetX, healthOffsetY+9, 200/alan.getMaxHealth(), 19);
         }
 
         g.setColor(Color.BLACK);
-        g.fillRect(28,30,2,27);
-        g.fillRect(226,30,2,27);
+        g.fillRect(4+healthOffsetX,healthOffsetY+4,2,27);
+        g.fillRect(202+healthOffsetX,healthOffsetY+4,2,27);
 
         g.setColor(new Color(245,248,247));
-        g.fillRect(24,29,3,27);
-        g.fillRect(228,29,3,27);
-        g.fillRect(28,26,200,3);
-        g.fillRect(28,56,200,3);
+        g.fillRect(healthOffsetX,healthOffsetY+3,3,27);
+        g.fillRect(204+healthOffsetX,healthOffsetY+3,3,27);
+        g.fillRect(4+healthOffsetX,healthOffsetY,200,3);
+        g.fillRect(4+healthOffsetX,healthOffsetY+30,200,3);
     }
 
     public static void blasterUI(Graphics g, Alan alan) {
@@ -46,9 +48,9 @@ public class UI {
     public static void ammoUI(Graphics g, Alan alan) {
         g.setFont(Util.fontTextSmall);
         if (alan.getWeapon().getCapacity() == 2023) {
-            g.drawString("AMMO: ∞ / ∞", 25, 120);
+            g.drawString("AMMO: ∞ / ∞", 25, 90+alan.getScreenOffset()/5);
         } else {
-            g.drawString("AMMO: " + alan.getWeapon().getAmmo() + " / " + alan.getWeapon().getCapacity(), 25, 120);
+            g.drawString("AMMO: " + alan.getWeapon().getAmmo() + " / " + alan.getWeapon().getCapacity(), 25, 90+alan.getScreenOffset()/5);
         }
     }
 }

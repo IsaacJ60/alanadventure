@@ -11,6 +11,7 @@ public class Gems {
     private final static ArrayList<Image> gemS = new ArrayList<>();
     private final static ArrayList<Image> gemM = new ArrayList<>();
     private final static ArrayList<Image> gemL = new ArrayList<>();
+    private static Image gemL0 = null;
 
     private final ArrayList<Gem> activeGems = new ArrayList<>();
 
@@ -26,6 +27,7 @@ public class Gems {
         for (int i = 0; i < 4; i++) {
             gemL.add(new ImageIcon("src/assets/gems/gemL"+i+".png").getImage());
         }
+        gemL0 = gemL.get(0).getScaledInstance(30,30,Image.SCALE_DEFAULT);
     }
 
     public Gems(int g) {
@@ -52,16 +54,20 @@ public class Gems {
     public static ArrayList<Image> getGemM() {return gemM;}
     public static ArrayList<Image> getGemL() {return gemL;}
 
-    public void displayGems(Graphics g, boolean total, boolean current) {
-        int xPos = 25;
+    public void displayGems(Graphics g, boolean total, boolean current, Alan alan) {
+        int xPos = 65;
+        int gemsOffset = alan.getScreenOffset()/5;
         g.setFont(Util.fontTextSmall);
+        g.setColor(new Color(204, 0, 1));
+        g.drawImage(gemL0, 22,gemsOffset+26,null);
+        g.fillRect(45,gemsOffset+50,140,2);
+        g.drawLine(185, gemsOffset+50, 192, gemsOffset+45);
+        g.drawLine(185, gemsOffset+51, 193, gemsOffset+45);
+        g.setColor(Color.WHITE);
         if (total && !current) { // display total gems
-            g.drawString("ALL GEMS: " + totalGems, xPos, 90);
+            g.drawString(totalGems + " (T)", xPos, gemsOffset+50);
         } else if (current && !total) { // display current run gems
-            g.drawString("GEMS: " + gems, xPos, 90);
-        } else {
-            g.drawString("ALL GEMS: " + totalGems, xPos, 90);
-            g.drawString("GEMS: " + gems, xPos, 120);
+            g.drawString(gems + " (C)", xPos, gemsOffset+50);
         }
     }
 

@@ -111,7 +111,7 @@ public class Intro extends JPanel implements KeyListener, ActionListener, MouseL
         g.setFont(Util.fontTitle6);
         g.drawString("ALAN'S", 372,380-alan.getOffset()+alan.getScreenOffset());
         g.drawString("ADVENTURE", 322,435-alan.getOffset()+alan.getScreenOffset());
-        GameManager.getGemManager().displayGems(g,true,false);
+        GameManager.getGemManager().displayGems(g,true,false, alan);
         story.display(g);
 
         // opacity decrease
