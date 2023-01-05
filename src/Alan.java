@@ -174,10 +174,11 @@ public class Alan {
         }
     }
 
-    public void move(boolean[] keys, Graphics g, Map map, Powerups powerups, EnemyManager enemies) {
+    public int move(boolean[] keys, Graphics g, Map map, Powerups powerups, EnemyManager enemies) {
         getSnakeCollision(GamePanel.getEnemyManager().getSnakes()); // collision between alan and snakes
         getCollision(g,this, map); // getting collision between player and blocks
         alanRect.setLocation(x+5,y); // setting rect location
+        boolean wallCollideLeft = false, wallCollideRight = false;
 
         // allow jump only if not jumping or falling and if space pressed
         if (keys[Util.space] && !GamePanel.getPrevSpaced() && state != JUMP && state != FALL) {
@@ -202,7 +203,10 @@ public class Alan {
                 // changing horizontal position towards left
                 x -= velX;
                 // ensuring x doesn't go out of bounds
-                x = Math.max(x, 0);
+                if (Math.max(x,0) == 0) {
+                    wallCollideLeft = true;
+                }
+                x = Math.max(x,0);
             }
 
             // if "D" key pressed and player allowed to move right
@@ -216,7 +220,10 @@ public class Alan {
                 // changing horizontal position towards right
                 x += velX;
                 // making sure player doesn't go out of bounds
-                x = Math.min(x, Background.getWallRightPos()-Background.getWallLeftPos()-Background.getWallWidth()-width-10);
+                if (Math.max(x,Background.getWallRightPos()-Background.getWallLeftPos()-Background.getWallWidth()-width) != x) {
+                    wallCollideRight = true;
+                }
+                x = Math.min(x, Background.getWallRightPos()-Background.getWallLeftPos()-Background.getWallWidth()-width);
             }
 
             // if moving left right but not in air, walking on ground
@@ -254,6 +261,15 @@ public class Alan {
             velY-=velY*1.2;
         }
         weapon.animation(g,this, map, powerups, enemies);
+
+        // return int of wall side that player is touching
+        if (wallCollideLeft) {
+            return Util.LEFT;
+        } else if (wallCollideRight) {
+            return Util.RIGHT;
+        } else {
+            return -1;
+        }
     }
 
     public void jump() {
@@ -308,6 +324,7 @@ public class Alan {
         //HINT: CHANGING LEVELS HERE
         // USE GAMEMANAGER TO SWITCH TO NEXT LEVEL WHEN ALAN REACHES CERTAIN POINT
         if (nextRow == map.getRows()-15) {
+            LevelClear.setAlpha(255);
             GameManager.toLevel(Util.getLevel()+1, false);
         }
 
@@ -452,8 +469,8 @@ public class Alan {
     }
 
     // drawing alan in different states and directions
-    public void draw(Graphics g, boolean[] keys, Map map, Powerups powerups, EnemyManager enemies) { //
-        move(keys, g, map, powerups, enemies);
+    public int draw(Graphics g, boolean[] keys, Map map, Powerups powerups, EnemyManager enemies) { //
+        int collisionWall = move(keys, g, map, powerups, enemies);
 
 //        g.setColor(Color.YELLOW);
 //        g.drawRect((int)getX(true), (int)getY(true), width, height);
@@ -500,6 +517,7 @@ public class Alan {
                 g.drawImage(allAnims.get(state * 2 + 1).get((int) animFrame), getX(true) - 5, getY(true) + 3, null);
             }
         }
+        return collisionWall;
     }
 }
 

@@ -106,13 +106,13 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener, Mo
 //        tarX = mouse.x - offset.x;
 //        tarY = mouse.y - offset.y;
         // move ball & paddle
+        requestFocus();
         mainFrame.start();
         repaint();
     }
     @Override
     public void paint(Graphics g) {
-        requestFocus();
-        bg.draw(g, Util.getLevel(), alan);
+        bg.draw(g, Util.getLevel(), alan, true, true);
         enemyManager.drawEnemies(g, MapList.getBlocksWithoutWallImages());
         UI.displayAll(g, alan, powers);
         GameManager.getGemManager().displayGems(g,false,true, alan);

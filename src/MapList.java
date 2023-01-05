@@ -47,8 +47,7 @@ public class MapList {
     public static Block[][] getBlockswithWallImages(int level) {return maps.get(level).getMapWithWallImages();}
 
     // draw all blocks
-    public void drawBlocks(Graphics g, int level, Alan alan) {
-        Map m = maps.get(level); // getting map for level
+    public void drawBlocks(Graphics g, Map m, Alan alan, boolean includeWalls, boolean includeBlocks) {
         Block[][] blocks = m.getMap(); // get blocks that contain wall images
         int x, y; // x and y for block location
         int alanY = alan.getY(false)/Util.BLOCKLENGTH; // alan's y location used for calculation visible rows
@@ -69,32 +68,87 @@ public class MapList {
 //            g.setColor(Color.WHITE);
 //            g.drawString(String.valueOf(i), 230, blocks[i][0].getY(true, alan)+20);
 
-            g.drawImage(wallImgLeft.getImg(), Background.getWallLeftPos()-15, blocks[i][0].getY(true, alan),null);
-            g.drawImage(wallImgRight.getImg(), Background.getWallRightPos(), blocks[i][0].getY(true, alan),null);
+            if (includeWalls) {
+                drawWalls(g, blocks, i, alan);
+            }
 
-            // going through each block row
-            for (int j = 0; j < blocks[i].length; j++) {
+            if (includeBlocks) {
+                // going through each block row
+                for (int j = 0; j < blocks[i].length; j++) {
 
-                // getting x and y values of block
-                x = blocks[i][j].getX(true);
-                y = blocks[i][j].getY(true, alan);
+                    // getting x and y values of block
+                    x = blocks[i][j].getX(true);
+                    y = blocks[i][j].getY(true, alan);
 
-                // switch for each type of block
-                switch (blocks[i][j].getType()) {
-                    // drawing wall blocks
-                    case (Block.WALL) -> {
-                        if (i>0 && i<m.getRows()-1 && blocks[i][j].getTile() != null) { // making sure checks are in bounds
-                            g.drawImage(blocks[i][j].getTile().getImg(), x, y, null);
+                    // switch for each type of block
+                    switch (blocks[i][j].getType()) {
+                        // drawing wall blocks
+                        case (Block.WALL) -> {
+                            if (i>0 && i<m.getRows()-1 && blocks[i][j].getTile() != null) { // making sure checks are in bounds
+                                g.drawImage(blocks[i][j].getTile().getImg(), x, y, null);
+                            }
                         }
-                    }
-                    // drawing box blocks
-                    case (Block.BOX) -> g.drawImage(boxTile.getImg(), x, y, null);
+                        // drawing box blocks
+                        case (Block.BOX) -> g.drawImage(boxTile.getImg(), x, y, null);
 
-                    // drawing platform blocks
-                    case (Block.PLAT) -> g.drawImage(platTile.getImg(), x, y, null);
+                        // drawing platform blocks
+                        case (Block.PLAT) -> g.drawImage(platTile.getImg(), x, y, null);
+                    }
                 }
             }
         }
+    }
+
+    public void drawBlocks(Graphics g, Map m, boolean includeWalls, boolean includeBlocks) {
+        Block[][] blocks = m.getMap(); // get blocks that contain wall images
+        int x, y; // x and y for block location
+
+        // only iterate through rows that are visible
+        for (int i = 0; i < 30; i++) {
+
+            // TMP CODE TO DISPLAY ROW NUMBERS
+//            g.setColor(Color.WHITE);
+//            g.drawString(String.valueOf(i), 230, blocks[i][0].getY(true, alan)+20);
+
+            if (includeWalls) {
+                drawWalls(g, blocks, i);
+            }
+
+            if (includeBlocks) {
+                // going through each block row
+                for (int j = 0; j < blocks[i].length; j++) {
+
+                    // getting x and y values of block
+                    x = blocks[i][j].getX(true);
+                    y = blocks[i][j].getY();
+
+                    // switch for each type of block
+                    switch (blocks[i][j].getType()) {
+                        // drawing wall blocks
+                        case (Block.WALL) -> {
+                            if (i>0 && i<m.getRows()-1 && blocks[i][j].getTile() != null) { // making sure checks are in bounds
+                                g.drawImage(blocks[i][j].getTile().getImg(), x, y, null);
+                            }
+                        }
+                        // drawing box blocks
+                        case (Block.BOX) -> g.drawImage(boxTile.getImg(), x, y, null);
+
+                        // drawing platform blocks
+                        case (Block.PLAT) -> g.drawImage(platTile.getImg(), x, y, null);
+                    }
+                }
+            }
+        }
+    }
+
+    public void drawWalls(Graphics g, Block[][] blocks, int i, Alan alan) {
+        g.drawImage(wallImgLeft.getImg(), Background.getWallLeftPos()-15, blocks[i][0].getY(true, alan),null);
+        g.drawImage(wallImgRight.getImg(), Background.getWallRightPos(), blocks[i][0].getY(true, alan),null);
+    }
+
+    public void drawWalls(Graphics g, Block[][] blocks, int i) {
+        g.drawImage(wallImgLeft.getImg(), Background.getWallLeftPos()-15, blocks[i][0].getY(),null);
+        g.drawImage(wallImgRight.getImg(), Background.getWallRightPos(), blocks[i][0].getY(),null);
     }
 }
 

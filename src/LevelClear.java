@@ -14,8 +14,13 @@ public class LevelClear extends JPanel implements KeyListener, ActionListener, M
     private static int WIDTH = AAdventure.getGameWidth(), HEIGHT = AAdventure.getGameHeight();
     private static int tarX, tarY;
 
+    Background bg;
+
+    private static int alpha;
+
     public LevelClear(AAdventure a) {
         mainFrame = a;
+        alpha = 255;
         keys = new boolean[KeyEvent.KEY_LAST+1];
         setPreferredSize(new Dimension(WIDTH, HEIGHT));
         setFocusable(true);
@@ -23,6 +28,8 @@ public class LevelClear extends JPanel implements KeyListener, ActionListener, M
         // adding listener for events
         addMouseListener(this);
         addKeyListener(this);
+
+        bg = new Background();
 
         timer = new Timer(25, this); // manages frames
         timer.start();
@@ -35,6 +42,7 @@ public class LevelClear extends JPanel implements KeyListener, ActionListener, M
     public static void setWIDTH(int w) {WIDTH = w;}
     public static int getHEIGHT() {return HEIGHT;}
     public static void setHEIGHT(int h) {HEIGHT = h;}
+    public static void setAlpha(int a) {alpha = a;}
 
     // MouseListener
     @Override
@@ -80,8 +88,12 @@ public class LevelClear extends JPanel implements KeyListener, ActionListener, M
     }
     @Override
     public void paint(Graphics g) {
-        g.setColor(Color.DARK_GRAY);
+        g.setColor(Color.BLACK);
         g.fillRect(0,0,900,700);
+        bg.draw(g, new Map(new Block[100][9]), true, false);
+
+        alpha = Util.increaseOpacity(alpha, false);
+        Util.overlay(g,0,0,0,alpha);
     }
 }
 

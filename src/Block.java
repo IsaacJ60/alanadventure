@@ -54,4 +54,8 @@ public class Block {
             return y;
         }
     }
+
+    public int getY() {
+        return y;
+    }
 }

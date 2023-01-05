@@ -22,12 +22,20 @@ public class Background {
     public static int getWallRightPos() {return wallRightPos;}
 
     // main driver code for drawing map and its blocks
-    public void draw(Graphics g, int level, Alan alan) {
+    public void draw(Graphics g, int level, Alan alan, boolean includeWalls, boolean includeBlocks) {
         g.setColor(Color.BLACK);
         setBackground(g, g.getColor());
         g.drawImage(bg,0,alan.getScreenOffset()/3,null);
         g.fillRect(getWallLeftPos(), 0, getWallRightPos()-getWallLeftPos(), GamePanel.getHEIGHT());
-        GameManager.getMaplist().drawBlocks(g,level,alan);
+        GameManager.getMaplist().drawBlocks(g, MapList.getAllMaps().get(level), alan, includeWalls, includeBlocks);
+    }
+
+    public void draw(Graphics g, Map map, boolean includeWalls, boolean includeBlocks) {
+        g.setColor(Color.BLACK);
+        setBackground(g, g.getColor());
+        g.drawImage(bg,0,0,null);
+        g.fillRect(getWallLeftPos(), 0, getWallRightPos()-getWallLeftPos(), GamePanel.getHEIGHT());
+        GameManager.getMaplist().drawBlocks(g, map, includeWalls, includeBlocks);
     }
 
     public void setBackground(Graphics g, Color col) {

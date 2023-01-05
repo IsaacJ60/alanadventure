@@ -27,7 +27,7 @@ public class GameManager {
 
         // making default levels
         for (int i = 0; i < Util.LEVELS; i++) { // loading all levels
-            maplist.addMap(new Map(500));
+            maplist.addMap(new Map(100));
         }
     }
 
