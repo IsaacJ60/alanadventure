@@ -11,7 +11,7 @@ public class Background {
 
     // manages basic background elements and ui as well as side walls
     public Background() {
-        bg = new ImageIcon("src/tiles/bg.png").getImage().getScaledInstance(GamePanel.getWIDTH(), GamePanel.getHEIGHT(), Image.SCALE_DEFAULT);
+        bg = new ImageIcon("src/tiles/bgB.png").getImage().getScaledInstance(GamePanel.getWIDTH(), GamePanel.getHEIGHT(), Image.SCALE_DEFAULT);
         wallLeftPos = GamePanel.getWIDTH()/2-GamePanel.getWIDTH()/5+1;
         wallRightPos = GamePanel.getWIDTH()/2+GamePanel.getWIDTH()/5-MapList.wallImgRight.getWidth();
         wallWidth = MapList.wallImgRight.getWidth();
@@ -22,18 +22,22 @@ public class Background {
     public static int getWallRightPos() {return wallRightPos;}
 
     // main driver code for drawing map and its blocks
-    public void draw(Graphics g, int level, Alan alan, boolean includeWalls, boolean includeBlocks) {
+    public void draw(Graphics g, int level, Alan alan, boolean includeWalls, boolean includeBlocks, boolean includeBG) {
         g.setColor(Color.BLACK);
         setBackground(g, g.getColor());
-        g.drawImage(bg,0,alan.getScreenOffset()/3,null);
+        if (includeBG) {
+            g.drawImage(bg,0,alan.getScreenOffset()/3,null);
+        }
         g.fillRect(getWallLeftPos(), 0, getWallRightPos()-getWallLeftPos(), GamePanel.getHEIGHT());
         GameManager.getMaplist().drawBlocks(g, MapList.getAllMaps().get(level), alan, includeWalls, includeBlocks);
     }
 
-    public void draw(Graphics g, Map map, boolean includeWalls, boolean includeBlocks) {
+    public void draw(Graphics g, Map map, boolean includeWalls, boolean includeBlocks, boolean includeBG) {
         g.setColor(Color.BLACK);
         setBackground(g, g.getColor());
-        g.drawImage(bg,0,0,null);
+        if (includeBG) {
+            g.drawImage(bg,0,0,null);
+        }
         g.fillRect(getWallLeftPos(), 0, getWallRightPos()-getWallLeftPos(), GamePanel.getHEIGHT());
         GameManager.getMaplist().drawBlocks(g, map, includeWalls, includeBlocks);
     }

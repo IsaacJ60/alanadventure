@@ -71,6 +71,12 @@ public class GameManager {
         } else {
             if (l != 1) {
                 AAdventure.setCurrPanel("LEVELCLEAR"); // changing panel to level clear panel
+                int a = Util.rand.nextInt(1,Powerups.powers.length-1);
+                int b = Util.rand.nextInt(a+1, Powerups.powers.length);
+                int c = Util.rand.nextInt(0,a);
+                LevelClear.setRandomPowerups(a,b,c);
+                LevelClear.resetSpace();
+                Powerups.selectionTimer.start();
             } else {
                 AAdventure.setCurrPanel("GAME"); // set to game if on first intro part
             }

@@ -19,7 +19,7 @@ public class Blaster {
 
     public Blaster(String name, int damage, int capacity, int speed) {
         if (capacity == -1) {
-            this.capacity = 2023;
+            this.capacity = Util.UNLIMITED;
         } else {
             this.capacity = capacity;
         }
@@ -33,7 +33,7 @@ public class Blaster {
         this.ammo = this.capacity;
         lastX = 0; lastY = 0;
         alanShoot = false;
-        defaultBullet = new ImageIcon("src/assets/alan/shoot/bullets/bullet.png").getImage().getScaledInstance(16,28,Image.SCALE_DEFAULT);
+        defaultBullet = new ImageIcon("src/assets/alan/shoot/bullets/bulletB.png").getImage().getScaledInstance(16,28,Image.SCALE_DEFAULT);
         for (int i = 0; i < 5; i++) {
             explosion.add(new ImageIcon("src/assets/alan/shoot/explosion/explosion" + i + ".png").getImage());
         }
@@ -52,14 +52,11 @@ public class Blaster {
     }
     public int getAmmo() {return ammo;}
     public void setAmmo(int a) {this.ammo = a;}
-
-    public void setAlanShoot(boolean alanShoot) {
-        this.alanShoot = alanShoot;
-    }
+    public void setAlanShoot(boolean alanShoot) {this.alanShoot = alanShoot;}
 
     public boolean useAmmo() {
         if (ammo > 0) {
-            if (capacity != 2023) {
+            if (capacity != Util.UNLIMITED) {
                 ammo--;
             }
             return true;
@@ -71,15 +68,17 @@ public class Blaster {
     // SHOOT - CHECKS IF PLAYER WANTS TO SHOOT AND IF TIMER ALLOWS, ADDS BULLET IF ALLOWED
     public boolean shoot(boolean[] keys, int velY, Graphics g, Alan alan) {
         blastAnim(g, alan);
-        if (alan.getState() == Alan.FALL && keys[Util.space] && shootTimer.getElapsedTime() > 0.12 && velY > 0) {
-            if (useAmmo()) {
-                shootTimer.restart();
-                // add bullet
-                bullets.add(new Bullet(alan.getX(false) + (alan.getDir() == Alan.LEFT ? 2 : 8), alan.getY(false) + alan.getVelY() + 10,
-                        alan.getY(false) + alan.getVelY() + 10,
-                        defaultBullet, Util.rand.nextDouble(-1,1)));
-                alanShoot = true;
-                return true;
+        if (keys[Util.space]) {
+            if (alan.getState() == Alan.FALL && shootTimer.getElapsedTime() > Util.SHOOTCOOLDOWN && velY > 0) {
+                if (useAmmo()) {
+                    shootTimer.restart();
+                    // add bullet
+                    bullets.add(new Bullet(alan.getX(false) + (alan.getDir() == Util.LEFT ? 2 : 8), alan.getY(false) + alan.getVelY() + 10,
+                            alan.getY(false) + alan.getVelY() + 10,
+                            defaultBullet, Util.rand.nextDouble(-1,1)));
+                    alanShoot = true;
+                    return true;
+                }
             }
         }
         return false;
@@ -94,7 +93,7 @@ public class Blaster {
             // block collisions
             if (getCollision(b, alan, map, powerups)) {
                 rm.add(b);
-            } else if (b.getY(false,alan) > b.getStartY() + 300) {
+            } else if (b.getY(false,alan) > b.getStartY() + (powerups.getPower(Powerups.LASERSIGHT) == 1 ? Util.EXTENDEDBULLETRANGE : Util.BULLETRANGE)) { // powerup for laser
                 rm.add(b);
             } else if (alan.getNearestY() < 10) {
                 rm.add(b);
@@ -173,7 +172,7 @@ public class Blaster {
         for (int i = blastPlaces.size()-1; i >= 0; i--) {
             g.drawImage(explosion.get(blastPlaces.get(i)),blastBlocks.get(i).getX(true),blastBlocks.get(i).getY(true, alan), null);
             blastPlaces.set(i, blastPlaces.get(i)+1);
-            if (blastPlaces.get(i) == 5) {
+            if (blastPlaces.get(i) == explosion.size()) {
                 blastBlocks.remove(i);
                 blastPlaces.remove(i);
             }
@@ -207,8 +206,10 @@ public class Blaster {
 
 // BULLET CLASS
 class Bullet {
-    private int y, startY, width, height;
-    private double x, velX;
+    private int y;
+    private final int startY, width, height;
+    private double x;
+    private final double velX;
     private Image img;
     private final Rectangle rect;
 

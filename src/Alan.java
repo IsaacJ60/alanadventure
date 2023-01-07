@@ -15,12 +15,11 @@ import java.util.ArrayList;
 
 public class Alan {
     // CONSTANTS
-    public static final int LEFT = 0, RIGHT = 1; // constants for direction
     public static final int IDLE = 0, WALK = 1, JUMP = 2, FALL = 3; // constants for state
 
     // STATES
     private int state = IDLE; // current state (e.g., idle, walk, fall, shoot) to change what animation is playing
-    private int dir = RIGHT; // the direction alan is facing
+    private int dir = Util.RIGHT; // the direction alan is facing
     private boolean invul;
 
     // PLAYER INFO AND STATS
@@ -148,6 +147,10 @@ public class Alan {
     public Blaster getWeapon() {return weapon;} // gets current weapon
     public void setWeapon(Blaster weapon) {this.weapon = weapon;} // sets current weapon
     public void setWeaponSpeed(int s) {weapon.setSpeed(s);}
+    public double getVelX() {return velX;}
+    public void setHealth(int h) {health = h;}
+    public void setHealthProgress(int h) {healthProgress = h;}
+    public void setMaxHealth(int h) {maxHealth = h;}
     public int getX(boolean adjusted) { // gets x
         if (adjusted) { // whether you want x relative to the gameplay window
             return this.x + Background.getWallLeftPos()+Background.getWallWidth();
@@ -175,7 +178,7 @@ public class Alan {
     }
 
     public int move(boolean[] keys, Graphics g, Map map, Powerups powerups, EnemyManager enemies) {
-        getSnakeCollision(GamePanel.getEnemyManager().getSnakes()); // collision between alan and snakes
+        getSnakeCollision(enemies.getSnakes()); // collision between alan and snakes
         getCollision(g,this, map); // getting collision between player and blocks
         alanRect.setLocation(x+5,y); // setting rect location
         boolean wallCollideLeft = false, wallCollideRight = false;
@@ -195,11 +198,11 @@ public class Alan {
             // if "A" key pressed and player allowed to move left
             if (keys[Util.a] && moveLeft) {
                 // checking if switched direction, reset velocity
-                if (dir == RIGHT) {
+                if (dir == Util.RIGHT) {
                     velX = 0;
                 }
                 // changing direction state to left
-                dir = LEFT;
+                dir = Util.LEFT;
                 // changing horizontal position towards left
                 x -= velX;
                 // ensuring x doesn't go out of bounds
@@ -212,11 +215,11 @@ public class Alan {
             // if "D" key pressed and player allowed to move right
             if (keys[Util.d] && moveRight) {
                 // checking if switched direction, reset velocity
-                if (dir == LEFT) {
+                if (dir == Util.LEFT) {
                     velX = 0;
                 }
                 // changing direction state to right
-                dir = RIGHT;
+                dir = Util.RIGHT;
                 // changing horizontal position towards right
                 x += velX;
                 // making sure player doesn't go out of bounds
@@ -504,7 +507,7 @@ public class Alan {
         }
 
         // drawing animation based on direction
-        if (dir == LEFT) {
+        if (dir == Util.LEFT) {
             if (weapon.isAlanShoot()) {
                 g.drawImage(shootL.get((int) animFrame), getX(true) - 5, getY(true) + 3, null);
             } else {

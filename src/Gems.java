@@ -27,7 +27,7 @@ public class Gems {
         for (int i = 0; i < 4; i++) {
             gemL.add(new ImageIcon("src/assets/gems/gemL"+i+".png").getImage());
         }
-        gemL0 = gemL.get(0).getScaledInstance(30,30,Image.SCALE_DEFAULT);
+        gemL0 = new ImageIcon("src/assets/gems/gemL0B.png").getImage().getScaledInstance(30,30,Image.SCALE_DEFAULT);
     }
 
     public Gems(int g) {
@@ -58,7 +58,7 @@ public class Gems {
         int xPos = 65;
         int gemsOffset = alan.getScreenOffset()/5;
         g.setFont(Util.fontTextSmall);
-        g.setColor(new Color(204, 0, 1));
+        g.setColor(new Color(0, 58, 109));
         g.drawImage(gemL0, 22,gemsOffset+26,null);
         g.fillRect(45,gemsOffset+50,140,2);
         g.drawLine(185, gemsOffset+50, 192, gemsOffset+45);
@@ -85,7 +85,7 @@ public class Gems {
                 activeGems.remove(i);
             }
             //TODO: "500*Util.BLOCKLENGTH" -> ASCAP
-            if (activeGem.getGemTimer().getElapsedTime() > 10 || activeGem.getY(false, alan) > 500*Util.BLOCKLENGTH) {
+            if (activeGem.getGemTimer().getElapsedTime() > 10 || activeGem.getY(false, alan) > map.getRows()*Util.BLOCKLENGTH-500) {
                 activeGems.remove(i);
             }
             activeGem.draw(g, alan, map);

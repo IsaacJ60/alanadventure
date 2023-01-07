@@ -29,7 +29,7 @@ public class Intro extends JPanel implements KeyListener, ActionListener, MouseL
 
         bg = new Background();
 
-        powers = new Powerups(2);
+        powers = new Powerups();
 
         alan = new Alan(20, HEIGHT/2+50, new Blaster("Machine Gun", 10,-1,13), 4, 4, 0);
 
@@ -101,13 +101,19 @@ public class Intro extends JPanel implements KeyListener, ActionListener, MouseL
     }
     @Override
     public void paint(Graphics g) {
-        bg.draw(g, 0, alan, true, true);
+        // BLOCKS
+        bg.draw(g, 0, alan, true, true, true);
+
+        // GAMEPLAY ELEMENTS
         alan.draw(g, keys, GameManager.intromap, powers, enemyManager);
-        UI.displayAll(g, alan, powers);
         g.setFont(Util.fontTitle6);
+        g.setColor(new Color(245,248,247));
         g.drawString("ALAN'S", 372,420-alan.getOffset()+alan.getScreenOffset());
         g.drawString("ADVENTURE", 322,475-alan.getOffset()+alan.getScreenOffset());
+
+        // UI ELEMENTS
         GameManager.getGemManager().displayGems(g,true,false, alan);
+        UI.displayAll(g, alan, powers);
 
         // opacity decrease
         if (alan.getY(false) > 25*Util.BLOCKLENGTH) {

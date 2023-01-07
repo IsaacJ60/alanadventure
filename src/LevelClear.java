@@ -9,10 +9,11 @@ public class LevelClear extends JPanel implements KeyListener, ActionListener, M
 
     AAdventure mainFrame;
 
-    private final boolean[] keys;
+    private static boolean[] keys;
 
     private static int WIDTH = AAdventure.getGameWidth(), HEIGHT = AAdventure.getGameHeight();
     private static int tarX, tarY;
+    private static int[] randomPowerups = new int[3];
 
     Background bg;
 
@@ -43,13 +44,12 @@ public class LevelClear extends JPanel implements KeyListener, ActionListener, M
     public static int getHEIGHT() {return HEIGHT;}
     public static void setHEIGHT(int h) {HEIGHT = h;}
     public static void setAlpha(int a) {alpha = a;}
+    public static void setRandomPowerups(int a, int b, int c) {randomPowerups = new int[]{a,b,c};}
+    public static void resetSpace() {keys[Util.space] = false;}
 
     // MouseListener
     @Override
-    public void mouseClicked(MouseEvent e) {
-        requestFocus();
-        AAdventure.setCurrPanel("GAME");
-    }
+    public void mouseClicked(MouseEvent e) {;}
     @Override
     public void mouseEntered(MouseEvent e) {;}
     @Override
@@ -90,7 +90,13 @@ public class LevelClear extends JPanel implements KeyListener, ActionListener, M
     public void paint(Graphics g) {
         g.setColor(Color.BLACK);
         g.fillRect(0,0,900,700);
-        bg.draw(g, new Map(new Block[100][9]), true, false);
+        bg.draw(g, new Map(new Block[100][9]), true, false, false);
+
+        // UI ELEMENTS
+        GameManager.getGemManager().displayGems(g,false,true, GamePanel.getAlan());
+        UI.displayAll(g, GamePanel.getAlan(), GamePanel.getPowerups());
+
+        GamePanel.getPowerups().choosePower(g, randomPowerups, keys);
 
         alpha = Util.increaseOpacity(alpha, false);
         Util.overlay(g,0,0,0,alpha);

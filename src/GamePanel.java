@@ -17,8 +17,8 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener, Mo
 
     private static Alan alan;
     private static EnemyManager enemyManager;
-    Blaster mgun;
-    Powerups powers;
+    private static Blaster mgun;
+    private static Powerups powers;
 
     public GamePanel(AAdventure a) {
         mainFrame = a;
@@ -37,7 +37,7 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener, Mo
 
         alan = new Alan(150, HEIGHT/2-50, mgun, 4, 4, 0);
 
-        powers = new Powerups(2);
+        powers = new Powerups();
 
         enemyManager = new EnemyManager();
 
@@ -59,12 +59,11 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener, Mo
     public static void setAlanCoords(int x, int y) {alan.setX(x); alan.setY(y);}
     public static EnemyManager getEnemyManager(){return enemyManager;}
     public static void setAlpha(int a) {alpha = a;}
+    public static Powerups getPowerups() {return powers;}
 
     // MouseListener
     @Override
-    public void mouseClicked(MouseEvent e) {
-        powers.activatePower(Powerups.GUNPOWDER);
-    }
+    public void mouseClicked(MouseEvent e) {}
     @Override
     public void mouseEntered(MouseEvent e) {;}
     @Override
@@ -112,14 +111,18 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener, Mo
     }
     @Override
     public void paint(Graphics g) {
-        bg.draw(g, Util.getLevel(), alan, true, true);
-        enemyManager.drawEnemies(g, MapList.getBlocksWithoutWallImages());
-        UI.displayAll(g, alan, powers);
-        GameManager.getGemManager().displayGems(g,false,true, alan);
-        GameManager.getGemManager().drawGems(g, alan, MapList.getAllMaps().get(Util.getLevel()));
-        powers.usePowers(alan);
+        // BLOCKS
+        bg.draw(g, Util.getLevel(), alan, true, true, true);
 
+        // GAMEPLAY ELEMENTS
+        enemyManager.drawEnemies(g, MapList.getBlocksWithoutWallImages());
+        GameManager.getGemManager().drawGems(g, alan, MapList.getAllMaps().get(Util.getLevel()));
+        powers.usePowers(alan, g);
         alan.draw(g, keys, MapList.getAllMaps().get(Util.getLevel()), powers, enemyManager);
+
+        // UI ELEMENTS
+        GameManager.getGemManager().displayGems(g,false,true, alan);
+        UI.displayAll(g, alan, powers);
 
         alpha = Util.increaseOpacity(alpha, false);
         Util.overlay(g,0,0,0,alpha);

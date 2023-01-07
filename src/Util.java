@@ -14,6 +14,10 @@ public class Util {
     public static void setLevel(int level) {Util.level = level;}
 
     // GAME CONSTANTS
+    public static final double SHOOTCOOLDOWN = 0.12;
+    public static final int BULLETRANGE = 300;
+    public static final int EXTENDEDBULLETRANGE = 400;
+    public static final int UNLIMITED = 2023;
     public static final int LEVELS = 10;
     public static final int DEFAULTCOLUMNS = 9;
     public static final int BLOCKLENGTH = 35;
