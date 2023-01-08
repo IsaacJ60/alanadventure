@@ -7,7 +7,8 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener, Mo
 
     AAdventure mainFrame;
 
-    private final boolean[] keys;
+    // HINT: static so that we can reset the keys after a level
+    private static boolean[] keys;
 
     private static int WIDTH = AAdventure.getGameWidth(), HEIGHT = AAdventure.getGameHeight();
     private static int tarX, tarY, alpha = 255;
@@ -60,6 +61,7 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener, Mo
     public static EnemyManager getEnemyManager(){return enemyManager;}
     public static void setAlpha(int a) {alpha = a;}
     public static Powerups getPowerups() {return powers;}
+    public static void resetMovementKeys() {keys[Util.space] = false; keys[Util.a] = false; keys[Util.d] = false;}
 
     // MouseListener
     @Override

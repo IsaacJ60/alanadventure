@@ -14,6 +14,7 @@ public class Powerups{
 
     private int[] activepowers;
 
+    private final String[] powerupIconFiles = {"rapidfire","gunpowder","lasersight","youth"};
     private Image[] powerupIcons;
     private int selected;
 
@@ -25,7 +26,6 @@ public class Powerups{
         powerupIcons = new Image[powers.length];
         selected = 0;
         //HINT: add powerup icon images here!
-        String[] powerupIconFiles = {"rapidfire","gunpowder","lasericon","youth"};
         for (int i = 0; i < powers.length; i++) {
             powerupIcons[i] = new ImageIcon("src/assets/powerups/"+powerupIconFiles[i]+".png").getImage().getScaledInstance(50,50,Image.SCALE_DEFAULT);
         }
@@ -70,9 +70,8 @@ public class Powerups{
     }
 
     public void choosePower(Graphics g, int[] chosen, boolean[] keys) {
-        if (selectionTimer.getElapsedTime() > 0.15) {
+        if (selectionTimer.getElapsedTime() > 0.2) {
             if (keys[Util.space]) {
-                System.out.println("SPACE???");
                 // HINT: activate powerup
                 if (chosen[selected] == YOUTH) {
                     activatePowerOnce(YOUTH);
@@ -92,12 +91,18 @@ public class Powerups{
         int xPos = Background.getWallLeftPos()+Background.getWallWidth()+40;
         for (int i = 0; i < chosen.length; i++) {
             if (i == selected) {
+                // selection circle
                 int diameter = 36 * 2;
                 g.setColor(Color.WHITE);
                 int x = xPos + (i * 90) - ((diameter - 50) / 2);
                 g.fillOval(x, 300 - ((diameter-50)/2), diameter, diameter);
                 g.setColor(Color.BLACK);
                 g.fillOval(x + 3, 300 - ((diameter-50)/2) + 3, diameter - 6, diameter - 6);
+
+                // text
+                g.setFont(Util.fontText);
+                g.setColor(Color.WHITE);
+                g.drawString(powerupIconFiles[chosen[i]].toUpperCase(), 900/2 - (powerupIconFiles[chosen[i]].length()*13), 200);
             }
             g.drawImage(powerupIcons[chosen[i]], xPos + (i*90), 300, null);
         }

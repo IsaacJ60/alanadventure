@@ -76,6 +76,7 @@ public class GameManager {
                 int c = Util.rand.nextInt(0,a);
                 LevelClear.setRandomPowerups(a,b,c);
                 LevelClear.resetSpace();
+                GamePanel.resetMovementKeys();
                 Powerups.selectionTimer.start();
             } else {
                 AAdventure.setCurrPanel("GAME"); // set to game if on first intro part
