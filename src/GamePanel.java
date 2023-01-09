@@ -39,6 +39,7 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener, Mo
         alan = new Alan(150, HEIGHT/2-50, mgun, 4, 4, 0);
 
         powers = new Powerups();
+        powers.activatePower(Powerups.GUNPOWDER);
 
         enemyManager = new EnemyManager();
 
