@@ -510,15 +510,15 @@ public class Alan {
         // drawing animation based on direction
         if (dir == Util.LEFT) {
             if (weapon.isAlanShoot()) {
-                g.drawImage(shootL.get((int) animFrame), getX(true) - 5, getY(true) + 3, null);
+                g.drawImage(shootL.get((int) animFrame), getX(true) - 5, getY(true), null);
             } else {
-                g.drawImage(allAnims.get(state * 2).get((int) animFrame), getX(true) - 5, getY(true) + 3, null);
+                g.drawImage(allAnims.get(state * 2).get((int) animFrame), getX(true) - 5, getY(true), null);
             }
         } else {
             if (weapon.isAlanShoot()) {
-                g.drawImage(shootR.get((int) animFrame), getX(true) - 5, getY(true) + 3, null);
+                g.drawImage(shootR.get((int) animFrame), getX(true) - 5, getY(true), null);
             } else {
-                g.drawImage(allAnims.get(state * 2 + 1).get((int) animFrame), getX(true) - 5, getY(true) + 3, null);
+                g.drawImage(allAnims.get(state * 2 + 1).get((int) animFrame), getX(true) - 5, getY(true), null);
             }
         }
         return collisionWall;

@@ -54,7 +54,7 @@ class Snake {
     private int health;
     private double x, y;
     private int dir;
-    private double speed, velX, velY, accelY; // the speed and acceleration the enemy has
+    private double speed, velX, velY, maxVelY, accelY; // the speed and acceleration the enemy has
     private double animFrame;
 
     private final ArrayList<Image> idleL = new ArrayList<>();
@@ -67,7 +67,9 @@ class Snake {
         this.y = y-height+1;
         dir = Util.RIGHT;
         this.health = 10;
-        this.speed = 2;
+        this.velX = 2;
+        this.accelY = 1;
+        this.maxVelY = 13;
         animFrame = 0;
 
         for (int i = 0; i < 4; i++) {
@@ -115,31 +117,67 @@ class Snake {
         int currColC = (int)(x+width/2)/Util.BLOCKLENGTH;
         int currColR = (int)(x+width)/Util.BLOCKLENGTH;
 
-        if (dir == Util.LEFT) {
-            if (x <= 0) {
-                dir = Util.RIGHT;
-                x += speed;
-            } else {
-                if (blocks[grndRow][currColL].getType() != Block.AIR && blocks[grndRow - 1][currColL].getType() == Block.AIR) {
-                    x -= speed;
-                } else {
+        if(blocks[grndRow][currColC].getType() != Block.AIR) {
+            velY = 0;
+            if (dir == Util.LEFT) {
+                if (x <= 0) {
                     dir = Util.RIGHT;
-                    x += speed;
-                }
-            }
-        } else {
-            if (x + width >= 9 * Util.BLOCKLENGTH) {
-                dir = Util.LEFT;
-                x -= speed;
-            } else {
-                if (blocks[grndRow][currColR].getType() != Block.AIR && blocks[grndRow - 1][currColR].getType() == Block.AIR) {
-                    x += speed;
+                    x += velX;
                 } else {
+                    if (blocks[grndRow][currColL].getType() != Block.AIR && blocks[grndRow - 1][currColL].getType() == Block.AIR) {
+                        x -= velX;
+                    } else {
+                        dir = Util.RIGHT;
+                        x += velX;
+                    }
+                }
+            } else {
+                if (x + width >= 9 * Util.BLOCKLENGTH) {
                     dir = Util.LEFT;
-                    x -= speed;
+                    x -= velX;
+                } else {
+                    if (blocks[grndRow][currColR].getType() != Block.AIR && blocks[grndRow - 1][currColR].getType() == Block.AIR) {
+                        x += velX;
+                    } else {
+                        dir = Util.LEFT;
+                        x -= velX;
+                    }
                 }
             }
         }
+        else{
+            System.out.println(velY);
+            y+=velY;
+            if(velY < maxVelY){
+                velY += accelY;
+            }
+        }
+    }
+
+    public void getCollision(Map map, Alan alan){
+//        Block[][] blocks = map.getMap();
+//
+//        int prevRow = (int)getY(false)/Util.BLOCKLENGTH;
+//        int nextRow = (int)getY(false)/Util.BLOCKLENGTH+1;
+//
+//        int nearestBlockY = 100, nearestAboveY = 100, nearestLeftX = 100, nearestRightX = 100, snapX = 0;
+//
+//        // top down collision
+//        for (int i = 0; i < map.getColumns(); i++) {
+//            int blockType = blocks[nextRow][i].getType();
+//            if (blockType != Block.AIR) { // if block isn't air, check for distance to player
+//                // only check top when velocity is positive (going down)
+//                if ((blockType == Block.WALL || blockType == Block.BOX || blockType == Block.PLAT) && velY >= 0) {
+//                    // checkig player has a chance of colliding with block (x value within range of block x values)
+//                    if (x+width > blocks[nextRow][i].getX(false) && x < blocks[nextRow][i].getX(false) + Util.BLOCKLENGTH) {
+//                        if (blocks[nextRow][i].getY(false, alan)-y < nearestBlockY) {
+//                            // updating nearest distance
+//                            nearestBlockY = Math.abs(blocks[nextRow][i].getY(false, alan)-(y+height));
+//                        }
+//                    }
+//                }
+//            }
+//        }
     }
 
     public void draw(Graphics g, Block[][] blocks) {
