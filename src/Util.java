@@ -15,6 +15,7 @@ public class Util {
 
     // GAME CONSTANTS
     public static final double SHOOTCOOLDOWN = 0.12;
+    public static final int MAGINCREASE = 2;
     public static final int BULLETRANGE = 300;
     public static final int EXTENDEDBULLETRANGE = 400;
     public static final int UNLIMITED = 2023;

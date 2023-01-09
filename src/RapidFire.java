@@ -7,3 +7,4 @@ public class RapidFire implements usePowers {
         alan.setWeaponSpeed(20);
     }
 }
+

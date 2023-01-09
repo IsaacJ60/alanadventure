@@ -291,7 +291,7 @@ public class Alan {
             if (getRect().intersects(s.getRect())) {
                 if(velY > 0 && y+height > s.getY(false)){
                     snakes.remove(s);
-                    velY -= 24;
+                    velY = -6;
                     GameManager.getGemManager().spawnGems((int)s.getX(false),(int)s.getY(false), 3);
                     return s;
                 }
