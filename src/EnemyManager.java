@@ -23,7 +23,7 @@ public class EnemyManager{
 
     public void generateSnakes(Block[][] blocks, Alan alan) {
         Random rand = new Random();
-        for(int i=1; i< blocks.length; i++){
+        for(int i=Util.GENERATIONSTART; i< blocks.length; i++){
             for(int j=1; j<blocks[i].length-1; j++) {
                 if (blocks[i-1][j].getType() == Block.AIR && blocks[i][j].getType() != Block.AIR && blocks[i][j].getType() != Block.SPIKE) {
                     if(rand.nextInt(100)<=20) {
@@ -118,6 +118,7 @@ class Snake {
         int currColR = (int)(x+width)/Util.BLOCKLENGTH;
 
         if(blocks[grndRow][currColC].getType() != Block.AIR) {
+            y = grndRow * Util.BLOCKLENGTH - height;
             velY = 0;
             if (dir == Util.LEFT) {
                 if (x <= 0) {
@@ -152,32 +153,6 @@ class Snake {
                 velY += accelY;
             }
         }
-    }
-
-    public void getCollision(Map map, Alan alan){
-//        Block[][] blocks = map.getMap();
-//
-//        int prevRow = (int)getY(false)/Util.BLOCKLENGTH;
-//        int nextRow = (int)getY(false)/Util.BLOCKLENGTH+1;
-//
-//        int nearestBlockY = 100, nearestAboveY = 100, nearestLeftX = 100, nearestRightX = 100, snapX = 0;
-//
-//        // top down collision
-//        for (int i = 0; i < map.getColumns(); i++) {
-//            int blockType = blocks[nextRow][i].getType();
-//            if (blockType != Block.AIR) { // if block isn't air, check for distance to player
-//                // only check top when velocity is positive (going down)
-//                if ((blockType == Block.WALL || blockType == Block.BOX || blockType == Block.PLAT) && velY >= 0) {
-//                    // checkig player has a chance of colliding with block (x value within range of block x values)
-//                    if (x+width > blocks[nextRow][i].getX(false) && x < blocks[nextRow][i].getX(false) + Util.BLOCKLENGTH) {
-//                        if (blocks[nextRow][i].getY(false, alan)-y < nearestBlockY) {
-//                            // updating nearest distance
-//                            nearestBlockY = Math.abs(blocks[nextRow][i].getY(false, alan)-(y+height));
-//                        }
-//                    }
-//                }
-//            }
-//        }
     }
 
     public void draw(Graphics g, Block[][] blocks) {

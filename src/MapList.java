@@ -213,7 +213,7 @@ class Map {
     public void generateBlocks() {
         generatePlatBlocks();
         generateWallBlocks(); // BOX BLOCKS GENERATED WITHIN WALL BLOCKS
-        generationOfFreeStandingRandomizedBreakableBoxBlocks("WOOOOO!OO!O!O!O!O!O");
+        generationOfFreeStandingRandomizedBreakableBoxBlocks("generationOfFreeStandingRandomizedBreakableBoxBlocks");
     }
 
     public void generationOfFreeStandingRandomizedBreakableBoxBlocks(String s) {
