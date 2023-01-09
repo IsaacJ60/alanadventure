@@ -56,7 +56,7 @@ public class Gems {
 
     public void displayGems(Graphics g, boolean total, boolean current, Alan alan) {
         int xPos = 65;
-        int gemsOffset = alan.getScreenOffset()/5;
+        int gemsOffset = 0;
         g.setFont(Util.fontTextSmall);
         g.setColor(new Color(0, 58, 109));
         g.drawImage(gemL0, 22,gemsOffset+26,null);

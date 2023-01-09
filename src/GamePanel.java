@@ -14,7 +14,7 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener, Mo
     private static int tarX, tarY, alpha = 255;
     private static boolean spaced = false, prevSpaced = false;
 
-    Background bg;
+    private static Background bg;
 
     private static Alan alan;
     private static EnemyManager enemyManager;
@@ -61,6 +61,7 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener, Mo
     public static EnemyManager getEnemyManager(){return enemyManager;}
     public static void setAlpha(int a) {alpha = a;}
     public static Powerups getPowerups() {return powers;}
+    public static void setPowerups(Powerups powerups) {powers = powerups;}
     public static void resetMovementKeys() {keys[Util.space] = false; keys[Util.a] = false; keys[Util.d] = false;}
 
     // MouseListener

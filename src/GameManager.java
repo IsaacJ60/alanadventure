@@ -68,6 +68,7 @@ public class GameManager {
             GamePanel.setAlan(new Alan(150, HEIGHT/2-50, GamePanel.getAlan().getWeapon(), 4, GamePanel.getAlan().getMaxHealth(), GamePanel.getAlan().getHealthProgress())); // resetting alan
             Intro.setAlpha(0);
             GamePanel.setAlpha(255);
+            GamePanel.setPowerups(new Powerups());
         } else {
             if (l != 1) {
                 AAdventure.setCurrPanel("LEVELCLEAR"); // changing panel to level clear panel

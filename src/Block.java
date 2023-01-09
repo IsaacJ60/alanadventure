@@ -12,7 +12,7 @@ public class Block {
     private Tile tile;
 
     // TYPE CONSTANTS
-    public static final int AIR = 0, BOX = 1, PLAT = 2, SPIKE = 3, WALL = 4;
+    public static final int AIR = 0, BOX = 1, PLAT = 2, SPIKE = 3, WALL = 4, PORTAL = 5;
     // store type of block
     private int type;
 
