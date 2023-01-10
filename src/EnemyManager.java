@@ -26,8 +26,8 @@ public class EnemyManager{
         Random rand = new Random();
         for(int i=Util.GENERATIONSTART; i< blocks.length; i++){
             for(int j=1; j<blocks[i].length-1; j++) {
-                if (blocks[i-1][j].getType() == Block.AIR && blocks[i][j].getType() != Block.AIR && blocks[i][j].getType() != Block.SPIKE) {
-                    if(rand.nextInt(100)<=20) {
+                if ((blocks[i-1][j].getType() == Block.AIR && blocks[i][j].getType() != Block.AIR && blocks[i][j].getType() != Block.SPIKE) && (blocks[i-1][j-1].getType() == Block.AIR && blocks[i][j-1].getType() != Block.AIR)) {
+                    if(rand.nextInt(100)<=40) {
                         addSnake(blocks[i][j].getX(false), blocks[i][j].getY(false, alan));
                     }
                 }

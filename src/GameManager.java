@@ -27,7 +27,7 @@ public class GameManager {
 
         // making default levels
         for (int i = 0; i < Util.LEVELS; i++) { // loading all levels
-            int rows = 100;
+            int rows = 200;
             Map tmp = new Map(rows);
             for (int j = 3; j < 6; j++) {
                 tmp.placeBlock(15,j,Block.PLAT,Util.INDEX,Util.NEUTRAL);
