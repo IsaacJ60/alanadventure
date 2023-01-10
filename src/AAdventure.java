@@ -9,7 +9,7 @@ public class AAdventure extends JFrame { // frame
     private LevelClear levelClear;
     private Settings settings;
     private GameOver gameOver;
-    private Shop shop;
+    private ShopPanel shop;
 
     Sound sound;
 
@@ -57,7 +57,7 @@ public class AAdventure extends JFrame { // frame
         gameOver = new GameOver(this);
         add("GAMEOVER", gameOver);
 
-        shop = new Shop(this);
+        shop = new ShopPanel(this);
         add("SHOP", shop);
 
         pack();

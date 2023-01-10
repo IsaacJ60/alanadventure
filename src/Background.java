@@ -7,7 +7,7 @@ import java.awt.*;
 
 public class Background {
     private static int wallWidth, wallLeftPos, wallRightPos;
-    private final Image bg;
+    private static Image bg;
 
     // manages basic background elements and ui as well as side walls
     public Background() {
@@ -20,6 +20,7 @@ public class Background {
     public static int getWallWidth() {return wallWidth;}
     public static int getWallLeftPos() {return wallLeftPos;}
     public static int getWallRightPos() {return wallRightPos;}
+    public void setBg(Image b) {bg = b;}
 
     // main driver code for drawing map and its blocks
     public void draw(Graphics g, int level, Alan alan, boolean includeWalls, boolean includeBlocks, boolean includeBG) {

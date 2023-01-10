@@ -1,110 +1,70 @@
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
+import java.util.ArrayList;
 
-//TODO: GIVE REWARD EVERY X LEVELS
+public class Shop {
+    private ArrayList<ArrayList<Cosmetics>> allItems;
+    private int selectedItem;
+    private int selectedType;
 
-public class Shop extends JPanel implements KeyListener, ActionListener, MouseListener {
-    Timer timer;
-
-    AAdventure mainFrame;
-
-    private static boolean[] keys;
-
-    private static int WIDTH = AAdventure.getGameWidth(), HEIGHT = AAdventure.getGameHeight();
-    private static int tarX, tarY;
-    private static int[] randomPowerups = new int[3];
-
-    Background bg;
-
-    private static int alpha;
-
-    public Shop(AAdventure a) {
-        mainFrame = a;
-        alpha = 255;
-        keys = new boolean[KeyEvent.KEY_LAST+1];
-        setPreferredSize(new Dimension(WIDTH, HEIGHT));
-        setFocusable(true);
-        requestFocus();
-        // adding listener for events
-        addMouseListener(this);
-        addKeyListener(this);
-
-        bg = new Background();
-
-        timer = new Timer(25, this); // manages frames
-        timer.start();
+    public Shop(ArrayList<ArrayList<Cosmetics>> allItems) {
+        this.allItems = allItems;
+        this.selectedItem = 0;
+        this.selectedType = 0;
     }
 
-    // getter and setter for mouse pos, lives, and level
-    public static int getTarX() {return tarX;}
-    public static int getTarY() {return tarY;}
-    public static int getWIDTH() {return WIDTH;}
-    public static void setWIDTH(int w) {WIDTH = w;}
-    public static int getHEIGHT() {return HEIGHT;}
-    public static void setHEIGHT(int h) {HEIGHT = h;}
-    public static void setAlpha(int a) {alpha = a;}
-    public static void setRandomPowerups(int a, int b, int c) {randomPowerups = new int[]{a,b,c};}
-    public static void resetSpace() {keys[Util.space] = false;}
+    public void addCosmetic(int type, Cosmetics c) {allItems.get(type).add(c);}
 
-    // MouseListener
-    @Override
-    public void mouseClicked(MouseEvent e) {;}
-    @Override
-    public void mouseEntered(MouseEvent e) {;}
-    @Override
-    public void mouseExited(MouseEvent e) {;}
-    @Override
-    public void mousePressed(MouseEvent e) {;}
-    @Override
-    public void mouseReleased(MouseEvent e) {;}
-    @Override
-    public void keyTyped(KeyEvent e) {;}
-
-    @Override
-    public void keyPressed(KeyEvent e) {
-        int key = e.getKeyCode();
-        keys[key] = true;
-//        GameManager.requestSettings(keys);
-    }
-
-    @Override
-    public void keyReleased(KeyEvent e) {
-        int key = e.getKeyCode();
-        if (keys[KeyEvent.VK_ESCAPE]) {
-            String last = AAdventure.getLastPanel();
-            AAdventure.setCurrPanel(AAdventure.getLastPanel());
-            AAdventure.setLastPanel(last);
-            Intro.getAlan().setX(Background.getWallRightPos()-Background.getWallLeftPos()-Background.getWallWidth()-50);
-            Intro.resetMovementKeys();
+    public void draw(Graphics g) {
+        for (int i = 0; i < allItems.get(selectedType).size(); i++) {
+            Cosmetics item = allItems.get(selectedType).get(i);
+            g.drawImage(item.getImg(), (AAdventure.getGameWidth()/2)-(item.getWidth()/2), 100+(i*200), null);
         }
-        keys[key] = false;
-    }
-
-    // ActionListener
-    @Override
-    public void actionPerformed(ActionEvent e) {
-//        Point mouse = MouseInfo.getPointerInfo().getLocation(); // loc of mouse on screen
-//        Point offset = getLocationOnScreen(); // loc of panel
-//        // getting mouse pos
-//        tarX = mouse.x - offset.x;
-//        tarY = mouse.y - offset.y;
-        requestFocus();
-        mainFrame.start();
-        repaint();
-    }
-    @Override
-    public void paint(Graphics g) {
-        g.setColor(Color.BLACK);
-        g.fillRect(0,0,900,700);
-        bg.draw(g, new Map(new Block[100][9]), true, false, false);
-
-        // UI ELEMENTS
-        GameManager.getGemManager().displayGems(g,true,false, GamePanel.getAlan());
-        UI.displayAll(g, GamePanel.getAlan(), GamePanel.getPowerups());
-
-        alpha = Util.increaseOpacity(alpha, false);
-        Util.overlay(g,0,0,0,alpha);
     }
 }
 
+class Cosmetics {
+    private String type;
+    private Image img;
+
+    private int width, height;
+
+    Cosmetics(String type, ImageIcon img, int width, int height) {
+        this.type = type;
+        this.width = width;
+        this.height = height;
+        this.img = img.getImage().getScaledInstance(width, height, Image.SCALE_DEFAULT);
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public Image getImg() {
+        return img;
+    }
+
+    public void setImg(Image img) {
+        this.img = img;
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public void setWidth(int width) {
+        this.width = width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
+    public void setHeight(int height) {
+        this.height = height;
+    }
+}
