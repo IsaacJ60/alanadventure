@@ -178,7 +178,7 @@ public class Alan {
     }
 
     public int move(boolean[] keys, Graphics g, Map map, Powerups powerups, EnemyManager enemies) {
-        getSnakeCollision(enemies.getSnakes()); // collision between alan and snakes
+        getEnemyCollision(enemies.getSnakes(), enemies.getSnails()); // collision between alan and snakes
         getCollision(g,this, map); // getting collision between player and blocks
         alanRect.setLocation(x+5,y); // setting rect location
         boolean wallCollideLeft = false, wallCollideRight = false;
@@ -286,14 +286,13 @@ public class Alan {
         }
     }
 
-    public Snake getSnakeCollision(ArrayList<Snake> snakes) {
+    public void getEnemyCollision(ArrayList<Snake> snakes, ArrayList<Snail> snails) {
         for (Snake s:snakes) {
             if (getRect().intersects(s.getRect())) {
                 if(velY > 0 && y+height > s.getY(false)){
                     snakes.remove(s);
                     velY = -6;
                     GameManager.getGemManager().spawnGems((int)s.getX(false),(int)s.getY(false), 3);
-                    return s;
                 }
                 else{
                     if (invulTimer.getElapsedTime() >= 2) {
@@ -307,10 +306,21 @@ public class Alan {
             }
         }
 
+        for (Snail s:snails) {
+            if (getRect().intersects(s.getRect())) {
+                if (invulTimer.getElapsedTime() >= 2) {
+                    System.out.println("-1 hp");
+                    health--;
+                    invulTimer.restart();
+                } else {
+                    System.out.print(".");
+                }
+            }
+        }
+
         if(health == 0){
             GameManager.gameOver();
         }
-        return null;
     }
 
     // get collision on 4 sides of blocks

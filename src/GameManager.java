@@ -93,6 +93,7 @@ public class GameManager {
             Util.setLevel(l); // setting level to l
             GamePanel.getEnemyManager().clearEnemies();
             GamePanel.getEnemyManager().generateSnakes(MapList.getBlocksWithoutWallImages(), GamePanel.getAlan());
+            GamePanel.getEnemyManager().generateSnails(MapList.getBlocksWithoutWallImages(), GamePanel.getAlan());
             //TODO: perhaps make a reset() function in alan to avoid bugs from recreating an instance each level
             GamePanel.setAlan(new Alan(150, HEIGHT/2-50, GamePanel.getAlan().getWeapon(), GamePanel.getAlan().getHealth(), GamePanel.getAlan().getMaxHealth(), GamePanel.getAlan().getHealthProgress())); // resetting alan
         }
