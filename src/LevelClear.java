@@ -65,7 +65,7 @@ public class LevelClear extends JPanel implements KeyListener, ActionListener, M
     public void keyPressed(KeyEvent e) {
         int key = e.getKeyCode();
         keys[key] = true;
-        GameManager.requestSettings(keys);
+//        GameManager.requestSettings(keys);
     }
 
     @Override

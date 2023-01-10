@@ -36,7 +36,7 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener, Mo
         //TODO: create bullet manager class
         mgun = new Blaster("Machine Gun", 10,8,13, "bulletB");
 
-        alan = new Alan(150, HEIGHT/2-50, mgun, 4, 4, 0);
+        alan = new Alan(150, HEIGHT/2-50, mgun, 4, 4, 0, Util.a, Util.d);
 
         powers = new Powerups();
 
@@ -86,7 +86,6 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener, Mo
             prevSpaced = spaced;
             spaced = true;
         }
-        GameManager.requestSettings(keys);
     }
 
     @Override
@@ -131,3 +130,4 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener, Mo
         Util.overlay(g,0,0,0,alpha);
     }
 }
+

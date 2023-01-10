@@ -28,6 +28,9 @@ public class Alan {
     private int x, y;
     private int health, maxHealth, healthProgress; // current health, health capacity, and progress to +1 maximum health
 
+    // MOVEMENT UTIL
+    private int keyLeft, keyRight;
+
     // MOVEMENT LIMITERS AND VELOCITIES
     private boolean moveLeft = true, moveRight = true;
 
@@ -60,7 +63,7 @@ public class Alan {
     Util.CustomTimer jumpTimer = new Util.CustomTimer();
     Util.CustomTimer invulTimer = new Util.CustomTimer();
 
-    public Alan(int posX, int posY, Blaster weapon, int health, int maxHealth, int healthProgress) {
+    public Alan(int posX, int posY, Blaster weapon, int health, int maxHealth, int healthProgress, int keyLeft, int keyRight) {
         x = posX;
         y = posY;
         this.health = health;
@@ -78,6 +81,9 @@ public class Alan {
         this.accelX = 0.7;
         this.animFrame = 0;
         this.weapon = weapon;
+
+        this.keyLeft = keyLeft;
+        this.keyRight = keyRight;
 
         offset = 0;
         screenOffset = 0;
@@ -189,14 +195,14 @@ public class Alan {
         }
 
         // left right movement keys pressed
-        if (keys[Util.a] || keys[Util.d]) {
+        if (keys[keyLeft] || keys[keyRight]) {
             // checking if max speed not yet reached
             if (velX < maxVelX) {
                 velX += accelX;
             }
 
             // if "A" key pressed and player allowed to move left
-            if (keys[Util.a] && moveLeft) {
+            if (keys[keyLeft] && moveLeft) {
                 // checking if switched direction, reset velocity
                 if (dir == Util.RIGHT) {
                     velX = 0;
@@ -213,7 +219,7 @@ public class Alan {
             }
 
             // if "D" key pressed and player allowed to move right
-            if (keys[Util.d] && moveRight) {
+            if (keys[keyRight] && moveRight) {
                 // checking if switched direction, reset velocity
                 if (dir == Util.LEFT) {
                     velX = 0;
@@ -223,7 +229,7 @@ public class Alan {
                 // changing horizontal position towards right
                 x += velX;
                 // making sure player doesn't go out of bounds
-                if (Math.max(x,Background.getWallRightPos()-Background.getWallLeftPos()-Background.getWallWidth()-width) != x) {
+                if (Math.min(x,Background.getWallRightPos()-Background.getWallLeftPos()-Background.getWallWidth()-width) != x) {
                     wallCollideRight = true;
                 }
                 x = Math.min(x, Background.getWallRightPos()-Background.getWallLeftPos()-Background.getWallWidth()-width);

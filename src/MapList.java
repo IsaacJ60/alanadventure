@@ -213,10 +213,10 @@ class Map {
     public void generateBlocks() {
         generatePlatBlocks();
         generateWallBlocks(); // BOX BLOCKS GENERATED WITHIN WALL BLOCKS
-        generationOfFreeStandingRandomizedBreakableBoxBlocks("generationOfFreeStandingRandomizedBreakableBoxBlocks");
+        generateSemiRandomizedFreeStandingBreakableBoxBlocksWithThreeRandomSpawnPatterns("generationOfFreeStandingRandomizedBreakableBoxBlocks");
     }
 
-    public void generationOfFreeStandingRandomizedBreakableBoxBlocks(String s) {
+    public void generateSemiRandomizedFreeStandingBreakableBoxBlocksWithThreeRandomSpawnPatterns(String s) {
         for (int i = Util.GENERATIONSTART; i < rows-5; i+=Util.MAXCHUNKSIZE) {
             //HINT: getting type of wall, if doesn't match any types then don't spawn
             // - increasing bound decreases wall spawns

@@ -19,12 +19,12 @@ public class EnemyManager{
     public ArrayList<Bat> getBats() {return bats;}
 
     // HINT: modify enemy health here
-    private void addSnake(int x, int y) {snakes.add(new Snake(x,y, 20));}
+    private void addSnake(int x, int y) {snakes.add(new Snake(x,y, 10));}
     private void addBat(int x, int y) {bats.add(new Bat(x,y, 30));}
 
     public void generateSnakes(Block[][] blocks, Alan alan) {
         Random rand = new Random();
-        for(int i=Util.GENERATIONSTART; i< blocks.length; i++){
+        for(int i=Util.GENERATIONSTART; i<blocks.length-5; i++){
             for(int j=1; j<blocks[i].length-1; j++) {
                 if (blocks[i-1][j].getType() == Block.AIR && blocks[i][j].getType() != Block.AIR && blocks[i][j].getType() != Block.SPIKE) {
                     if(rand.nextInt(100)<=20) {

@@ -7,7 +7,7 @@ public class Intro extends JPanel implements KeyListener, ActionListener, MouseL
 
     AAdventure mainFrame;
 
-    private final boolean[] keys;
+    private static boolean[] keys;
 
     private static int WIDTH = AAdventure.getGameWidth(), HEIGHT = AAdventure.getGameHeight();
     private static int tarX, tarY, alpha = 0;
@@ -16,6 +16,8 @@ public class Intro extends JPanel implements KeyListener, ActionListener, MouseL
     private final Background bg;
     private final Powerups powers;
     private static EnemyManager enemyManager;
+
+    private Image shopLogo;
 
     public Intro(AAdventure a) {
         mainFrame = a;
@@ -27,11 +29,13 @@ public class Intro extends JPanel implements KeyListener, ActionListener, MouseL
         addMouseListener(this);
         addKeyListener(this);
 
+        shopLogo = new ImageIcon("src/assets/shop/logo.png").getImage().getScaledInstance(48,36,Image.SCALE_DEFAULT);
+
         bg = new Background();
 
         powers = new Powerups();
 
-        alan = new Alan(20, HEIGHT/2+50, new Blaster("Machine Gun", 10,-1,13, "bulletB"), 4, 4, 0);
+        alan = new Alan(20, HEIGHT/2+50, new Blaster("Machine Gun", 10,-1,13, "bulletB"), 4, 4, 0, Util.a, Util.d);
 
         enemyManager = new EnemyManager();
 
@@ -50,6 +54,7 @@ public class Intro extends JPanel implements KeyListener, ActionListener, MouseL
     public static Alan getAlan() {return alan;}
     public static void setAlan(Alan a) {alan = a;}
     public static void setAlpha(int a) {alpha = a;}
+    public static void resetMovementKeys() {keys[Util.space] = false; keys[Util.a] = false; keys[Util.d] = false;}
 
     // MouseListener
     @Override
@@ -78,7 +83,7 @@ public class Intro extends JPanel implements KeyListener, ActionListener, MouseL
     public void keyPressed(KeyEvent e) {
         int key = e.getKeyCode();
         keys[key] = true;
-        GameManager.requestSettings(keys);
+//        GameManager.requestSettings(keys);
     }
 
     @Override
@@ -105,11 +110,17 @@ public class Intro extends JPanel implements KeyListener, ActionListener, MouseL
         bg.draw(g, 0, alan, true, true, true);
 
         // GAMEPLAY ELEMENTS
-        alan.draw(g, keys, GameManager.intromap, powers, enemyManager);
         g.setFont(Util.fontTitle6);
         g.setColor(new Color(245,248,247));
         g.drawString("ALAN'S", 372,420-alan.getOffset()+alan.getScreenOffset());
         g.drawString("ADVENTURE", 322,475-alan.getOffset()+alan.getScreenOffset());
+
+        g.drawImage(shopLogo, Background.getWallRightPos()-50, 630-alan.getOffset()+alan.getScreenOffset(), null);
+
+        if (alan.draw(g, keys, GameManager.intromap, powers, enemyManager) == Util.RIGHT) {
+            AAdventure.setLastPanel(AAdventure.getCurrPanel());
+            AAdventure.setCurrPanel("SHOP");
+        }
 
         // UI ELEMENTS
         GameManager.getGemManager().displayGems(g,true,false, alan);

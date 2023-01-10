@@ -2,20 +2,26 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
-//TODO: DISPLAY LEVEL STATS
+//TODO: GIVE REWARD EVERY X LEVELS
 
-public class Settings extends JPanel implements KeyListener, ActionListener, MouseListener {
+public class Shop extends JPanel implements KeyListener, ActionListener, MouseListener {
     Timer timer;
 
     AAdventure mainFrame;
 
-    private final boolean[] keys;
+    private static boolean[] keys;
 
     private static int WIDTH = AAdventure.getGameWidth(), HEIGHT = AAdventure.getGameHeight();
-    private static int tarX, tarY, alpha = 0;
+    private static int tarX, tarY;
+    private static int[] randomPowerups = new int[3];
 
-    public Settings(AAdventure a) {
+    Background bg;
+
+    private static int alpha;
+
+    public Shop(AAdventure a) {
         mainFrame = a;
+        alpha = 255;
         keys = new boolean[KeyEvent.KEY_LAST+1];
         setPreferredSize(new Dimension(WIDTH, HEIGHT));
         setFocusable(true);
@@ -23,6 +29,8 @@ public class Settings extends JPanel implements KeyListener, ActionListener, Mou
         // adding listener for events
         addMouseListener(this);
         addKeyListener(this);
+
+        bg = new Background();
 
         timer = new Timer(25, this); // manages frames
         timer.start();
@@ -35,10 +43,13 @@ public class Settings extends JPanel implements KeyListener, ActionListener, Mou
     public static void setWIDTH(int w) {WIDTH = w;}
     public static int getHEIGHT() {return HEIGHT;}
     public static void setHEIGHT(int h) {HEIGHT = h;}
+    public static void setAlpha(int a) {alpha = a;}
+    public static void setRandomPowerups(int a, int b, int c) {randomPowerups = new int[]{a,b,c};}
+    public static void resetSpace() {keys[Util.space] = false;}
 
     // MouseListener
     @Override
-    public void mouseClicked(MouseEvent e) {}
+    public void mouseClicked(MouseEvent e) {;}
     @Override
     public void mouseEntered(MouseEvent e) {;}
     @Override
@@ -54,12 +65,19 @@ public class Settings extends JPanel implements KeyListener, ActionListener, Mou
     public void keyPressed(KeyEvent e) {
         int key = e.getKeyCode();
         keys[key] = true;
-        GameManager.requestSettings(keys);
+//        GameManager.requestSettings(keys);
     }
 
     @Override
     public void keyReleased(KeyEvent e) {
         int key = e.getKeyCode();
+        if (keys[KeyEvent.VK_ESCAPE]) {
+            String last = AAdventure.getLastPanel();
+            AAdventure.setCurrPanel(AAdventure.getLastPanel());
+            AAdventure.setLastPanel(last);
+            Intro.getAlan().setX(Background.getWallRightPos()-Background.getWallLeftPos()-Background.getWallWidth()-50);
+            Intro.resetMovementKeys();
+        }
         keys[key] = false;
     }
 
@@ -77,9 +95,16 @@ public class Settings extends JPanel implements KeyListener, ActionListener, Mou
     }
     @Override
     public void paint(Graphics g) {
-        alpha = Util.increaseOpacity(alpha, true);
+        g.setColor(Color.BLACK);
+        g.fillRect(0,0,900,700);
+        bg.draw(g, new Map(new Block[100][9]), true, false, false);
+
+        // UI ELEMENTS
+        GameManager.getGemManager().displayGems(g,true,false, GamePanel.getAlan());
+        UI.displayAll(g, GamePanel.getAlan(), GamePanel.getPowerups());
+
+        alpha = Util.increaseOpacity(alpha, false);
         Util.overlay(g,0,0,0,alpha);
-        //TODO: make settings lol
     }
 }
 

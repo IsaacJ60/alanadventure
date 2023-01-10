@@ -33,7 +33,8 @@ public class GameManager {
                 tmp.placeBlock(15,j,Block.PLAT,Util.INDEX,Util.NEUTRAL);
             }
             for (int j = 0; j < 9; j++) {
-                tmp.placeBlock(rows-10,j,Block.WALL,Util.INDEX,Util.NEUTRAL);
+                tmp.placeBlock(rows-3,j,Block.BOX,Util.INDEX,Util.NEUTRAL);
+                tmp.placeBlock(rows-2,j,Block.WALL,Util.INDEX,Util.NEUTRAL);
             }
             maplist.addMap(tmp);
         }
@@ -72,8 +73,8 @@ public class GameManager {
             AAdventure.setCurrPanel("INTRO");
             Util.setLevel(l);
             Intro.getEnemyManager().clearEnemies();
-            Intro.setAlan(new Alan(20, HEIGHT/2+50, GamePanel.getAlan().getWeapon(), 4, GamePanel.getAlan().getMaxHealth(), GamePanel.getAlan().getHealthProgress())); // resetting alan
-            GamePanel.setAlan(new Alan(150, HEIGHT/2-50, GamePanel.getAlan().getWeapon(), 4, GamePanel.getAlan().getMaxHealth(), GamePanel.getAlan().getHealthProgress())); // resetting alan
+            Intro.setAlan(new Alan(20, HEIGHT/2+50, GamePanel.getAlan().getWeapon(), 4, GamePanel.getAlan().getMaxHealth(), GamePanel.getAlan().getHealthProgress(), Util.a, Util.d)); // resetting alan
+            GamePanel.setAlan(new Alan(150, HEIGHT/2-50, GamePanel.getAlan().getWeapon(), 4, GamePanel.getAlan().getMaxHealth(), GamePanel.getAlan().getHealthProgress(), Util.a, Util.d)); // resetting alan
             Intro.setAlpha(0);
             GamePanel.setAlpha(255);
             GamePanel.setPowerups(new Powerups());
@@ -94,7 +95,7 @@ public class GameManager {
             GamePanel.getEnemyManager().clearEnemies();
             GamePanel.getEnemyManager().generateSnakes(MapList.getBlocksWithoutWallImages(), GamePanel.getAlan());
             //TODO: perhaps make a reset() function in alan to avoid bugs from recreating an instance each level
-            GamePanel.setAlan(new Alan(150, HEIGHT/2-50, GamePanel.getAlan().getWeapon(), GamePanel.getAlan().getHealth(), GamePanel.getAlan().getMaxHealth(), GamePanel.getAlan().getHealthProgress())); // resetting alan
+            GamePanel.setAlan(new Alan(150, HEIGHT/2-50, GamePanel.getAlan().getWeapon(), GamePanel.getAlan().getHealth(), GamePanel.getAlan().getMaxHealth(), GamePanel.getAlan().getHealthProgress(), Util.a, Util.d)); // resetting alan
         }
     }
 
