@@ -12,23 +12,39 @@ import java.util.Random;
 // - ENSURE ENEMIES BOUNCE OFF EACH OTHER
 
 public class EnemyManager{
-    private final ArrayList<Snake> snakes = new ArrayList<>();
-    private final ArrayList<Bat> bats = new ArrayList<>();
+    private ArrayList<Snake> snakes = new ArrayList<Snake>();
+    private ArrayList<Snail> snails = new ArrayList<Snail>();
+    private ArrayList<Bat> bats = new ArrayList<Bat>();
 
     public ArrayList<Snake> getSnakes() {return snakes;}
+    public ArrayList<Snail> getSnails() {return snails;}
     public ArrayList<Bat> getBats() {return bats;}
 
     // HINT: modify enemy health here
-    private void addSnake(int x, int y) {snakes.add(new Snake(x,y, 10));}
-    private void addBat(int x, int y) {bats.add(new Bat(x,y, 30));}
+    private void addSnake(int x, int y) {snakes.add(new Snake(x,y));}
+    private void addSnail(int x, int y, int horiDir, int vertDir) {snails.add(new Snail(x,y,horiDir,vertDir));}
+    private void addBat(int x, int y) {bats.add(new Bat(x,y));}
 
     public void generateSnakes(Block[][] blocks, Alan alan) {
         Random rand = new Random();
         for(int i=Util.GENERATIONSTART; i<blocks.length-5; i++){
             for(int j=1; j<blocks[i].length-1; j++) {
-                if (blocks[i-1][j].getType() == Block.AIR && blocks[i][j].getType() != Block.AIR && blocks[i][j].getType() != Block.SPIKE) {
-                    if(rand.nextInt(100)<=20) {
+                if ((blocks[i-1][j].getType() == Block.AIR && blocks[i][j].getType() != Block.AIR && blocks[i][j].getType() != Block.SPIKE) && (blocks[i-1][j-1].getType() == Block.AIR && blocks[i][j-1].getType() != Block.AIR)) {
+                    if(rand.nextInt(100)<=35) {
                         addSnake(blocks[i][j].getX(false), blocks[i][j].getY(false, alan));
+                    }
+                }
+            }
+        }
+    }
+
+    public void generateSnails(Block[][] blocks, Alan alan){
+        Random rand = new Random();
+        for(int i=Util.GENERATIONSTART; i< blocks.length; i++){
+            for(int j=1; j<blocks[i].length-1; j++) {
+                if(blocks[i][j-1].getType() == Block.AIR && blocks[i][j].getType() == Block.WALL && blocks[i+1][j-1].getType() == Block.AIR && blocks[i+1][j].getType() == Block.WALL) {
+                    if(rand.nextInt(100)<=20) {
+                        addSnail(blocks[i][j].getX(false), blocks[i][j].getY(false, alan), Snail.RIGHT, Snail.UP);
                     }
                 }
             }
@@ -38,20 +54,25 @@ public class EnemyManager{
     public void clearEnemies(){
         snakes.clear();
         bats.clear();
+        snails.clear();
     }
 
     public void drawEnemies(Graphics g, Block[][] blocks){
-        for(Bat b : bats){
-            b.draw(g);
-        }
         for(Snake s : snakes){
             s.draw(g, blocks);
+        }
+        for(Snail s : snails){
+            s.draw(g, blocks);
+        }
+        for(Bat b : bats){
+            b.draw(g);
         }
     }
 }
 
 class Snake {
-    private final int width, height;
+    private final int LEFT = 0, RIGHT = 1;
+    private int width, height;
     private int health;
     private double x, y;
     private int dir;
@@ -61,13 +82,13 @@ class Snake {
     private final ArrayList<Image> idleL = new ArrayList<>();
     private final ArrayList<Image> idleR = new ArrayList<>();
 
-    public Snake(int x, int y, int health) {
+    public Snake(int x, int y) {
         this.width = 32;
         this.height = 18;
         this.x = x;
         this.y = y-height+1;
-        dir = Util.RIGHT;
-        this.health = health;
+        dir = RIGHT;
+        this.health = 10;
         this.velX = 2;
         this.accelY = 1;
         this.maxVelY = 13;
@@ -121,9 +142,9 @@ class Snake {
         if(blocks[grndRow][currColC].getType() != Block.AIR) {
             y = grndRow * Util.BLOCKLENGTH - height;
             velY = 0;
-            if (dir == Util.LEFT) {
+            if (dir == LEFT) {
                 if (x <= 0) {
-                    dir = Util.RIGHT;
+                    dir = RIGHT;
                     x += velX;
                 } else {
                     if (blocks[grndRow][currColL].getType() != Block.AIR && blocks[grndRow - 1][currColL].getType() == Block.AIR) {
@@ -135,13 +156,13 @@ class Snake {
                 }
             } else {
                 if (x + width >= 9 * Util.BLOCKLENGTH) {
-                    dir = Util.LEFT;
+                    dir = LEFT;
                     x -= velX;
                 } else {
                     if (blocks[grndRow][currColR].getType() != Block.AIR && blocks[grndRow - 1][currColR].getType() == Block.AIR) {
                         x += velX;
                     } else {
-                        dir = Util.LEFT;
+                        dir = LEFT;
                         x -= velX;
                     }
                 }
@@ -158,7 +179,7 @@ class Snake {
     public void draw(Graphics g, Block[][] blocks) {
         move(blocks);
 
-        if(dir == Util.LEFT) {
+        if(dir == LEFT) {
             if ((int) animFrame == idleL.size() - 1) {
                 animFrame = 0;
             } else {
@@ -180,6 +201,124 @@ class Snake {
     }
 }
 
+class Snail {
+    public static final int LEFT = 0, RIGHT = 1, UP = 2, DOWN = 3;
+    private int width, height, dir;
+    private int health;
+    private double x, y;
+    private double velY; // the speed and acceleration the enemy has
+    private double animFrame;
+
+    private final ArrayList<Image> idleU = new ArrayList<>();
+    private final ArrayList<Image> idleD = new ArrayList<>();
+
+    public Snail(int x, int y, int horiDir, int vertDir) {
+        this.width = 35;
+        this.height = 35;
+        this.x = x;
+        this.y = y;
+        this.dir = vertDir;
+        this.health = 30;
+        this.velY = 1.5;
+        animFrame = 0;
+
+        if(horiDir == LEFT){
+            this.x += Util.BLOCKLENGTH;
+            for (int i = 0; i < 4; i++) {
+                idleU.add(new ImageIcon("src/assets/enemies/snail/idle/snailIdleLU" + i + ".png").getImage());
+                idleU.set(i, idleU.get(i).getScaledInstance((idleU.get(i).getWidth(null)*2), (idleU.get(i).getHeight(null)*2), Image.SCALE_DEFAULT));
+            }
+            for (int i = 0; i < 4; i++) {
+                idleD.add(new ImageIcon("src/assets/enemies/snail/idle/snailIdleLD" + i + ".png").getImage());
+                idleD.set(i, idleD.get(i).getScaledInstance((idleU.get(i).getWidth(null)*2), (idleD.get(i).getHeight(null)*2), Image.SCALE_DEFAULT));
+            }
+        }
+        else{
+            this.x -= Util.BLOCKLENGTH;
+            for (int i = 0; i < 4; i++) {
+                idleU.add(new ImageIcon("src/assets/enemies/snail/idle/snailIdleRU" + i + ".png").getImage());
+                idleU.set(i, idleU.get(i).getScaledInstance((idleU.get(i).getWidth(null)*2), (idleU.get(i).getHeight(null)*2), Image.SCALE_DEFAULT));
+            }
+            for (int i = 0; i < 4; i++) {
+                idleD.add(new ImageIcon("src/assets/enemies/snail/idle/snailIdleRD" + i + ".png").getImage());
+                idleD.set(i, idleD.get(i).getScaledInstance((idleU.get(i).getWidth(null)*2), (idleD.get(i).getHeight(null)*2), Image.SCALE_DEFAULT));
+            }
+        }
+    }
+
+    public void setX(int x) {this.x = x;}
+    public void setY(int y) {this.y = y;}
+    public int getHealth() {return health;}
+    public void setHealth(int health) {this.health = health;}
+    public double getX(boolean adjusted) { // gets x
+        if (adjusted) { // whether you want x relative to the gameplay window
+            return x + Background.getWallLeftPos() + Background.getWallWidth();
+        } else {
+            return x;
+        }
+    }
+    public double getY(boolean adjusted) { // gets y
+        if (adjusted) { // whether you want y relative to the gameplay window
+            return y-GamePanel.getAlan().getOffset()+GamePanel.getAlan().getScreenOffset();
+        } else {
+            return y;
+        }
+    }
+    public Rectangle getRect(){return new Rectangle((int)x,(int)y,width,height);}
+
+    public void move(Block[][] blocks){
+        int currRow = (int)y/Util.BLOCKLENGTH;
+        int topRow = (int)y/Util.BLOCKLENGTH;
+        int bottomRow = (int)(y+height)/Util.BLOCKLENGTH;
+        int currCol = (int) x / Util.BLOCKLENGTH;
+        int wallCol;
+        if(dir == LEFT) {
+            wallCol = currCol-1;
+        }
+        else{
+            wallCol = currCol+1;
+        }
+
+        if(dir == UP) {
+            if (blocks[topRow][wallCol].getType() == Block.WALL && blocks[topRow][currCol].getType() == Block.AIR) {
+                y -= velY;
+            } else {
+                dir = DOWN;
+                y += velY;
+            }
+        }
+        else{
+            if (blocks[bottomRow][wallCol].getType() == Block.WALL && blocks[bottomRow][currCol].getType() == Block.AIR) {
+                y += velY;
+            } else {
+                dir = UP;
+                y -= velY;
+            }
+        }
+    }
+
+    public void draw(Graphics g, Block[][] blocks) {
+        move(blocks);
+
+        if(dir == UP) {
+            if ((int) animFrame == idleU.size() - 1) {
+                animFrame = 0;
+            } else {
+                animFrame += 0.2;
+            }
+            g.drawImage(idleU.get((int) animFrame), (int) getX(true), (int)getY(true), null);
+        }
+        else{
+            if ((int) animFrame == idleD.size() - 1) {
+                animFrame = 0;
+            } else {
+                animFrame += 0.2;
+            }
+            g.drawImage(idleD.get((int) animFrame), (int) getX(true), (int)getY(true), null);
+        }
+    }
+}
+
 class Bat{
     public static final int IDLE = 0, FLY = 1;
     private final int state;
@@ -192,12 +331,12 @@ class Bat{
     ArrayList<Image> idle = new ArrayList<>();
     ArrayList<Image> fly = new ArrayList<>();
 
-    public Bat(int x, int y, int health) {
+    public Bat(int x, int y) {
         this.x = x;
         this.y = y;
         this.width = 36;
         this.height = 26;
-        this.health = health;
+        this.health = 30;
         this.speed = 2;
         this.maxVelX = 4.5;
         this.maxVelY = 4.5;
