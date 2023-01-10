@@ -8,7 +8,7 @@ import java.util.ArrayList;
 public class Blaster {
     String name;
     int damage, capacity, speed, lastX, lastY, ammo;
-    private Image defaultBullet;
+    private Image defaultBullet, equippedBullet;
 
     private boolean alanShoot;
     ArrayList<Image> explosion;
@@ -17,7 +17,7 @@ public class Blaster {
     ArrayList<Block> blastBlocks;
     Util.CustomTimer shootTimer;
 
-    public Blaster(String name, int damage, int capacity, int speed) {
+    public Blaster(String name, int damage, int capacity, int speed, String file) {
         if (capacity == -1) {
             this.capacity = Util.UNLIMITED;
         } else {
@@ -33,7 +33,8 @@ public class Blaster {
         this.ammo = this.capacity;
         lastX = 0; lastY = 0;
         alanShoot = false;
-        defaultBullet = new ImageIcon("src/assets/alan/shoot/bullets/bulletB.png").getImage().getScaledInstance(16,28,Image.SCALE_DEFAULT);
+        defaultBullet = new ImageIcon("src/assets/alan/shoot/bullets/"+file+".png").getImage().getScaledInstance(16,28,Image.SCALE_DEFAULT);
+        equippedBullet = defaultBullet;
         for (int i = 0; i < 5; i++) {
             explosion.add(new ImageIcon("src/assets/alan/shoot/explosion/explosion" + i + ".png").getImage());
         }
@@ -53,6 +54,7 @@ public class Blaster {
     public int getAmmo() {return ammo;}
     public void setAmmo(int a) {this.ammo = a;}
     public void setAlanShoot(boolean alanShoot) {this.alanShoot = alanShoot;}
+    public void setEquippedBullet(String s) {equippedBullet = new ImageIcon("src/assets/alan/shoot/bullets/"+s+".png").getImage().getScaledInstance(16,28,Image.SCALE_DEFAULT);}
 
     public boolean useAmmo() {
         if (ammo > 0) {
@@ -75,7 +77,7 @@ public class Blaster {
                     // add bullet
                     bullets.add(new Bullet(alan.getX(false) + (alan.getDir() == Util.LEFT ? 2 : 8), alan.getY(false) + alan.getVelY() + 10,
                             alan.getY(false) + alan.getVelY() + 10,
-                            defaultBullet, Util.rand.nextDouble(-1,1)));
+                            equippedBullet, Util.rand.nextDouble(-1,1)));
                     alanShoot = true;
                     return true;
                 }
@@ -89,7 +91,9 @@ public class Blaster {
         ArrayList<Bullet> rm = new ArrayList<>(); // removal list for bullets
         for (Bullet b : bullets) { // go through all bullets
             // enemy collisions
-            getCollision(b, enemies.getSnakes());
+            if (getCollision(b, enemies.getSnakes())) {
+                rm.add(b);
+            }
             // block collisions
             if (getCollision(b, alan, map, powerups)) {
                 rm.add(b);
@@ -108,16 +112,19 @@ public class Blaster {
         }
     }
 
-    public Snake getCollision(Bullet b, ArrayList<Snake> snakes) {
+    public boolean getCollision(Bullet b, ArrayList<Snake> snakes) {
         for (Snake s:snakes) {
             if (s.getRect().intersects(b.getRect())) {
-                setAmmo(getCapacity());
-                snakes.remove(s);
-                GameManager.getGemManager().spawnGems((int)s.getX(false),(int)s.getY(false), 3);
-                return s;
+                s.setHealth(s.getHealth()-damage);
+                if (s.getHealth() <= 0) {
+                    setAmmo(getCapacity());
+                    snakes.remove(s);
+                    GameManager.getGemManager().spawnGems((int)s.getX(false),(int)s.getY(false), 3);
+                }
+                return true;
             }
         }
-        return null;
+        return false;
     }
 
     public boolean getCollision(Bullet b, Alan alan, Map map, Powerups powerups) {
@@ -251,7 +258,7 @@ class Bullet {
     public double getVelX() {return velX;}
 
     public void draw(Graphics g) {
-        g.drawImage(img, (int)x, y, null);
+        g.drawImage(img, (int) x, y, null);
     }
 }
 

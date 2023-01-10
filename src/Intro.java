@@ -31,7 +31,7 @@ public class Intro extends JPanel implements KeyListener, ActionListener, MouseL
 
         powers = new Powerups();
 
-        alan = new Alan(20, HEIGHT/2+50, new Blaster("Machine Gun", 10,-1,13), 4, 4, 0);
+        alan = new Alan(20, HEIGHT/2+50, new Blaster("Machine Gun", 10,-1,13, "bulletB"), 4, 4, 0);
 
         enemyManager = new EnemyManager();
 

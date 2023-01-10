@@ -8,13 +8,13 @@ public class Powerups{
     //POWERUP CONSTANTS
     //HINT: add powerups here, SHOW POWERUP IF PASSIVE OR ACTIVE, USE IF ACTIVE
     public static int NONACTIVE = 0, ACTIVE = 1, PASSIVE = 2, ONCE = 3;
-    public static int RAPIDFIRE = 0, GUNPOWDER = 1, LASERSIGHT = 2, YOUTH = 3, EXTENDMAG = 4;
-    public static int[] powers = new int[]{RAPIDFIRE, GUNPOWDER, LASERSIGHT, YOUTH, EXTENDMAG};
+    public static int RAPIDFIRE = 0, GUNPOWDER = 1, LASERSIGHT = 2, YOUTH = 3, EXTENDMAG = 4, FIREBULLET = 5;
+    public static int[] powers = new int[]{RAPIDFIRE, GUNPOWDER, LASERSIGHT, YOUTH, EXTENDMAG, FIREBULLET};
     private final List<usePowers> powerups;
 
     private int[] activepowers;
 
-    private final String[] powerupIconFiles = {"rapidfire","gunpowder","lasersight","youth","extended mag"};
+    private final String[] powerupIconFiles = {"rapidfire","gunpowder","lasersight","youth","extended mag", "firebullet"};
     private Image[] powerupIcons;
     private int selected;
 
@@ -39,6 +39,7 @@ public class Powerups{
         powerups.add(new LaserSight());
         powerups.add(new Youth());
         powerups.add(new ExtendedMag());
+        powerups.add(new FireBullet());
         return powerups;
     }
 
@@ -78,6 +79,8 @@ public class Powerups{
                     activatePowerOnce(YOUTH);
                 } else if (chosen[selected] == EXTENDMAG) {
                     activatePowerOnce(EXTENDMAG);
+                } else if (chosen[selected] == FIREBULLET) {
+                    activatePowerOnce(FIREBULLET);
                 } else {
                     activatePower(chosen[selected]);
                 }

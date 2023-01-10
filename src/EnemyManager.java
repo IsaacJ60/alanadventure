@@ -18,8 +18,9 @@ public class EnemyManager{
     public ArrayList<Snake> getSnakes() {return snakes;}
     public ArrayList<Bat> getBats() {return bats;}
 
-    private void addSnake(int x, int y) {snakes.add(new Snake(x,y));}
-    private void addBat(int x, int y) {bats.add(new Bat(x,y));}
+    // HINT: modify enemy health here
+    private void addSnake(int x, int y) {snakes.add(new Snake(x,y, 20));}
+    private void addBat(int x, int y) {bats.add(new Bat(x,y, 30));}
 
     public void generateSnakes(Block[][] blocks, Alan alan) {
         Random rand = new Random();
@@ -60,13 +61,13 @@ class Snake {
     private final ArrayList<Image> idleL = new ArrayList<>();
     private final ArrayList<Image> idleR = new ArrayList<>();
 
-    public Snake(int x, int y) {
+    public Snake(int x, int y, int health) {
         this.width = 32;
         this.height = 18;
         this.x = x;
         this.y = y-height+1;
         dir = Util.RIGHT;
-        this.health = 10;
+        this.health = health;
         this.velX = 2;
         this.accelY = 1;
         this.maxVelY = 13;
@@ -147,7 +148,6 @@ class Snake {
             }
         }
         else{
-            System.out.println(velY);
             y+=velY;
             if(velY < maxVelY){
                 velY += accelY;
@@ -192,12 +192,12 @@ class Bat{
     ArrayList<Image> idle = new ArrayList<>();
     ArrayList<Image> fly = new ArrayList<>();
 
-    public Bat(int x, int y) {
+    public Bat(int x, int y, int health) {
         this.x = x;
         this.y = y;
         this.width = 36;
         this.height = 26;
-        this.health = 30;
+        this.health = health;
         this.speed = 2;
         this.maxVelX = 4.5;
         this.maxVelY = 4.5;
