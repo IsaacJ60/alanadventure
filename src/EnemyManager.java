@@ -12,17 +12,20 @@ import java.util.Random;
 // - ENSURE ENEMIES BOUNCE OFF EACH OTHER
 
 public class EnemyManager{
-    private ArrayList<Snake> snakes = new ArrayList<Snake>();
-    private ArrayList<Snail> snails = new ArrayList<Snail>();
-    private ArrayList<Bat> bats = new ArrayList<Bat>();
+    private ArrayList<Snake> snakes = new ArrayList<>();
+    private ArrayList<Snail> snails = new ArrayList<>();
+    private ArrayList<Jelly> jellies = new ArrayList<>();
+    private ArrayList<Bat> bats = new ArrayList<>();
 
     public ArrayList<Snake> getSnakes() {return snakes;}
     public ArrayList<Snail> getSnails() {return snails;}
+    public ArrayList<Jelly> getJellies() {return jellies;}
     public ArrayList<Bat> getBats() {return bats;}
 
     // HINT: modify enemy health here
     private void addSnake(int x, int y) {snakes.add(new Snake(x,y));}
     private void addSnail(int x, int y, int horiDir, int vertDir) {snails.add(new Snail(x,y,horiDir,vertDir));}
+    private void addJelly(int x, int y) {jellies.add(new Jelly(x,y));}
     private void addBat(int x, int y) {bats.add(new Bat(x,y));}
 
     public void generateSnakes(Block[][] blocks, Alan alan) {
@@ -51,10 +54,37 @@ public class EnemyManager{
         }
     }
 
+    public void generateJellies(Block[][] blocks, Alan alan){
+        Random rand = new Random();
+        for(int i=Util.GENERATIONSTART; i< blocks.length; i++){
+            for(int j=1; j<blocks[i].length-1; j++) {
+                if(blocks[i][j-1].getType() == Block.AIR) {
+                    if(rand.nextInt(100)<=3) {
+                        addJelly(blocks[i][j].getX(false), blocks[i][j].getY(false, alan));
+                    }
+                }
+            }
+        }
+    }
+
+    public void generateBats(Block[][] blocks, Alan alan){
+        Random rand = new Random();
+        for(int i=Util.GENERATIONSTART; i< blocks.length; i++){
+            for(int j=1; j<blocks[i].length-1; j++) {
+                if(blocks[i][j-1].getType() == Block.AIR) {
+                    if(rand.nextInt(100)<=2) {
+                        addBat(blocks[i][j].getX(false), blocks[i][j].getY(false, alan));
+                    }
+                }
+            }
+        }
+    }
+
     public void clearEnemies(){
         snakes.clear();
-        bats.clear();
         snails.clear();
+        jellies.clear();
+        bats.clear();
     }
 
     public void drawEnemies(Graphics g, Block[][] blocks){
@@ -63,6 +93,9 @@ public class EnemyManager{
         }
         for(Snail s : snails){
             s.draw(g, blocks);
+        }
+        for(Jelly j:jellies){
+            j.draw(g);
         }
         for(Bat b : bats){
             b.draw(g);
@@ -214,7 +247,7 @@ class Snail {
 
     public Snail(int x, int y, int horiDir, int vertDir) {
         this.width = 35;
-        this.height = 35;
+        this.height = 42;
         this.x = x;
         this.y = y;
         this.dir = vertDir;
@@ -316,6 +349,160 @@ class Snail {
             }
             g.drawImage(idleD.get((int) animFrame), (int) getX(true), (int)getY(true), null);
         }
+
+//        g.setColor(Color.YELLOW);
+//        g.drawRect((int)getX(true), (int)getY(true), width, height);
+    }
+}
+
+class Jelly{
+    private final int width, height;
+    private int health;
+    private double x, y;
+    private double speed, velX, velY, maxVelX, maxVelY, accelX, accelY, accelFactor; // the speed and acceleration the enemy has
+    private double animFrame;
+
+    ArrayList<Image> idle = new ArrayList<>();
+    public Jelly(int x, int y) {
+        this.x = x;
+        this.y = y;
+        this.width = 40;
+        this.height = 30;
+        this.health = 30;
+        this.speed = 1;
+        this.maxVelX = 2;
+        this.maxVelY = 2;
+        this.accelX = 0;
+        this.accelY = 0;
+        this.accelFactor = .06;
+        animFrame = 0;
+        for (int i = 0; i < 4; i++) {
+            idle.add(new ImageIcon("src/assets/enemies/jelly/idle/jellyIdle" + i + ".png").getImage().getScaledInstance(width, height, Image.SCALE_DEFAULT));
+            idle.set(i, idle.get(i).getScaledInstance((idle.get(i).getWidth(null)*2), (idle.get(i).getHeight(null)*2), Image.SCALE_DEFAULT));
+        }
+    }
+    public double getX(boolean adjusted) { // gets x
+        if (adjusted) { // whether you want x relative to the gameplay window
+            return x + Background.getWallLeftPos() + Background.getWallWidth();
+        } else {
+            return x;
+        }
+    }
+    public double getY(boolean adjusted) { // gets y
+        if (adjusted) { // whether you want y relative to the gameplay window
+            return y-GamePanel.getAlan().getOffset()+GamePanel.getAlan().getScreenOffset();
+        } else {
+            return y;
+        }
+    }
+    public void setX(int x) {
+        this.x = x;
+    }
+    public void setY(int y) {
+        this.y = y;
+    }
+    public int getHealth() {
+        return health;
+    }
+    public void setHealth(int health) {
+        this.health = health;
+    }
+    public void move() {
+//        getCollision();
+        // distance calculations
+        double distX = x - GamePanel.getAlan().getX(false);
+        // how far away the enemy is compared to alan
+        double distY = y - GamePanel.getAlan().getY(false);
+        double distance = Math.sqrt(Math.pow(distX, 2) + Math.pow(distY, 2)); // pythag theorem
+        // adding up how many frames movement has been in x direction, capping out at +-20 to limit terminal velocity
+        if (distX < 0 && velX < maxVelX) {
+            accelX += accelFactor;
+        } else if (distX > 0 && velX > -maxVelX) {
+            accelX -= accelFactor;
+        }
+        if (distY < 0 && velY < maxVelY) {
+            accelY += accelFactor;
+        } else if (distY > 0 && velY > -maxVelY) {
+            accelY -= accelFactor;
+        }
+        // moving the enemy
+        velX = ((-1 / distance) * distX) * speed + accelX; // -1 so the enemy moves TOWARDS alan, just 1 would make the enemy run away from alan
+        velY = ((-1 / distance) * distY) * speed + accelY; // frames*accel so the enemy speeds up/down for a more "natural" look, instead of perfectly tracking alan
+        x += velX;
+        y += velY;
+    }
+
+    public void getCollision(Graphics g, Alan alan, Map map) {
+        // BLOCK COLLISION
+        Block[][] blocks = map.getMap();
+        // getting rows with same y values as jelly
+        int prevRow = (int)getY(false)/Util.BLOCKLENGTH;
+        int nextRow = (int)getY(false)/Util.BLOCKLENGTH+1;
+
+        // variables to track the nearest block distances
+        int nearestBlockY = 100, nearestAboveY = 100, nearestLeftX = 100, nearestRightX = 100, snapX = 0;
+
+        // top down collision
+        for (int i = 0; i < map.getColumns(); i++) {
+            int blockType = blocks[nextRow][i].getType();
+            if (blockType != Block.AIR) { // if block isn't air, check for distance to player
+                // only check top when velocity is positive (going down)
+                if ((blockType == Block.WALL || blockType == Block.BOX || blockType == Block.PLAT) && velY >= 0) {
+                    // checkig player has a chance of colliding with block (x value within range of block x values)
+                    if (x+width > blocks[nextRow][i].getX(false) && x < blocks[nextRow][i].getX(false) + Util.BLOCKLENGTH) {
+                        if (blocks[nextRow][i].getY(false, alan)-y < nearestBlockY) {
+                            // updating nearest distance
+                            nearestBlockY = (int)Math.abs(blocks[nextRow][i].getY(false, alan)-(y+height));
+                        }
+                    }
+                }
+            }
+        }
+        // if nearest distance is less than or equal to next velocity increment, stop player
+        if (nearestBlockY <= velY+5) {
+
+            // set velocity in y-dir to be 0
+            velY = 0;
+
+        } else { // in the case that the player has not reached block/ground
+            if (velY == 0) { // starts falling velocity at 3 (if velocity is 0, when player just starts to fall)
+                velY = 5;
+            }
+            else if (velY < maxVelY) { // increase velocity if not reached max y vel
+                velY += accelY;
+            }
+        }
+
+        // bottom up collision checking
+        for (int i = 0; i < map.getColumns(); i++) {
+            int blockType = blocks[prevRow][i].getType();
+            if (blockType != Block.AIR) {
+                // only check bottom collision in solid blocks and when going upwards in y-dir
+                if ((blockType == Block.WALL || blockType == Block.BOX) && velY < 0) {
+                    // checking if block is in collision boundary of Alan
+                    if (x+width > blocks[prevRow][i].getX(false) && x < blocks[prevRow][i].getX(false) + Util.BLOCKLENGTH) {
+                        if (Math.abs(y-(blocks[prevRow][i].getY(false,alan)+Util.BLOCKLENGTH)) < nearestAboveY) {
+                            // setting nearest distance
+                            nearestAboveY = (int)Math.abs(y-(blocks[prevRow][i].getY(false, alan)+Util.BLOCKLENGTH));
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    public void draw(Graphics g) {
+        move();
+
+        if ((int) animFrame == idle.size() - 1) {
+            animFrame = 0;
+        } else {
+            animFrame += 0.33;
+        }
+        g.drawImage(idle.get((int) animFrame), (int) getX(true), (int)getY(true), null);
+
+        g.setColor(Color.YELLOW);
+        g.drawRect((int)getX(true), (int)getY(true), width, height);
     }
 }
 
@@ -349,31 +536,32 @@ class Bat{
             idle.add(new ImageIcon("src/assets/enemies/fly/fly" + i + ".png").getImage().getScaledInstance(width, height, Image.SCALE_DEFAULT));
         }
     }
-
-    public int getX() {
-        return (int) x;
+    public double getX(boolean adjusted) { // gets x
+        if (adjusted) { // whether you want x relative to the gameplay window
+            return x + Background.getWallLeftPos() + Background.getWallWidth();
+        } else {
+            return x;
+        }
     }
-
+    public double getY(boolean adjusted) { // gets y
+        if (adjusted) { // whether you want y relative to the gameplay window
+            return y-GamePanel.getAlan().getOffset()+GamePanel.getAlan().getScreenOffset();
+        } else {
+            return y;
+        }
+    }
     public void setX(int x) {
         this.x = x;
     }
-
-    public int getY() {
-        return (int) y;
-    }
-
     public void setY(int y) {
         this.y = y;
     }
-
     public int getHealth() {
         return health;
     }
-
     public void setHealth(int health) {
         this.health = health;
     }
-
     public void move() {
         // distance calculations
         double distX = x - GamePanel.getAlan().getX(false);
@@ -397,7 +585,9 @@ class Bat{
         x += velX;
         y += velY;
     }
+    public void getCollision(){
 
+    }
 
     public void draw(Graphics g) {
         move();
@@ -408,7 +598,7 @@ class Bat{
             } else {
                 animFrame += 0.33;
             }
-            g.drawImage(idle.get((int) animFrame), (int) x+Background.getWallLeftPos(), (int) y-GamePanel.getAlan().getOffset(), null);
+            g.drawImage(idle.get((int) animFrame), (int) getX(true), (int)getY(true), null);
         }
     }
 }
