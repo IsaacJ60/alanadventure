@@ -17,6 +17,7 @@ public class GameManager {
 
     public static void loadGems() {
         gemManager = new Gems();
+        gemManager.setTotalGems(999);
         //TODO: get total gems from file
     }
 
@@ -78,6 +79,9 @@ public class GameManager {
             Intro.setAlpha(0);
             GamePanel.setAlpha(255);
             GamePanel.setPowerups(new Powerups());
+            gemManager.setTotalGems(gemManager.getTotalGems()+gemManager.getGems());
+            gemManager.setGems(0);
+            //TODO: reset bullets and ammo capacity
         } else {
             if (l != 1) {
                 AAdventure.setCurrPanel("LEVELCLEAR"); // changing panel to level clear panel

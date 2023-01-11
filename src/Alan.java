@@ -190,8 +190,14 @@ public class Alan {
         boolean wallCollideLeft = false, wallCollideRight = false;
 
         // allow jump only if not jumping or falling and if space pressed
-        if (keys[Util.space] && !GamePanel.getPrevSpaced() && state != JUMP && state != FALL) {
-            changeState(JUMP, dir, false);
+        if (AAdventure.getCurrPanel().equals("GAME")) {
+            if (keys[Util.space] && !GamePanel.getPrevSpaced() && state != JUMP && state != FALL) {
+                changeState(JUMP, dir, false);
+            }
+        } else {
+            if (keys[Util.space] && state != JUMP && state != FALL) {
+                changeState(JUMP, dir, false);
+            }
         }
 
         // left right movement keys pressed
