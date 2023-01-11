@@ -184,7 +184,7 @@ public class Alan {
     }
 
     public int move(boolean[] keys, Graphics g, Map map, Powerups powerups, EnemyManager enemies) {
-        getEnemyCollision(enemies.getSnakes(), enemies.getSnails()); // collision between alan and snakes
+        getEnemyCollision(GamePanel.getBlaster(), enemies.getSnakes(), enemies.getSnails()); // collision between alan and snakes
         getCollision(g,this, map); // getting collision between player and blocks
         alanRect.setLocation(x+5,y); // setting rect location
         boolean wallCollideLeft = false, wallCollideRight = false;
@@ -284,7 +284,7 @@ public class Alan {
     public void jump() {
         if (state == JUMP) {
             if (jumpTimer.getElapsedTime() > 0.5) {
-                velY -= 12;
+                velY -= 14;
                 jumpTimer.restart();
             } else {
                 changeState(IDLE, dir, false);
@@ -292,12 +292,15 @@ public class Alan {
         }
     }
 
-    public void getEnemyCollision(ArrayList<Snake> snakes, ArrayList<Snail> snails) {
+    public void getEnemyCollision(Blaster blaster, ArrayList<Snake> snakes, ArrayList<Snail> snails) {
+        ArrayList<Snake> removalSnake = new ArrayList<>();
+
         for (Snake s:snakes) {
             if (getRect().intersects(s.getRect())) {
                 if(velY > 0 && y+height > s.getY(false)){
-                    snakes.remove(s);
-                    velY = -6;
+                    blaster.setAmmo(blaster.getCapacity());
+                    removalSnake.add(s);
+                    velY = -8;
                     GameManager.getGemManager().spawnGems((int)s.getX(false),(int)s.getY(false), 3);
                 }
                 else{
@@ -326,6 +329,10 @@ public class Alan {
 
         if(health == 0){
             GameManager.gameOver();
+        }
+
+        for(Snake s:removalSnake){
+            snakes.remove(s);
         }
     }
 
