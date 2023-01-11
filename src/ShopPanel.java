@@ -35,6 +35,10 @@ public class ShopPanel extends JPanel implements KeyListener, ActionListener, Mo
 
         bg = new Background();
 
+        Image clouds = new ImageIcon("src/tiles/bgB.png").getImage();
+        Image cloudsbg = new ImageIcon("src/tiles/bgB.png").getImage().getScaledInstance(900, 700, Image.SCALE_DEFAULT);
+        ImageIcon previewcloudsbg = new ImageIcon("src/tiles/bgB.png");
+
         Image snow = new ImageIcon("src/tiles/snowbg.png").getImage();
         Image snowbg = new ImageIcon("src/tiles/snowbg.png").getImage().getScaledInstance(900, 700, Image.SCALE_DEFAULT);
         ImageIcon previewsnowbg = new ImageIcon("src/tiles/snowbg.png");
@@ -45,8 +49,9 @@ public class ShopPanel extends JPanel implements KeyListener, ActionListener, Mo
 
         ArrayList<ArrayList<Cosmetics>> cosmetics = new ArrayList<>();
         cosmetics.add(new ArrayList<>());
-        cosmetics.get(0).add(new Cosmetics("BG", previewsnowbg, 128, 73));
-        cosmetics.get(0).add(new Cosmetics("BG", previewfrogbg, 128, 73));
+        cosmetics.get(0).add(new Cosmetics("BG", previewcloudsbg, cloudsbg, 128, 73, 0));
+        cosmetics.get(0).add(new Cosmetics("BG", previewsnowbg, snowbg, 128, 73, 100));
+        cosmetics.get(0).add(new Cosmetics("BG", previewfrogbg, frogbg, 128, 73, 200));
         shop = new Shop(cosmetics);
 
         timer = new Timer(25, this); // manages frames
@@ -116,7 +121,7 @@ public class ShopPanel extends JPanel implements KeyListener, ActionListener, Mo
         g.fillRect(0,0,900,700);
         bg.draw(g, new Map(new Block[100][9]), true, false, false);
 
-        shop.draw(g);
+        shop.draw(g, keys, GameManager.getGemManager());
 
         // UI ELEMENTS
         GameManager.getGemManager().displayGems(g,true,false, GamePanel.getAlan());

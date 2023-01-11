@@ -29,7 +29,8 @@ public class Util {
     public static final int FADEVEL = 14;
 
     // KEYBOARD CONSTANTS
-    public static final int a = KeyEvent.VK_A, d = KeyEvent.VK_D, space = KeyEvent.VK_SPACE; // constants for keyboard input
+    public static final int a = KeyEvent.VK_A, d = KeyEvent.VK_D, space = KeyEvent.VK_SPACE,
+    w = KeyEvent.VK_W, s = KeyEvent.VK_S; // constants for keyboard input
 
     //
     static Random rand = new Random();

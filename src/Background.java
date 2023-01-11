@@ -20,7 +20,7 @@ public class Background {
     public static int getWallWidth() {return wallWidth;}
     public static int getWallLeftPos() {return wallLeftPos;}
     public static int getWallRightPos() {return wallRightPos;}
-    public void setBg(Image b) {bg = b;}
+    public static void setBg(Image b) {bg = b;}
 
     // main driver code for drawing map and its blocks
     public void draw(Graphics g, int level, Alan alan, boolean includeWalls, boolean includeBlocks, boolean includeBG) {
