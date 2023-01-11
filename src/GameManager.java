@@ -17,6 +17,7 @@ public class GameManager {
 
     public static void loadGems() {
         gemManager = new Gems();
+        gemManager.setTotalGems(999);
         //TODO: get total gems from file
     }
 

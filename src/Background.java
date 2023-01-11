@@ -27,7 +27,7 @@ public class Background {
         g.setColor(Color.BLACK);
         setBackground(g, g.getColor());
         if (includeBG) {
-            g.drawImage(bg,0,alan.getScreenOffset()/3,null);
+            g.drawImage(bg,0,0,null);
         }
         g.fillRect(getWallLeftPos(), 0, getWallRightPos()-getWallLeftPos(), GamePanel.getHEIGHT());
         GameManager.getMaplist().drawBlocks(g, MapList.getAllMaps().get(level), alan, includeWalls, includeBlocks);
