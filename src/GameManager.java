@@ -15,6 +15,8 @@ public class GameManager {
 
     public static Block[][] introblocks;
     public static Map intromap;
+    private static int rows = 100;
+    private static int levelCount = 100;
 
     public static void loadGems() {
         gemManager = new Gems();
@@ -27,19 +29,15 @@ public class GameManager {
 
         createIntro();
 
-        // making default levels
-        for (int i = 0; i < Util.LEVELS; i++) { // loading all levels
-            int rows = 200;
-            Map tmp = new Map(rows);
-            for (int j = 4; j < 7; j++) {
-                tmp.placeBlock(15,j,Block.PLAT,Util.INDEX,Util.NEUTRAL);
-            }
-            for (int j = 1; j < 10; j++) {
-                tmp.placeBlock(rows-3,j,Block.BOX,Util.INDEX,Util.NEUTRAL);
-                tmp.placeBlock(rows-2,j,Block.WALL,Util.INDEX,Util.NEUTRAL);
-            }
-            maplist.addMap(tmp);
+        Map tmp = new Map(rows);
+        for (int j = 4; j < 7; j++) {
+            tmp.placeBlock(15,j,Block.PLAT,Util.INDEX,Util.NEUTRAL);
         }
+        for (int j = 1; j < 10; j++) {
+            tmp.placeBlock(rows-3,j,Block.BOX,Util.INDEX,Util.NEUTRAL);
+            tmp.placeBlock(rows-2,j,Block.WALL,Util.INDEX,Util.NEUTRAL);
+        }
+            maplist.addMap(tmp);
     }
 
     public static void createIntro() {
@@ -107,7 +105,22 @@ public class GameManager {
             } else {
                 AAdventure.setCurrPanel("GAME"); // set to game if on first intro part
             }
+
             Util.setLevel(l); // setting level to l
+
+            // lazy load next map
+            if (MapList.getAllMaps().size() == Util.getLevel()+1) {
+                Map tmp = new Map(rows);
+                for (int j = 4; j < 7; j++) {
+                    tmp.placeBlock(15,j,Block.PLAT,Util.INDEX,Util.NEUTRAL);
+                }
+                for (int j = 1; j < 10; j++) {
+                    tmp.placeBlock(rows-3,j,Block.BOX,Util.INDEX,Util.NEUTRAL);
+                    tmp.placeBlock(rows-2,j,Block.WALL,Util.INDEX,Util.NEUTRAL);
+                }
+                maplist.addMap(tmp);
+            }
+
             GamePanel.getEnemyManager().clearEnemies();
 //            GamePanel.getEnemyManager().addJelly(300,2000);
             GamePanel.getEnemyManager().generateSnakes(MapList.getBlocksWithoutWallImages(), GamePanel.getAlan());
