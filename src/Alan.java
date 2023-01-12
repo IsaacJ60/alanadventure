@@ -311,11 +311,11 @@ public class Alan {
                 }
                 else{
                     if (invulTimer.getElapsedTime() >= 2) {
-                        System.out.println("-1 hp");
+//                        System.out.println("-1 hp");
                         health--;
                         invulTimer.restart();
                     } else {
-                        System.out.print(".");
+//                        System.out.print(".");
                     }
                 }
             }
@@ -324,11 +324,11 @@ public class Alan {
         for (Snail s:snails) {
             if (getRect().intersects(s.getRect())) {
                 if (invulTimer.getElapsedTime() >= 2) {
-                    System.out.println("-1 hp");
+//                    System.out.println("-1 hp");
                     health--;
                     invulTimer.restart();
                 } else {
-                    System.out.print(".");
+//                    System.out.print(".");
                 }
             }
         }
