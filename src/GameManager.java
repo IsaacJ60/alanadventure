@@ -110,7 +110,7 @@ public class GameManager {
             Util.setLevel(l); // setting level to l
             GamePanel.getEnemyManager().clearEnemies();
 //            GamePanel.getEnemyManager().addJelly(300,2000);
-//            GamePanel.getEnemyManager().generateSnakes(MapList.getBlocksWithoutWallImages(), GamePanel.getAlan());
+            GamePanel.getEnemyManager().generateSnakes(MapList.getBlocksWithoutWallImages(), GamePanel.getAlan());
             GamePanel.getEnemyManager().generateSnails(MapList.getBlocksWithoutWallImages(), GamePanel.getAlan());
 //            GamePanel.getEnemyManager().generateJellies(MapList.getBlocksWithoutWallImages(), GamePanel.getAlan());
             //            GamePanel.getEnemyManager().generateBats(MapList.getBlocksWithoutWallImages(), GamePanel.getAlan());
