@@ -20,12 +20,15 @@ public class Gems {
 
         for (int i = 0; i < 4; i++) {
             gemS.add(new ImageIcon("src/assets/gems/gemS"+i+".png").getImage());
+            gemS.set(i, gemS.get(i).getScaledInstance((gemS.get(i).getWidth(null)*2), (gemS.get(i).getHeight(null)*2), Image.SCALE_DEFAULT));
         }
         for (int i = 0; i < 4; i++) {
             gemM.add(new ImageIcon("src/assets/gems/gemM"+i+".png").getImage());
+            gemM.set(i, gemM.get(i).getScaledInstance((gemM.get(i).getWidth(null)*2), (gemM.get(i).getHeight(null)*2), Image.SCALE_DEFAULT));
         }
         for (int i = 0; i < 4; i++) {
             gemL.add(new ImageIcon("src/assets/gems/gemL"+i+".png").getImage());
+            gemL.set(i, gemL.get(i).getScaledInstance((gemL.get(i).getWidth(null)*2), (gemL.get(i).getHeight(null)*2), Image.SCALE_DEFAULT));
         }
         gemL0 = new ImageIcon("src/assets/gems/gemL0B.png").getImage().getScaledInstance(30,30,Image.SCALE_DEFAULT);
     }
@@ -35,12 +38,15 @@ public class Gems {
 
         for (int i = 0; i < 4; i++) {
             gemS.add(new ImageIcon("src/assets/gems/gemS"+i+".png").getImage());
+            gemS.set(i, gemS.get(i).getScaledInstance((gemS.get(i).getWidth(null)*2), (gemS.get(i).getHeight(null)*2), Image.SCALE_DEFAULT));
         }
         for (int i = 0; i < 4; i++) {
             gemM.add(new ImageIcon("src/assets/gems/gemM"+i+".png").getImage());
+            gemM.set(i, gemM.get(i).getScaledInstance((gemM.get(i).getWidth(null)*2), (gemM.get(i).getHeight(null)*2), Image.SCALE_DEFAULT));
         }
         for (int i = 0; i < 4; i++) {
             gemL.add(new ImageIcon("src/assets/gems/gemL"+i+".png").getImage());
+            gemL.set(i, gemL.get(i).getScaledInstance((gemL.get(i).getWidth(null)*2), (gemL.get(i).getHeight(null)*2), Image.SCALE_DEFAULT));
         }
     }
 
@@ -108,21 +114,21 @@ class Gem {
 
     Gem(int x, int y, int initialX, int initialY) {
         // random gem size
-        switch (Gems.rand.nextInt(0,3)) {
+        switch (Gems.rand.nextInt(0,2)) {
             case 0 -> {
                 anim = Gems.getGemS();
                 size = 1;
-                width = 8; height = 8; // hmm TODO: ASCAP...
+                width = 16; height = 16; // hmm TODO: ASCAP...
             }
             case 1 -> {
                 anim = Gems.getGemM();
                 size = 2;
-                width = 12; height = 12;
+                width = 24; height = 24;
             }
             case 2 -> {
                 anim = Gems.getGemL();
                 size = 3;
-                width = 20; height = 20;
+                width = 40; height = 40;
             }
         }
         this.claimed = false;
@@ -166,7 +172,7 @@ class Gem {
     public void move(Alan alan, Map map, Graphics g) {
         getCollision(alan, map, g);
         x += (int)velX;
-        x = Math.min(Background.getWallRightPos()-(Background.getWallLeftPos()+Background.getWallWidth())-width, x);
+        x = Math.min(Background.getWallRightPos()-(Background.getWallLeftPos())-width, x);
         x = Math.max(0, x);
         y += (int)velY;
         if (velY < maxY) {
