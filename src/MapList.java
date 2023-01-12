@@ -389,7 +389,7 @@ class Map {
                         } else if (j == columns - 1) {
                             map[i][j].setTile(MapList.wallFull);
                         } else { //HINT: CHECKING IF BLOCK IS ALONE (NO VERTICAL CONNECTIONS)
-                            if (map[i-1][j].getType() == Block.AIR && map[i+1][j].getType() == Block.AIR) {
+                            if (map[i-1][j].getType() != Block.WALL && map[i+1][j].getType() != Block.WALL) {
                                 // CHECKING SIDE
                                 if (map[i][j].getSide() == Util.LEFT) {
                                     if (map[i][j+1].getType() != Block.WALL) { // FULL SIDE
