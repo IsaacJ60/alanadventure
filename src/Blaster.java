@@ -7,7 +7,8 @@ import java.util.ArrayList;
 
 public class Blaster {
     String name;
-    int damage, capacity, speed, lastX, lastY, ammo;
+    private int damage, capacity, speed, lastX, lastY, ammo, bloom, amount;
+    private double firerate;
     private Image defaultBullet, equippedBullet;
 
     private boolean alanShoot;
@@ -18,10 +19,10 @@ public class Blaster {
     Util.CustomTimer shootTimer;
 
     private static ArrayList<Blaster> blasters;
-    private static Blaster machinegun, shotgun;
-    public static int MACHINEGUN = 0, SHOTGUN = 1;
+    private static Blaster machinegun, shotgun, riflegun;
+    public static int MACHINEGUN = 0, SHOTGUN = 1, RIFLEGUN = 2;
 
-    public Blaster(String name, int damage, int capacity, int speed, String file) {
+    public Blaster(String name, int damage, int capacity, int speed, int bloom, double firerate, int amount, String file) {
         if (capacity == -1) {
             this.capacity = Util.UNLIMITED;
         } else {
@@ -35,6 +36,9 @@ public class Blaster {
         this.damage = damage;
         this.speed = speed;
         this.ammo = this.capacity;
+        this.bloom = bloom;
+        this.firerate = firerate;
+        this.amount = amount;
         lastX = 0; lastY = 0;
         alanShoot = false;
         defaultBullet = new ImageIcon("src/assets/alan/shoot/bullets/"+file+".png").getImage().getScaledInstance(16,28,Image.SCALE_DEFAULT);
@@ -64,16 +68,18 @@ public class Blaster {
 
     public static void loadGuns() {
         blasters = new ArrayList<>();
-        machinegun = new Blaster("Machine Gun", 10,8,13, "bulletB");
-        shotgun = new Blaster("Shotgun", 10,8,13, "bulletB");
+        machinegun = new Blaster("Machine Gun", 10,8,13, 2,0.12,1,"bulletB");
         blasters.add(machinegun);
+        shotgun = new Blaster("Shotgun", 10,8,13, 5,0.24,2,"bulletB");
         blasters.add(shotgun);
+        riflegun = new Blaster("Rifle", 10, 12, 10, 1, 0.15, 1, "bulletB");
+        blasters.add(riflegun);
     }
 
-    public boolean useAmmo() {
-        if (ammo > 0) {
+    public boolean useAmmo(int a) {
+        if (ammo >= a) {
             if (capacity != Util.UNLIMITED) {
-                ammo--;
+                ammo -= a;
             }
             return true;
         } else {
@@ -85,13 +91,15 @@ public class Blaster {
     public boolean shoot(boolean[] keys, int velY, Graphics g, Alan alan) {
         blastAnim(g, alan);
         if (keys[Util.space]) {
-            if (alan.getState() == Alan.FALL && shootTimer.getElapsedTime() > Util.SHOOTCOOLDOWN && velY > 0) {
-                if (useAmmo()) {
+            if (alan.getState() == Alan.FALL && shootTimer.getElapsedTime() > firerate && velY > 0) {
+                if (useAmmo(amount)) {
                     shootTimer.restart();
                     // add bullet
-                    bullets.add(new Bullet(alan.getX(false) + (alan.getDir() == Util.LEFT ? 2 : 8), alan.getY(false) + alan.getVelY() + 10,
-                            alan.getY(false) + alan.getVelY() + 10,
-                            equippedBullet, Util.rand.nextDouble(-1,1)));
+                    for (int i = 0; i < amount; i++) {
+                        bullets.add(new Bullet(alan.getX(false) + (alan.getDir() == Util.LEFT ? 2 : 8), alan.getY(false) + alan.getVelY() + 10,
+                                alan.getY(false) + alan.getVelY() + 10,
+                                equippedBullet, Util.rand.nextDouble(bloom*-1,bloom)));
+                    }
                     alanShoot = true;
                     return true;
                 }

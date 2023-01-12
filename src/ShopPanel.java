@@ -49,9 +49,15 @@ public class ShopPanel extends JPanel implements KeyListener, ActionListener, Mo
 
         ArrayList<ArrayList<Cosmetics>> cosmetics = new ArrayList<>();
         cosmetics.add(new ArrayList<>());
-        cosmetics.get(0).add(new Cosmetics("BG", previewcloudsbg, cloudsbg, 128, 73, 0));
-        cosmetics.get(0).add(new Cosmetics("BG", previewsnowbg, snowbg, 128, 73, 100));
-        cosmetics.get(0).add(new Cosmetics("BG", previewfrogbg, frogbg, 128, 73, 200));
+        cosmetics.get(0).add(new Cosmetics("BACKGROUNDS", "CLOUDS", previewcloudsbg, cloudsbg, 128, 73, -1));
+        cosmetics.get(0).add(new Cosmetics("BACKGROUNDS", "WELL", previewsnowbg, snowbg, 128, 73, 100));
+        cosmetics.get(0).add(new Cosmetics("BACKGROUNDS", "FROGS", previewfrogbg, frogbg, 128, 73, 200));
+
+        cosmetics.add(new ArrayList<>());
+        cosmetics.get(1).add(new Cosmetics("BLASTERS", "MACHINE GUN", previewcloudsbg, Blaster.getBlasters().get(Blaster.MACHINEGUN), 128, 73, -1));
+        cosmetics.get(1).add(new Cosmetics("BLASTERS", "SHOTGUN", previewfrogbg, Blaster.getBlasters().get(Blaster.SHOTGUN), 128, 73, 200));
+        cosmetics.get(1).add(new Cosmetics("BLASTERS", "RIFLE", previewsnowbg, Blaster.getBlasters().get(Blaster.RIFLEGUN), 128, 73, 200));
+
         shop = new Shop(cosmetics);
 
         timer = new Timer(25, this); // manages frames
@@ -97,7 +103,7 @@ public class ShopPanel extends JPanel implements KeyListener, ActionListener, Mo
             String last = AAdventure.getLastPanel();
             AAdventure.setCurrPanel(AAdventure.getLastPanel());
             AAdventure.setLastPanel(last);
-            Intro.getAlan().setX(Background.getWallRightPos()-Background.getWallLeftPos()-Background.getWallWidth()-50);
+            Intro.getAlan().setX(Background.getWallRightPos()-Background.getWallLeftPos()-50);
             Intro.resetMovementKeys();
         }
         keys[key] = false;

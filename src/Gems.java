@@ -53,6 +53,7 @@ public class Gems {
     public static ArrayList<Image> getGemS() {return gemS;}
     public static ArrayList<Image> getGemM() {return gemM;}
     public static ArrayList<Image> getGemL() {return gemL;}
+    public static Image getGemL0() {return gemL0;}
 
     public void displayGems(Graphics g, boolean total, boolean current, Alan alan) {
         int xPos = 65;
