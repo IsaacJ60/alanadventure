@@ -185,7 +185,7 @@ class Snake {
                     }
                 }
             } else {
-                if (x + width >= 9 * Util.BLOCKLENGTH) {
+                if (x + width >= (blocks[0].length-1) * Util.BLOCKLENGTH) {
                     dir = LEFT;
                     x -= velX;
                 } else {

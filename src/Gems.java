@@ -205,7 +205,7 @@ class Gem {
             }
         }
 
-        for (int r = nextRow-2; r < nextRow; r++) {
+        for (int r = nextRow-2; r < nextRow+1; r++) {
             for (int i = map.getColumns()-1; i >= 0; i--) {
                 Block b = blocks[r][i];
                 int blockType = b.getType();
@@ -223,7 +223,7 @@ class Gem {
             }
         }
 
-        for (int r = nextRow-2; r < nextRow; r++) {
+        for (int r = nextRow-2; r < nextRow+1; r++) {
             for (int i = 0; i < map.getColumns(); i++) {
                 Block b = blocks[r][i];
                 int blockType = b.getType();

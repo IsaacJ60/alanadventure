@@ -111,9 +111,9 @@ public class MapList {
 //            g.setColor(Color.WHITE);
 //            g.drawString(String.valueOf(i), 230, blocks[i][0].getY(true, alan)+20);
 
-//            if (includeWalls) {
-//                drawWalls(g, blocks, i);
-//            }
+            if (includeWalls) {
+                drawWalls(g, blocks, i);
+            }
 
             if (includeBlocks) {
                 // going through each block row
@@ -148,7 +148,7 @@ public class MapList {
     }
 
     public void drawWalls(Graphics g, Block[][] blocks, int i) {
-        g.drawImage(wallImgLeft.getImg(), Background.getWallLeftPos()-15, blocks[i][0].getY(),null);
+        g.drawImage(wallImgLeft.getImg(), Background.getWallLeftPos(), blocks[i][0].getY(),null);
         g.drawImage(wallImgRight.getImg(), Background.getWallRightPos(), blocks[i][0].getY(),null);
     }
 }
