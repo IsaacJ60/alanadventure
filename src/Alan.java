@@ -184,7 +184,7 @@ public class Alan {
     }
 
     public int move(boolean[] keys, Graphics g, Map map, Powerups powerups, EnemyManager enemies) {
-        getEnemyCollision(GamePanel.getBlaster(), enemies.getSnakes(), enemies.getSnails()); // collision between alan and snakes
+        getEnemyCollision(weapon, enemies.getSnakes(), enemies.getSnails()); // collision between alan and snakes
         getCollision(g,this, map); // getting collision between player and blocks
         alanRect.setLocation(x+5,y); // setting rect location
         boolean wallCollideLeft = false, wallCollideRight = false;

@@ -17,6 +17,10 @@ public class Blaster {
     ArrayList<Block> blastBlocks;
     Util.CustomTimer shootTimer;
 
+    private static ArrayList<Blaster> blasters;
+    private static Blaster machinegun, shotgun;
+    public static int MACHINEGUN = 0, SHOTGUN = 1;
+
     public Blaster(String name, int damage, int capacity, int speed, String file) {
         if (capacity == -1) {
             this.capacity = Util.UNLIMITED;
@@ -55,6 +59,16 @@ public class Blaster {
     public void setAmmo(int a) {this.ammo = a;}
     public void setAlanShoot(boolean alanShoot) {this.alanShoot = alanShoot;}
     public void setEquippedBullet(String s) {equippedBullet = new ImageIcon("src/assets/alan/shoot/bullets/"+s+".png").getImage().getScaledInstance(16,28,Image.SCALE_DEFAULT);}
+    public void setBullets(ArrayList<Bullet> b) {bullets = b;}
+    public static ArrayList<Blaster> getBlasters() {return blasters;}
+
+    public static void loadGuns() {
+        blasters = new ArrayList<>();
+        machinegun = new Blaster("Machine Gun", 10,8,13, "bulletB");
+        shotgun = new Blaster("Shotgun", 10,8,13, "bulletB");
+        blasters.add(machinegun);
+        blasters.add(shotgun);
+    }
 
     public boolean useAmmo() {
         if (ammo > 0) {

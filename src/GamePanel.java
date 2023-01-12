@@ -18,7 +18,6 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener, Mo
 
     private static Alan alan;
     private static EnemyManager enemyManager;
-    private static Blaster mgun;
     private static Powerups powers;
 
     public GamePanel(AAdventure a) {
@@ -33,10 +32,9 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener, Mo
 
         bg = new Background(); // background exclusive to game class
 
-        //TODO: create bullet manager class
-        mgun = new Blaster("Machine Gun", 10,8,13, "bulletB");
+        Blaster.loadGuns();
 
-        alan = new Alan(150, HEIGHT/2-50, mgun, 4, 4, 0, Util.a, Util.d);
+        alan = new Alan(150, HEIGHT/2-50, Blaster.getBlasters().get(Blaster.MACHINEGUN), 4, 4, 0, Util.a, Util.d);
 
         powers = new Powerups();
 
@@ -63,7 +61,7 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener, Mo
     public static Powerups getPowerups() {return powers;}
     public static void setPowerups(Powerups powerups) {powers = powerups;}
     public static void resetMovementKeys() {keys[Util.space] = false; keys[Util.a] = false; keys[Util.d] = false;}
-    public static Blaster getBlaster(){return mgun;}
+    public static Blaster getBlaster(){return alan.getWeapon();}
 
     // MouseListener
     @Override

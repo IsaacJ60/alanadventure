@@ -1,4 +1,5 @@
 import java.awt.event.KeyEvent;
+import java.util.ArrayList;
 
 //TODO: RESTART GAME FUNCTIONALITY
 
@@ -74,6 +75,7 @@ public class GameManager {
             AAdventure.setCurrPanel("INTRO");
             Util.setLevel(l);
             Intro.getEnemyManager().clearEnemies();
+            Intro.getAlan().getWeapon().setBullets(new ArrayList<>());
             Intro.setAlan(new Alan(20, HEIGHT/2+50, GamePanel.getAlan().getWeapon(), 4, GamePanel.getAlan().getMaxHealth(), GamePanel.getAlan().getHealthProgress(), Util.a, Util.d)); // resetting alan
             GamePanel.setAlan(new Alan(150, HEIGHT/2-50, GamePanel.getAlan().getWeapon(), 4, GamePanel.getAlan().getMaxHealth(), GamePanel.getAlan().getHealthProgress(), Util.a, Util.d)); // resetting alan
             Intro.setAlpha(0);
@@ -106,9 +108,7 @@ public class GameManager {
         }
     }
 
-    public static void gameOver(){
-        AAdventure.setCurrPanel("GAMEOVER");
-    }
+    public static void gameOver(){AAdventure.setCurrPanel("GAMEOVER");}
 
     public static void requestSettings(boolean[] keys) {
         if (keys[KeyEvent.VK_ESCAPE]) {
