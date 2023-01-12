@@ -159,7 +159,7 @@ public class Alan {
     public void setMaxHealth(int h) {maxHealth = h;}
     public int getX(boolean adjusted) { // gets x
         if (adjusted) { // whether you want x relative to the gameplay window
-            return this.x + Background.getWallLeftPos()+Background.getWallWidth();
+            return this.x + Background.getWallLeftPos();
         } else {
             return x;
         }
@@ -221,7 +221,7 @@ public class Alan {
                 if (Math.max(x,0) == 0) {
                     wallCollideLeft = true;
                 }
-                x = Math.max(x,0);
+//                x = Math.max(x,0);
             }
 
             // if "D" key pressed and player allowed to move right
@@ -235,10 +235,10 @@ public class Alan {
                 // changing horizontal position towards right
                 x += velX;
                 // making sure player doesn't go out of bounds
-                if (Math.min(x,Background.getWallRightPos()-Background.getWallLeftPos()-Background.getWallWidth()-width) != x) {
+                if (Math.min(x,Background.getWallRightPos()-Background.getWallLeftPos()-width-10) != x) {
                     wallCollideRight = true;
                 }
-                x = Math.min(x, Background.getWallRightPos()-Background.getWallLeftPos()-Background.getWallWidth()-width);
+//                x = Math.min(x, Background.getWallRightPos()-Background.getWallLeftPos()-Background.getWallWidth()-width);
             }
 
             // if moving left right but not in air, walking on ground

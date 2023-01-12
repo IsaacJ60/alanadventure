@@ -41,7 +41,7 @@ public class Block {
 
     public int getX(boolean adjusted) {
         if (adjusted) {
-            return x+Background.getWallLeftPos()+Background.getWallWidth();
+            return x+Background.getWallLeftPos();
         } else {
             return x;
         }

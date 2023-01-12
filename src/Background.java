@@ -12,9 +12,9 @@ public class Background {
     // manages basic background elements and ui as well as side walls
     public Background() {
         bg = new ImageIcon("src/tiles/bgB.png").getImage().getScaledInstance(GamePanel.getWIDTH(), GamePanel.getHEIGHT(), Image.SCALE_DEFAULT);
-        wallLeftPos = GamePanel.getWIDTH()/2-GamePanel.getWIDTH()/5+1;
-        wallRightPos = GamePanel.getWIDTH()/2+GamePanel.getWIDTH()/5-MapList.wallImgRight.getWidth();
-        wallWidth = MapList.wallImgRight.getWidth();
+        wallLeftPos = 257;
+        wallRightPos = 642-Util.BLOCKLENGTH;
+        wallWidth = Util.BLOCKLENGTH;
     }
 
     public static int getWallWidth() {return wallWidth;}
@@ -29,7 +29,7 @@ public class Background {
         if (includeBG) {
             g.drawImage(bg,0,0,null);
         }
-        g.fillRect(getWallLeftPos(), 0, getWallRightPos()-getWallLeftPos(), GamePanel.getHEIGHT());
+        g.fillRect(getWallLeftPos()+Util.BLOCKLENGTH, 0, getWallRightPos()-getWallLeftPos()-Util.BLOCKLENGTH, GamePanel.getHEIGHT());
         GameManager.getMaplist().drawBlocks(g, MapList.getAllMaps().get(level), alan, includeWalls, includeBlocks);
     }
 

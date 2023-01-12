@@ -34,7 +34,7 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener, Mo
 
         Blaster.loadGuns();
 
-        alan = new Alan(150, HEIGHT/2-50, Blaster.getBlasters().get(Blaster.MACHINEGUN), 4, 4, 0, Util.a, Util.d);
+        alan = new Alan(180, HEIGHT/2-50, Blaster.getBlasters().get(Blaster.MACHINEGUN), 4, 4, 0, Util.a, Util.d);
 
         powers = new Powerups();
 

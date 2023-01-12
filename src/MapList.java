@@ -14,7 +14,7 @@ public class MapList {
     // MAP BLOCKS
     public static Tile boxTile,wallTopLeft,wallTopRight,wallBottomLeft,wallBottomRight,
             wallFullLeft,wallFullRight,wallSideLeft,wallSideRight,wallTopBottom,
-            wallTop, wallBottom, platTile, wallImgLeft, wallImgRight;
+            wallTop, wallBottom, platTile, wallImgLeft, wallImgRight, wallFull;
 
     // constructor gets images for tiles
     public MapList() {
@@ -34,6 +34,7 @@ public class MapList {
         platTile = new Tile("PLAT", "src/tiles/plat.png");
         wallImgLeft = new Tile("WALL LEFT", "src/tiles/sideleft.png");
         wallImgRight = new Tile("WALL RIGHT", "src/tiles/sideright.png");
+        wallFull = new Tile("WALL FULL", "src/tiles/wallfull.png");
     }
 
     // add map to maps arraylist
@@ -68,9 +69,9 @@ public class MapList {
             g.setColor(Color.WHITE);
             g.drawString(String.valueOf(i), 230, blocks[i][0].getY(true, alan)+20);
 
-            if (includeWalls) {
-                drawWalls(g, blocks, i, alan);
-            }
+//            if (includeWalls) {
+//                drawWalls(g, blocks, i, alan);
+//            }
 
             if (includeBlocks) {
                 // going through each block row
@@ -110,9 +111,9 @@ public class MapList {
 //            g.setColor(Color.WHITE);
 //            g.drawString(String.valueOf(i), 230, blocks[i][0].getY(true, alan)+20);
 
-            if (includeWalls) {
-                drawWalls(g, blocks, i);
-            }
+//            if (includeWalls) {
+//                drawWalls(g, blocks, i);
+//            }
 
             if (includeBlocks) {
                 // going through each block row
@@ -154,7 +155,7 @@ public class MapList {
 
 class Map {
     Block[][] map; // 1 map
-    private final int columns = Util.DEFAULTCOLUMNS; // columns stay the same
+    private final int columns = Util.DEFAULTCOLUMNS+2; // columns stay the same
     private final int rows; // number of rows of map, determined with constructor input
 
     Random rand = new Random(); // random object to get random ints for map generation
@@ -214,6 +215,16 @@ class Map {
         generatePlatBlocks();
         generateWallBlocks(); // BOX BLOCKS GENERATED WITHIN WALL BLOCKS
         generateSemiRandomizedFreeStandingBreakableBoxBlocksWithThreeRandomSpawnPatterns("generateSemiRandomizedFreeStandingBreakableBoxBlocksWithThreeRandomSpawnPatterns");
+        generateCompletelyNonRandomizedSideWallBlocksWithFixedSizeOfStandardBlockLengthInsteadOfCustomLengthOfTwentyTwoPixels("        mgun = new Blaster(\"Machine Gun\", 10,8,13, \"bulletB\");\n");
+    }
+
+    public void generateCompletelyNonRandomizedSideWallBlocksWithFixedSizeOfStandardBlockLengthInsteadOfCustomLengthOfTwentyTwoPixels(String s) {
+        for (int i = 0; i < rows; i++) {
+            placeBlock(i,0,Block.WALL,Util.INDEX,Util.LEFT);
+        }
+        for (int i = 0; i < rows; i++) {
+            placeBlock(i,columns-1,Block.WALL,Util.INDEX,Util.RIGHT);
+        }
     }
 
     public void generateSemiRandomizedFreeStandingBreakableBoxBlocksWithThreeRandomSpawnPatterns(String s) {
@@ -234,7 +245,7 @@ class Map {
     }
 
     public void generateBoxes(int row, int length, int height) {
-        int start = rand.nextInt(0,columns-length-1);
+        int start = rand.nextInt(1,columns-length-1-1);
         for (int i = row; i < row+height; i++) {
             for (int j = start; j < start+length; j++) {
                 if (rand.nextInt(0,3) != 0 && getBlock(i,j).getType() == Block.AIR) {
@@ -262,7 +273,7 @@ class Map {
     }
 
     public void generateFlat(int row, int length) {
-        int start = rand.nextInt(0,columns-length);
+        int start = rand.nextInt(1,columns-length-1);
         for (int i = start; i < length; i++) {
             placeBlock(row, i, Block.PLAT, Util.INDEX, Util.NEUTRAL);
         }
@@ -276,7 +287,7 @@ class Map {
         if (side == Util.TOP) {
             if (otherside == Util.LEFT) {
                 for (int j = 0; j < rand.nextInt(1,4); j++) {
-                    for (int i = 0; i < length; i++) {
+                    for (int i = 1; i < length+1; i++) {
                         if (getBlock(row, i).getType() == Block.AIR) {
                             placeBlock(row, i, Block.BOX, Util.INDEX, otherside);
                         }
@@ -285,7 +296,7 @@ class Map {
                 }
             } else if (otherside == Util.RIGHT) {
                 for (int j = 0; j < rand.nextInt(1,4); j++) {
-                    for (int i = columns-length; i < columns; i++) {
+                    for (int i = columns-length-1; i < columns-1; i++) {
                         //FIXME: NULLPOINTEREXCEPTION FOR getBlock()
                         if (getBlock(row, i).getType() == Block.AIR) {
                             placeBlock(row, i, Block.BOX, Util.INDEX, otherside);
@@ -332,14 +343,14 @@ class Map {
         // CREATE CLIFF DIFFERENTLY BASED ON SIDE
         if (side == Util.LEFT) {
             for (int j = longest; j >= 0; j-=rand.nextInt(0,2)) {
-                for (int i = 0; i < j; i++) {
+                for (int i = 1; i < j+1; i++) {
                     placeBlock(row,i,type,Util.INDEX,side);
                 }
                 row++;
             }
         } else if (side == Util.RIGHT) {
             for (int j = longest; j >= 0; j-=rand.nextInt(0,2)) {
-                for (int i = columns-j; i < columns; i++) {
+                for (int i = columns-j-1; i < columns-1; i++) {
                     placeBlock(row,i,type,Util.INDEX,side);
                 }
                 row++;
@@ -353,13 +364,13 @@ class Map {
         int x = rand.nextInt(0,3), y = rand.nextInt(1,4);
         if (side == Util.LEFT) {
             for (int i = r; i < r+y; i++) {
-                for (int j = 0; j < x; j++) {
+                for (int j = 1; j < x+1; j++) {
                     placeBlock(i,j,type,Util.INDEX,side);
                 }
             }
         } else if (side == Util.RIGHT) {
             for (int i = r; i < r+y; i++) {
-                for (int j = columns-x; j < columns; j++) {
+                for (int j = columns-x-1; j < columns-1; j++) {
                     placeBlock(i,j,type,Util.INDEX,side);
                 }
             }
@@ -373,59 +384,64 @@ class Map {
             for (int j = 0; j < map[i].length; j++) {
                 if (map[i][j].getType() == Block.WALL) {
                     if (i>0 && i<rows-1) { // making sure checks are in bounds
-                        //HINT: CHECKING IF BLOCK IS ALONE (NO VERTICAL CONNECTIONS)
-                        if (map[i-1][j].getType() == Block.AIR && map[i+1][j].getType() == Block.AIR) {
-                            // CHECKING SIDE
-                            if (map[i][j].getSide() == Util.LEFT) {
-                                if (map[i][j+1].getType() != Block.WALL) { // FULL SIDE
-                                    map[i][j].setTile(MapList.wallFullRight);
-                                } else { // ONLY TOP BOTTOM - STILL MORE WALL SEGMENTS AHEAD
-                                    map[i][j].setTile(MapList.wallTopBottom);
+                        if (j == 0) {
+                            map[i][j].setTile(MapList.wallFull);
+                        } else if (j == columns - 1) {
+                            map[i][j].setTile(MapList.wallFull);
+                        } else { //HINT: CHECKING IF BLOCK IS ALONE (NO VERTICAL CONNECTIONS)
+                            if (map[i-1][j].getType() == Block.AIR && map[i+1][j].getType() == Block.AIR) {
+                                // CHECKING SIDE
+                                if (map[i][j].getSide() == Util.LEFT) {
+                                    if (map[i][j+1].getType() != Block.WALL) { // FULL SIDE
+                                        map[i][j].setTile(MapList.wallFullRight);
+                                    } else { // ONLY TOP BOTTOM - STILL MORE WALL SEGMENTS AHEAD
+                                        map[i][j].setTile(MapList.wallTopBottom);
+                                    }
+                                    // RIGHT SIDE LOGIC SIMILAR
+                                } else if (map[i][j].getSide() == Util.RIGHT) {
+                                    if (map[i][j-1].getType() != Block.WALL) {
+                                        map[i][j].setTile(MapList.wallFullLeft);
+                                    } else {
+                                        map[i][j].setTile(MapList.wallTopBottom);
+                                    }
                                 }
-                                // RIGHT SIDE LOGIC SIMILAR
+                                //HINT: CHECKING IF PART OF STRAIGHT WALL SEQUENCE
+                            } else if (map[i-1][j].getType() == Block.WALL && map[i+1][j].getType() == Block.WALL) {
+                                if (map[i][j].getSide() == Util.LEFT) {
+                                    if (map[i][j+1].getType() != Block.WALL) {
+                                        map[i][j].setTile(MapList.wallSideRight);
+                                    }
+                                } else if (map[i][j].getSide() == Util.RIGHT) {
+                                    if (map[i][j - 1].getType() != Block.WALL) {
+                                        map[i][j].setTile(MapList.wallSideLeft);
+                                    }
+                                }
+                                //HINT: CHECKING IF CORNER OR IF TOP/BOTTOM BLOCK
+                                // - SAME LOGIC EXCEPT CORNER HAS 2 SIDES OCCUPIED
+                                // - TOP/BOTTOM HAS 3 SIDES OCCUPIED AND ONE HORIZONTAL EDGE IS REMAINING
+                            } else if (map[i][j].getSide() == Util.LEFT) {
+                                if (map[i+1][j].getType() != Block.WALL && map[i][j+1].getType() != Block.WALL) {
+                                    map[i][j].setTile(MapList.wallBottomRight);
+                                } else if (map[i-1][j].getType() != Block.WALL && map[i][j+1].getType() != Block.WALL) {
+                                    map[i][j].setTile(MapList.wallTopRight);
+                                } else { // IF TOP RIGHT AND BOTTOM RIGHT HAVE ONE OCCUPIED SPACE
+                                    if (map[i-1][j].getType() == Block.WALL) {
+                                        map[i][j].setTile(MapList.wallBottom);
+                                    } else if (map[i+1][j].getType() == Block.WALL) {
+                                        map[i][j].setTile(MapList.wallTop);
+                                    }
+                                }
                             } else if (map[i][j].getSide() == Util.RIGHT) {
-                                if (map[i][j-1].getType() != Block.WALL) {
-                                    map[i][j].setTile(MapList.wallFullLeft);
+                                if (map[i+1][j].getType() != Block.WALL && map[i][j-1].getType() != Block.WALL) {
+                                    map[i][j].setTile(MapList.wallBottomLeft);
+                                } else if (map[i-1][j].getType() != Block.WALL && map[i][j-1].getType() != Block.WALL) {
+                                    map[i][j].setTile(MapList.wallTopLeft);
                                 } else {
-                                    map[i][j].setTile(MapList.wallTopBottom);
-                                }
-                            }
-                            //HINT: CHECKING IF PART OF STRAIGHT WALL SEQUENCE
-                        } else if (map[i-1][j].getType() == Block.WALL && map[i+1][j].getType() == Block.WALL) {
-                            if (map[i][j].getSide() == Util.LEFT) {
-                                if (map[i][j+1].getType() != Block.WALL) {
-                                    map[i][j].setTile(MapList.wallSideRight);
-                                }
-                            } else if (map[i][j].getSide() == Util.RIGHT) {
-                                if (map[i][j - 1].getType() != Block.WALL) {
-                                    map[i][j].setTile(MapList.wallSideLeft);
-                                }
-                            }
-                            //HINT: CHECKING IF CORNER OR IF TOP/BOTTOM BLOCK
-                            // - SAME LOGIC EXCEPT CORNER HAS 2 SIDES OCCUPIED
-                            // - TOP/BOTTOM HAS 3 SIDES OCCUPIED AND ONE HORIZONTAL EDGE IS REMAINING
-                        } else if (map[i][j].getSide() == Util.LEFT) {
-                            if (map[i+1][j].getType() != Block.WALL && map[i][j+1].getType() != Block.WALL) {
-                                map[i][j].setTile(MapList.wallBottomRight);
-                            } else if (map[i-1][j].getType() != Block.WALL && map[i][j+1].getType() != Block.WALL) {
-                                map[i][j].setTile(MapList.wallTopRight);
-                            } else { // IF TOP RIGHT AND BOTTOM RIGHT HAVE ONE OCCUPIED SPACE
-                                if (map[i-1][j].getType() == Block.WALL) {
-                                    map[i][j].setTile(MapList.wallBottom);
-                                } else if (map[i+1][j].getType() == Block.WALL) {
-                                    map[i][j].setTile(MapList.wallTop);
-                                }
-                            }
-                        } else if (map[i][j].getSide() == Util.RIGHT) {
-                            if (map[i+1][j].getType() != Block.WALL && map[i][j-1].getType() != Block.WALL) {
-                                map[i][j].setTile(MapList.wallBottomLeft);
-                            } else if (map[i-1][j].getType() != Block.WALL && map[i][j-1].getType() != Block.WALL) {
-                                map[i][j].setTile(MapList.wallTopLeft);
-                            } else {
-                                if (map[i-1][j].getType() == Block.WALL) {
-                                    map[i][j].setTile(MapList.wallBottom);
-                                } else if (map[i+1][j].getType() == Block.WALL) {
-                                    map[i][j].setTile(MapList.wallTop);
+                                    if (map[i-1][j].getType() == Block.WALL) {
+                                        map[i][j].setTile(MapList.wallBottom);
+                                    } else if (map[i+1][j].getType() == Block.WALL) {
+                                        map[i][j].setTile(MapList.wallTop);
+                                    }
                                 }
                             }
                         }

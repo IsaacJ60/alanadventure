@@ -31,10 +31,10 @@ public class GameManager {
         for (int i = 0; i < Util.LEVELS; i++) { // loading all levels
             int rows = 200;
             Map tmp = new Map(rows);
-            for (int j = 3; j < 6; j++) {
+            for (int j = 4; j < 7; j++) {
                 tmp.placeBlock(15,j,Block.PLAT,Util.INDEX,Util.NEUTRAL);
             }
-            for (int j = 0; j < 9; j++) {
+            for (int j = 1; j < 10; j++) {
                 tmp.placeBlock(rows-3,j,Block.BOX,Util.INDEX,Util.NEUTRAL);
                 tmp.placeBlock(rows-2,j,Block.WALL,Util.INDEX,Util.NEUTRAL);
             }
@@ -44,25 +44,35 @@ public class GameManager {
 
     public static void createIntro() {
         // CREATING INTRO LEVEL
-        introblocks = new Block[50][9];
+        introblocks = new Block[50][11];
         intromap = new Map(introblocks);
         intromap.fillBlocks(Block.AIR);
 
-        for (int i = 0; i < 3; i++) {
+        for (int i = 1; i < 4; i++) {
             intromap.placeBlock(20,i,Block.WALL,Util.INDEX,Util.NEUTRAL);
             intromap.getBlock(20,i).setTile(MapList.wallTop);
         }
         for (int i = 20; i < 49; i++) {
-            intromap.placeBlock(i,2,Block.WALL,Util.INDEX,Util.NEUTRAL);
-            intromap.getBlock(i,2).setTile(MapList.wallSideRight);
+            intromap.placeBlock(i,3,Block.WALL,Util.INDEX,Util.NEUTRAL);
+            intromap.getBlock(i,3).setTile(MapList.wallSideRight);
         }
-        for (int i = 6; i < 9; i++) {
+        for (int i = 7; i < 10; i++) {
             intromap.placeBlock(20,i,Block.WALL,Util.INDEX,Util.NEUTRAL);
             intromap.getBlock(20,i).setTile(MapList.wallTop);
         }
         for (int i = 20; i < 49; i++) {
-            intromap.placeBlock(i,6,Block.WALL,Util.INDEX,Util.NEUTRAL);
-            intromap.getBlock(i,6).setTile(MapList.wallSideLeft);
+            intromap.placeBlock(i,7,Block.WALL,Util.INDEX,Util.NEUTRAL);
+            intromap.getBlock(i,7).setTile(MapList.wallSideLeft);
+        }
+
+        intromap.getBlock(20,3).setTile(MapList.wallTopRight);
+        intromap.getBlock(20,7).setTile(MapList.wallTopLeft);
+
+        for (int i = 0; i < 50; i++) {
+            intromap.placeBlock(i,0,Block.WALL,Util.INDEX,Util.LEFT);
+        }
+        for (int i = 0; i < 50; i++) {
+            intromap.placeBlock(i,10,Block.WALL,Util.INDEX,Util.RIGHT);
         }
 
         intromap.getMapWithWallImages();
@@ -76,8 +86,8 @@ public class GameManager {
             Util.setLevel(l);
             Intro.getEnemyManager().clearEnemies();
             Intro.getAlan().getWeapon().setBullets(new ArrayList<>());
-            Intro.setAlan(new Alan(20, HEIGHT/2+50, GamePanel.getAlan().getWeapon(), 4, GamePanel.getAlan().getMaxHealth(), GamePanel.getAlan().getHealthProgress(), Util.a, Util.d)); // resetting alan
-            GamePanel.setAlan(new Alan(150, HEIGHT/2-50, GamePanel.getAlan().getWeapon(), 4, GamePanel.getAlan().getMaxHealth(), GamePanel.getAlan().getHealthProgress(), Util.a, Util.d)); // resetting alan
+            Intro.setAlan(new Alan(40, HEIGHT/2+50, GamePanel.getAlan().getWeapon(), 4, GamePanel.getAlan().getMaxHealth(), GamePanel.getAlan().getHealthProgress(), Util.a, Util.d)); // resetting alan
+            GamePanel.setAlan(new Alan(180, HEIGHT/2-50, GamePanel.getAlan().getWeapon(), 4, GamePanel.getAlan().getMaxHealth(), GamePanel.getAlan().getHealthProgress(), Util.a, Util.d)); // resetting alan
             Intro.setAlpha(0);
             GamePanel.setAlpha(255);
             GamePanel.setPowerups(new Powerups());
@@ -104,7 +114,7 @@ public class GameManager {
 //            GamePanel.getEnemyManager().generateJellies(MapList.getBlocksWithoutWallImages(), GamePanel.getAlan());
             //            GamePanel.getEnemyManager().generateBats(MapList.getBlocksWithoutWallImages(), GamePanel.getAlan());
             //TODO: perhaps make a reset() function in alan to avoid bugs from recreating an instance each level
-            GamePanel.setAlan(new Alan(150, HEIGHT/2-50, GamePanel.getAlan().getWeapon(), GamePanel.getAlan().getHealth(), GamePanel.getAlan().getMaxHealth(), GamePanel.getAlan().getHealthProgress(), Util.a, Util.d)); // resetting alan
+            GamePanel.setAlan(new Alan(180, HEIGHT/2-50, GamePanel.getAlan().getWeapon(), GamePanel.getAlan().getHealth(), GamePanel.getAlan().getMaxHealth(), GamePanel.getAlan().getHealthProgress(), Util.a, Util.d)); // resetting alan
         }
     }
 

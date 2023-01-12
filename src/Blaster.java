@@ -269,7 +269,7 @@ class Bullet {
 
     public double getX(boolean adjusted) { // gets x
         if (adjusted) { // whether you want x relative to the gameplay window
-            return x + Background.getWallLeftPos()+Background.getWallWidth();
+            return x + Background.getWallLeftPos();
         } else {
             return x;
         }

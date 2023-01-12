@@ -142,7 +142,7 @@ class Gem {
     public int getSize() {return size;}
     public int getX(boolean adjusted) { // gets x
         if (adjusted) { // whether you want x relative to the gameplay window
-            return this.x + Background.getWallLeftPos()+Background.getWallWidth();
+            return this.x + Background.getWallLeftPos();
         } else {
             return this.x;
         }
