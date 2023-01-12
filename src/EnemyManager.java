@@ -121,7 +121,7 @@ class Snake {
         this.health = 10;
         this.velX = 2;
         this.accelY = 1;
-        this.maxVelY = 13;
+        this.maxVelY = Util.rand.nextInt(5,13);
         animFrame = 0;
 
         for (int i = 0; i < 4; i++) {
