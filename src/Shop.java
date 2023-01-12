@@ -130,7 +130,7 @@ public class Shop {
             if (item.getOwned()) {
                 g.drawString("OWNED", x+(item.getWidth()/2)-("OWNED".length()*7), y+item.getHeight()+40);
             } else {
-                g.drawImage(Gems.getGemM().get(0), x+(item.getWidth()/2)-(String.valueOf(item.getCost()).length()*7)-10, y+item.getHeight()+24, null);
+                g.drawImage(Gems.getGemS().get(0), x+(item.getWidth()/2)-(String.valueOf(item.getCost()).length()*7)-10, y+item.getHeight()+24, null);
                 g.drawString(String.valueOf(item.getCost()),x+(item.getWidth()/2)-(String.valueOf(item.getCost()).length()*7)+8,y+item.getHeight()+40);
             }
 
