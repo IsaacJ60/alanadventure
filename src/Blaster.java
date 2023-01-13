@@ -68,11 +68,11 @@ public class Blaster {
 
     public static void loadGuns() {
         blasters = new ArrayList<>();
-        machinegun = new Blaster("Machine Gun", 10,8,13, 2,0.12,1,"bulletB");
+        machinegun = new Blaster("Machine Gun", 10,8,13, 2,0.12,1,"bulletMachineB");
         blasters.add(machinegun);
-        shotgun = new Blaster("Shotgun", 10,8,13, 5,0.24,2,"bulletB");
+        shotgun = new Blaster("Shotgun", 10,8,13, 5,0.24,2,"bulletShotgunB");
         blasters.add(shotgun);
-        riflegun = new Blaster("Rifle", 10, 12, 10, 1, 0.15, 1, "bulletB");
+        riflegun = new Blaster("Rifle", 10, 12, 10, 1, 0.15, 1, "bulletRifleB");
         blasters.add(riflegun);
     }
 

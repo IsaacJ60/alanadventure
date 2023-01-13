@@ -15,7 +15,7 @@ public class LevelClear extends JPanel implements KeyListener, ActionListener, M
     private static int tarX, tarY;
     private static int[] randomPowerups = new int[3];
 
-    Background bg;
+    private final Background bg;
 
     private static int alpha;
 

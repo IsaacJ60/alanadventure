@@ -72,7 +72,7 @@ public class Powerups{
     }
 
     public void choosePower(Graphics g, int[] chosen, boolean[] keys) {
-        if (selectionTimer.getElapsedTime() > 0.2) {
+        if (selectionTimer.getElapsedTime() > 0.3) {
             if (keys[Util.space]) {
                 // HINT: activate powerup
                 if (chosen[selected] == YOUTH) {

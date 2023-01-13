@@ -1,5 +1,7 @@
 import java.awt.event.KeyEvent;
+import java.io.*;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 //TODO: RESTART GAME FUNCTIONALITY
 
@@ -15,13 +17,17 @@ public class GameManager {
 
     public static Block[][] introblocks;
     public static Map intromap;
-    private static int rows = 100;
-    private static int levelCount = 100;
+    private final static int rows = 100, levelCount = 100;
 
     public static void loadGems() {
-        gemManager = new Gems();
-        gemManager.setTotalGems(999);
-        //TODO: get total gems from file
+        int prevGems = 0;
+        try {
+            Scanner f = new Scanner(new BufferedReader(new FileReader("src/assets/gems/gems.txt")));
+            prevGems = f.nextInt();
+        } catch (FileNotFoundException ex) {
+            System.out.println(ex + "dummy");
+        }
+        gemManager = new Gems(prevGems);
     }
 
     public static void loadLevels() {
@@ -91,6 +97,7 @@ public class GameManager {
             GamePanel.setPowerups(new Powerups());
             gemManager.setTotalGems(gemManager.getTotalGems()+gemManager.getGems());
             gemManager.setGems(0);
+            gemManager.setActiveGems(new ArrayList<>());
             //TODO: reset bullets and ammo capacity
         } else {
             if (l != 1) {
@@ -121,6 +128,8 @@ public class GameManager {
                 maplist.addMap(tmp);
             }
 
+            gemManager.setActiveGems(new ArrayList<>());
+            gemManager.setTotalGems(gemManager.getTotalGems()+gemManager.getGems());
             GamePanel.getEnemyManager().clearEnemies();
 //            GamePanel.getEnemyManager().addJelly(300,2000);
             GamePanel.getEnemyManager().generateSnakes(MapList.getBlocksWithoutWallImages(), GamePanel.getAlan());
@@ -129,6 +138,14 @@ public class GameManager {
             //            GamePanel.getEnemyManager().generateBats(MapList.getBlocksWithoutWallImages(), GamePanel.getAlan());
             //TODO: perhaps make a reset() function in alan to avoid bugs from recreating an instance each level
             GamePanel.setAlan(new Alan(180, HEIGHT/2-50, GamePanel.getAlan().getWeapon(), GamePanel.getAlan().getHealth(), GamePanel.getAlan().getMaxHealth(), GamePanel.getAlan().getHealthProgress(), Util.a, Util.d)); // resetting alan
+        }
+
+        try {
+            PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("src/assets/gems/gems.txt")));
+            out.print(gemManager.getTotalGems());
+            out.close();
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
         }
     }
 

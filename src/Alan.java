@@ -358,6 +358,7 @@ public class Alan {
         // USE GAMEMANAGER TO SWITCH TO NEXT LEVEL WHEN ALAN REACHES CERTAIN POINT
         if (nextRow == map.getRows()-15) {
             LevelClear.setAlpha(255);
+            Powerups.selectionTimer.restart();
             GameManager.toLevel(Util.getLevel()+1, false);
         }
 
