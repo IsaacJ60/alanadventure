@@ -94,7 +94,7 @@ public class Gems {
                 activeGems.remove(i);
             }
             //TODO: "500*Util.BLOCKLENGTH" -> ASCAP
-            if (activeGem.getGemTimer().getElapsedTime() > 10 || activeGem.getY(false, alan) > map.getRows()*Util.BLOCKLENGTH-500) {
+            if (activeGem.getGemTimer().getElapsedTime() > 10 || activeGem.getY(false, alan) > map.getRows()*Util.BLOCKLENGTH-200) {
                 activeGems.remove(i);
             }
             activeGem.draw(g, alan, map);
@@ -175,8 +175,6 @@ class Gem {
     public void move(Alan alan, Map map, Graphics g) {
         getCollision(alan, map, g);
         x += (int)velX;
-        x = Math.min(Background.getWallRightPos()-(Background.getWallLeftPos())-width, x);
-        x = Math.max(0, x);
         y += (int)velY;
         if (velY < maxY) {
             velY+=accelY;
@@ -190,64 +188,88 @@ class Gem {
     }
 
     public void getCollision(Alan alan, Map map, Graphics g) {
+        Block[][] blocks = map.getMap();
+        int nextRow = getY(false,alan)/Util.BLOCKLENGTH+1;
+        int nearestRightX = 100, nearestLeftX = 100, nearestBlockY = 100, snapX = 0, snapY = 0;
+
         // PLAYER COLLISION
         if (rect.intersects(alan.getRect())) {
             claimed = true; // claim gem!
         }
 
-        // BLOCK COLLISION
-        Block[][] blocks = map.getMap();
-        int nextRow = getY(false,alan)/Util.BLOCKLENGTH+1;
-        for (int r = nextRow-1; r < nextRow+2; r++) {
-            for (int i = 0; i < map.getColumns(); i++) {
-                Block b = blocks[r][i];
-                int blockType = b.getType();
-                if (blockType != Block.AIR) {
-                    if ((blockType == Block.WALL || blockType == Block.BOX || blockType == Block.PLAT)) {
-                        if (rect.intersectsLine(b.getX(false), b.getY(false, alan), b.getX(false)+Util.BLOCKLENGTH, b.getY(false, alan))) {
-                            velY = -1 * (velY/2);
-                            y = b.getY(false,alan)-height-1;
+        // top down collision
+        for (int i = 0; i < map.getColumns(); i++) {
+            int blockType = blocks[nextRow][i].getType();
+            if (blockType != Block.AIR) { // if block isn't air, check for distance to player
+                // only check top when velocity is positive (going down)
+                if ((blockType == Block.WALL || blockType == Block.BOX || blockType == Block.PLAT) && velY >= 0) {
+                    // checkig player has a chance of colliding with block (x value within range of block x values)
+                    if (x+width > blocks[nextRow][i].getX(false) && x < blocks[nextRow][i].getX(false) + Util.BLOCKLENGTH) {
+                        if (blocks[nextRow][i].getY(false, alan)-y < nearestBlockY) {
+                            // updating nearest distance
+                            nearestBlockY = Math.abs(blocks[nextRow][i].getY(false, alan)-(y+height));
+                            snapY = blocks[nextRow][i].getY(false,alan)-height-1;
+                        }
+                    }
+                }
+            }
+        }
+        if (nearestBlockY <= velY+5) {
+            velY = -1 * (velY/2);
+            y = snapY;
+        }
+
+        // right to left collision checking
+        // similar logic to top-down collisions
+        // differences:
+        // - checks multiple rows, player able to collide with multiple rows of block
+        // - checks on y-axis instead of x
+        // - snapping to x-axis not bug prone vs snapping to y because no offset
+        for (int r = nextRow-2; r < nextRow+1; r++) {
+            for (int i = map.getColumns()-1; i >= 0; i--) {
+                Block block = blocks[r][i];
+                if (block.getX(false) < x) {
+                    if (block.getType() != Block.AIR) {
+                        if (block.getType() == Block.BOX || block.getType() == Block.WALL) {
+                            if (y+height > block.getY(false,alan) && y < block.getY(false,alan) + Util.BLOCKLENGTH) {
+                                if (x-(block.getX(false)+Util.BLOCKLENGTH) < nearestLeftX) {
+                                    nearestLeftX = Math.abs(x-(block.getX(false)+Util.BLOCKLENGTH));
+                                    snapX = block.getX(false)+Util.BLOCKLENGTH+1;
+                                }
+                            }
                             break;
                         }
                     }
                 }
             }
         }
+        if (nearestLeftX <= velX+10) {
+            velX = -1 * velX;
+            x = snapX;
+        }
 
+        // left to right collision checking - SAME AS RIGHT TO LEFT BUT X VALUES TO CHECK ARE DIFFERENT
         for (int r = nextRow-2; r < nextRow+1; r++) {
-            for (int i = map.getColumns()-1; i >= 0; i--) {
-                Block b = blocks[r][i];
-                int blockType = b.getType();
-                if (b.getX(false) < x) {
-                    if (blockType != Block.AIR) {
-                        if (blockType == Block.BOX || blockType == Block.WALL) {
-                            if (rect.intersectsLine(b.getX(false), b.getY(false, alan), b.getX(false), b.getY(false, alan)+Util.BLOCKLENGTH)) {
-                                x = b.getX(false)-width-1;
-                                velX = -1 * velX;
-                                break;
+            for (int i = 0; i < map.getColumns(); i++) {
+                Block block = blocks[r][i];
+                if (block.getX(false) > x) {
+                    if (block.getType() != Block.AIR) {
+                        if (block.getType() == Block.BOX || block.getType() == Block.WALL) {
+                            if (y + height > block.getY(false,alan) && y < block.getY(false,alan) + Util.BLOCKLENGTH) {
+                                if (Math.abs(block.getX(false) - (x + width)) < nearestRightX) {
+                                    nearestRightX = Math.abs(block.getX(false) - (x + width));
+                                    snapX = block.getX(false) - width - 5;
+                                }
                             }
+                            break;
                         }
                     }
                 }
             }
         }
-
-        for (int r = nextRow-2; r < nextRow+1; r++) {
-            for (int i = 0; i < map.getColumns(); i++) {
-                Block b = blocks[r][i];
-                int blockType = b.getType();
-                if (b.getX(false) < x) {
-                    if (blockType != Block.AIR) {
-                        if (blockType == Block.BOX || blockType == Block.WALL) {
-                            if (rect.intersectsLine(b.getX(false)+Util.BLOCKLENGTH, b.getY(false, alan), b.getX(false)+Util.BLOCKLENGTH, b.getY(false, alan)+Util.BLOCKLENGTH)) {
-                                x = b.getX(false)+Util.BLOCKLENGTH+1;
-                                velX = -1 * velX;
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
+        if (nearestRightX <= velX+10) {
+            velX = -1 * velX;
+            x = snapX;
         }
     }
 

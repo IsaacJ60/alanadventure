@@ -119,13 +119,15 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener, Mo
         enemyManager.drawEnemies(g, alan, MapList.getAllMaps().get(Util.getLevel()));
         GameManager.getGemManager().drawGems(g, alan, MapList.getAllMaps().get(Util.getLevel()));
         powers.usePowers(alan, g);
+
+        g.setFont(Util.fontTextSmall);
+        g.drawString("LEVEL " + Util.getLevel(), AAdventure.getGameWidth()/2-(("LEVEL " + Util.getLevel()).length()*8), 370 - alan.getOffset() + alan.getScreenOffset());
+
         alan.draw(g, keys, MapList.getAllMaps().get(Util.getLevel()), powers, enemyManager);
 
         // UI ELEMENTS
         GameManager.getGemManager().displayGems(g,false,true, alan);
         UI.displayAll(g, alan, powers);
-        g.setFont(Util.fontTextSmall);
-        g.drawString("LEVEL " + Util.getLevel(), AAdventure.getGameWidth()/2-(("LEVEL " + Util.getLevel()).length()*8), 370 - alan.getOffset() + alan.getScreenOffset());
 
         alpha = Util.increaseOpacity(alpha, false);
         Util.overlay(g,0,0,0,alpha);
