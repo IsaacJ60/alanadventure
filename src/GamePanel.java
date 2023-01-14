@@ -85,6 +85,8 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener, Mo
             prevSpaced = spaced;
             spaced = true;
         }
+        GameManager.requestSettings(keys);
+        keys[KeyEvent.VK_ESCAPE] = false;
     }
 
     @Override
@@ -120,6 +122,7 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener, Mo
         GameManager.getGemManager().drawGems(g, alan, MapList.getAllMaps().get(Util.getLevel()));
         powers.usePowers(alan, g);
 
+        g.setColor(Color.WHITE);
         g.setFont(Util.fontTextSmall);
         g.drawString("LEVEL " + Util.getLevel(), AAdventure.getGameWidth()/2-(("LEVEL " + Util.getLevel()).length()*8), 370 - alan.getOffset() + alan.getScreenOffset());
 

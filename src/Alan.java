@@ -462,7 +462,6 @@ public class Alan {
                                     snapX = block.getX(false)+Util.BLOCKLENGTH+1;
                                 }
                             }
-                            break;
                         }
                     }
                 }
@@ -488,7 +487,6 @@ public class Alan {
                                     snapX = block.getX(false) - width - 5;
                                 }
                             }
-                            break;
                         }
                     }
                 }

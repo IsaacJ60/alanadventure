@@ -79,7 +79,7 @@ public class Settings extends JPanel implements KeyListener, ActionListener, Mou
     public void paint(Graphics g) {
         alpha = Util.increaseOpacity(alpha, true);
         Util.overlay(g,0,0,0,alpha);
-        //TODO: make settings lol
+        //TODO: key binding & control help display
     }
 }
 

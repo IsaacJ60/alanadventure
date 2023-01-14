@@ -53,10 +53,14 @@ public class ShopPanel extends JPanel implements KeyListener, ActionListener, Mo
         cosmetics.get(0).add(new Cosmetics("BACKGROUNDS", "WELL", previewsnowbg, snowbg, 128, 73, 100));
         cosmetics.get(0).add(new Cosmetics("BACKGROUNDS", "FROGS", previewfrogbg, frogbg, 128, 73, 200));
 
+        ImageIcon previewmachine = new ImageIcon("src/assets/alan/shoot/bullets/bulletMachinePreview.png");
+        ImageIcon previewshotgun = new ImageIcon("src/assets/alan/shoot/bullets/bulletShotgunPreview.png");
+        ImageIcon previewrifle = new ImageIcon("src/assets/alan/shoot/bullets/bulletRiflePreview.png");
+
         cosmetics.add(new ArrayList<>());
-        cosmetics.get(1).add(new Cosmetics("BLASTERS", "MACHINE GUN", previewcloudsbg, Blaster.getBlasters().get(Blaster.MACHINEGUN), 128, 73, -1));
-        cosmetics.get(1).add(new Cosmetics("BLASTERS", "SHOTGUN", previewfrogbg, Blaster.getBlasters().get(Blaster.SHOTGUN), 128, 73, 200));
-        cosmetics.get(1).add(new Cosmetics("BLASTERS", "RIFLE", previewsnowbg, Blaster.getBlasters().get(Blaster.RIFLEGUN), 128, 73, 200));
+        cosmetics.get(1).add(new Cosmetics("BLASTERS", "MACHINE GUN", previewmachine, Blaster.getBlasters().get(Blaster.MACHINEGUN), 110, 73, -1));
+        cosmetics.get(1).add(new Cosmetics("BLASTERS", "SHOTGUN", previewshotgun, Blaster.getBlasters().get(Blaster.SHOTGUN), 110, 73, 200));
+        cosmetics.get(1).add(new Cosmetics("BLASTERS", "RIFLE", previewrifle, Blaster.getBlasters().get(Blaster.RIFLEGUN), 110, 73, 200));
 
         shop = new Shop(cosmetics);
 

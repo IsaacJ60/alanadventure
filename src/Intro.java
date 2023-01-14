@@ -83,7 +83,8 @@ public class Intro extends JPanel implements KeyListener, ActionListener, MouseL
     public void keyPressed(KeyEvent e) {
         int key = e.getKeyCode();
         keys[key] = true;
-//        GameManager.requestSettings(keys);
+        GameManager.requestSettings(keys);
+        keys[KeyEvent.VK_ESCAPE] = false;
     }
 
     @Override
