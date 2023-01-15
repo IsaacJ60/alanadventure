@@ -10,15 +10,15 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener, Mo
     // HINT: static so that we can reset the keys after a level
     private static boolean[] keys;
 
-    private static int WIDTH = AAdventure.getGameWidth(), HEIGHT = AAdventure.getGameHeight();
-    private static int tarX, tarY, alpha = 255;
-    private static boolean spaced = false, prevSpaced = false;
+    private final int WIDTH = AAdventure.getGameWidth(), HEIGHT = AAdventure.getGameHeight();
+    private int tarX, tarY, alpha = 255;
+    private boolean spaced = false, prevSpaced = false;
 
-    private static Background bg;
+    private Background bg;
 
-    private static Alan alan;
-    private static EnemyManager enemyManager;
-    private static Powerups powers;
+    private Alan alan;
+    private EnemyManager enemyManager;
+    private Powerups powers;
 
     public GamePanel(AAdventure a) {
         mainFrame = a;
@@ -45,23 +45,15 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener, Mo
     }
 
     // getter and setter for mouse pos, lives, and level
-    public static boolean getSpaced() {return spaced;}
-    public static boolean getPrevSpaced() {return prevSpaced;}
-    public static int getTarX() {return tarX;}
-    public static int getTarY() {return tarY;}
-    public static int getWIDTH() {return WIDTH;}
-    public static void setWIDTH(int w) {WIDTH = w;}
-    public static int getHEIGHT() {return HEIGHT;}
-    public static void setHEIGHT(int h) {HEIGHT = h;}
-    public static Alan getAlan() {return alan;}
-    public static void setAlan(Alan a) {alan = a;}
-    public static void setAlanCoords(int x, int y) {alan.setX(x); alan.setY(y);}
-    public static EnemyManager getEnemyManager(){return enemyManager;}
-    public static void setAlpha(int a) {alpha = a;}
-    public static Powerups getPowerups() {return powers;}
-    public static void setPowerups(Powerups powerups) {powers = powerups;}
+    public boolean getPrevSpaced() {return prevSpaced;}
+    public int getHEIGHT() {return HEIGHT;}
+    public Alan getAlan() {return alan;}
+    public void setAlan(Alan a) {alan = a;}
+    public EnemyManager getEnemyManager(){return enemyManager;}
+    public void setAlpha(int a) {alpha = a;}
+    public Powerups getPowerups() {return powers;}
+    public void setPowerups(Powerups powerups) {powers = powerups;}
     public static void resetMovementKeys() {keys[Util.space] = false; keys[Util.a] = false; keys[Util.d] = false;}
-    public static Blaster getBlaster(){return alan.getWeapon();}
 
     // MouseListener
     @Override

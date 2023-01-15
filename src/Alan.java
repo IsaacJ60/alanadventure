@@ -157,6 +157,8 @@ public class Alan {
     public void setHealth(int h) {health = h;}
     public void setHealthProgress(int h) {healthProgress = h;}
     public void setMaxHealth(int h) {maxHealth = h;}
+    public void setKeyLeft(int k) {keyLeft = k;}
+    public void setKeyRight(int k) {keyRight = k;}
     public int getX(boolean adjusted) { // gets x
         if (adjusted) { // whether you want x relative to the gameplay window
             return this.x + Background.getWallLeftPos();
@@ -191,7 +193,7 @@ public class Alan {
 
         // allow jump only if not jumping or falling and if space pressed
         if (AAdventure.getCurrPanel().equals("GAME")) {
-            if (keys[Util.space] && !GamePanel.getPrevSpaced() && state != JUMP && state != FALL) {
+            if (keys[Util.space] && !AAdventure.getGame().getPrevSpaced() && state != JUMP && state != FALL) {
                 changeState(JUMP, dir, false);
             }
         } else {
@@ -357,7 +359,7 @@ public class Alan {
         //HINT: CHANGING LEVELS HERE
         // USE GAMEMANAGER TO SWITCH TO NEXT LEVEL WHEN ALAN REACHES CERTAIN POINT
         if (nextRow == map.getRows()-15) {
-            LevelClear.setAlpha(255);
+            AAdventure.getLevelClear().setAlpha(255);
             Powerups.selectionTimer.restart();
             GameManager.toLevel(Util.getLevel()+1, false);
         }

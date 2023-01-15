@@ -10,12 +10,12 @@ public class Intro extends JPanel implements KeyListener, ActionListener, MouseL
     private static boolean[] keys;
 
     private static int WIDTH = AAdventure.getGameWidth(), HEIGHT = AAdventure.getGameHeight();
-    private static int tarX, tarY, alpha = 0;
+    private int tarX, tarY, alpha = 0;
 
-    private static Alan alan;
-    private final Background bg;
-    private final Powerups powers;
-    private static EnemyManager enemyManager;
+    private Alan alan;
+    private Background bg;
+    private Powerups powers;
+    private EnemyManager enemyManager;
 
     private Image shopLogo;
 
@@ -44,17 +44,11 @@ public class Intro extends JPanel implements KeyListener, ActionListener, MouseL
     }
 
     // getter and setter for mouse pos, lives, and level
-    public static int getTarX() {return tarX;}
-    public static int getTarY() {return tarY;}
-    public static int getWIDTH() {return WIDTH;}
-    public static void setWIDTH(int w) {WIDTH = w;}
-    public static int getHEIGHT() {return HEIGHT;}
-    public static void setHEIGHT(int h) {HEIGHT = h;}
-    public static EnemyManager getEnemyManager(){return enemyManager;}
-    public static Alan getAlan() {return alan;}
-    public static void setAlan(Alan a) {alan = a;}
-    public static void setAlpha(int a) {alpha = a;}
-    public static void resetMovementKeys() {keys[Util.space] = false; keys[Util.a] = false; keys[Util.d] = false;}
+    public EnemyManager getEnemyManager(){return enemyManager;}
+    public Alan getAlan() {return alan;}
+    public void setAlan(Alan a) {alan = a;}
+    public void setAlpha(int a) {alpha = a;}
+    public void resetMovementKeys() {keys[Util.space] = false; keys[Util.a] = false; keys[Util.d] = false;}
 
     // MouseListener
     @Override

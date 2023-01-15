@@ -12,13 +12,11 @@ public class ShopPanel extends JPanel implements KeyListener, ActionListener, Mo
 
     private static boolean[] keys;
 
-    private static int WIDTH = AAdventure.getGameWidth(), HEIGHT = AAdventure.getGameHeight();
-    private static int tarX, tarY;
+    private int WIDTH = AAdventure.getGameWidth(), HEIGHT = AAdventure.getGameHeight();
     private static int[] randomPowerups = new int[3];
 
-    Background bg;
-
-    Shop shop;
+    private Background bg;
+    private Shop shop;
 
     private static int alpha;
 
@@ -69,12 +67,6 @@ public class ShopPanel extends JPanel implements KeyListener, ActionListener, Mo
     }
 
     // getter and setter for mouse pos, lives, and level
-    public static int getTarX() {return tarX;}
-    public static int getTarY() {return tarY;}
-    public static int getWIDTH() {return WIDTH;}
-    public static void setWIDTH(int w) {WIDTH = w;}
-    public static int getHEIGHT() {return HEIGHT;}
-    public static void setHEIGHT(int h) {HEIGHT = h;}
     public static void setAlpha(int a) {alpha = a;}
     public static void setRandomPowerups(int a, int b, int c) {randomPowerups = new int[]{a,b,c};}
     public static void resetSpace() {keys[Util.space] = false;}
@@ -107,8 +99,8 @@ public class ShopPanel extends JPanel implements KeyListener, ActionListener, Mo
             String last = AAdventure.getLastPanel();
             AAdventure.setCurrPanel(AAdventure.getLastPanel());
             AAdventure.setLastPanel(last);
-            Intro.getAlan().setX(Background.getWallRightPos()-Background.getWallLeftPos()-50);
-            Intro.resetMovementKeys();
+            AAdventure.getIntro().getAlan().setX(Background.getWallRightPos()-Background.getWallLeftPos()-50);
+            AAdventure.getIntro().resetMovementKeys();
         }
         keys[key] = false;
     }
@@ -134,8 +126,8 @@ public class ShopPanel extends JPanel implements KeyListener, ActionListener, Mo
         shop.draw(g, keys, GameManager.getGemManager());
 
         // UI ELEMENTS
-        GameManager.getGemManager().displayGems(g,true,false, GamePanel.getAlan());
-        UI.displayAll(g, GamePanel.getAlan(), GamePanel.getPowerups());
+        GameManager.getGemManager().displayGems(g,true,false, AAdventure.getGame().getAlan());
+        UI.displayAll(g, AAdventure.getGame().getAlan(), AAdventure.getGame().getPowerups());
 
         alpha = Util.increaseOpacity(alpha, false);
         Util.overlay(g,0,0,0,alpha);

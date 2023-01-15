@@ -9,12 +9,18 @@ public class UI {
     }
 
     public static void powerupUI(Graphics g, Powerups powerups) {
-        ;
+        int x = 23 + Background.getWallRightPos();
+        for (int i = 0; i < powerups.getActivepowers().length; i++) {
+            if (powerups.getActivepowers()[i] == Powerups.ACTIVE || powerups.getActivepowers()[i] == Powerups.PASSIVE) {
+                x += 30;
+                g.drawImage(powerups.getSmallPowerupIcons()[i], x, 70, null);
+            }
+        }
     }
 
     public static void healthUI(Graphics g, Alan alan) {
         int healthOffsetX = 54 + Background.getWallRightPos();
-        int healthOffsetY = 0 + 26;
+        int healthOffsetY = 26;
         healthBar(g, alan, healthOffsetX, healthOffsetY);
         g.setFont(Util.fontText);
         g.setColor(Color.BLACK);

@@ -11,7 +11,7 @@ public class Background {
 
     // manages basic background elements and ui as well as side walls
     public Background() {
-        bg = new ImageIcon("src/tiles/bgB.png").getImage().getScaledInstance(GamePanel.getWIDTH(), GamePanel.getHEIGHT(), Image.SCALE_DEFAULT);
+        bg = new ImageIcon("src/tiles/bgB.png").getImage().getScaledInstance(900, 700, Image.SCALE_DEFAULT);
         wallLeftPos = 257;
         wallRightPos = 642-Util.BLOCKLENGTH;
         wallWidth = Util.BLOCKLENGTH;
@@ -29,7 +29,7 @@ public class Background {
         if (includeBG) {
             g.drawImage(bg,0,0,null);
         }
-        g.fillRect(getWallLeftPos()+Util.BLOCKLENGTH, 0, getWallRightPos()-getWallLeftPos()-Util.BLOCKLENGTH, GamePanel.getHEIGHT());
+        g.fillRect(getWallLeftPos()+Util.BLOCKLENGTH, 0, getWallRightPos()-getWallLeftPos()-Util.BLOCKLENGTH, AAdventure.getGame().getHeight());
         GameManager.getMaplist().drawBlocks(g, MapList.getAllMaps().get(level), alan, includeWalls, includeBlocks);
     }
 
@@ -39,13 +39,13 @@ public class Background {
         if (includeBG) {
             g.drawImage(bg,0,0,null);
         }
-        g.fillRect(getWallLeftPos(), 0, getWallRightPos()-getWallLeftPos(), GamePanel.getHEIGHT());
+        g.fillRect(getWallLeftPos(), 0, getWallRightPos()-getWallLeftPos(), AAdventure.getGame().getHeight());
         GameManager.getMaplist().drawBlocks(g, map, includeWalls, includeBlocks);
     }
 
     public void setBackground(Graphics g, Color col) {
         g.setColor(col);
-        g.fillRect(0,0,GamePanel.getWIDTH(),GamePanel.getHEIGHT());
+        g.fillRect(0,0,AAdventure.getGame().getWidth(),AAdventure.getGame().getHeight());
     }
 }
 

@@ -15,7 +15,8 @@ public class Powerups{
     private int[] activepowers;
 
     private final String[] powerupIconFiles = {"rapidfire","gunpowder","lasersight","youth","extended mag", "firebullet"};
-    private Image[] powerupIcons;
+
+    private Image[] powerupIcons, smallPowerupIcons;
     private int selected;
 
     public static Util.CustomTimer selectionTimer = new Util.CustomTimer();
@@ -24,10 +25,12 @@ public class Powerups{
         powerups = createPowerups();
         this.activepowers = new int[powers.length];
         powerupIcons = new Image[powers.length];
+        smallPowerupIcons = new Image[powers.length];
         selected = 0;
         //HINT: add powerup icon images here!
         for (int i = 0; i < powers.length; i++) {
             powerupIcons[i] = new ImageIcon("src/assets/powerups/"+powerupIconFiles[i]+".png").getImage().getScaledInstance(50,50,Image.SCALE_DEFAULT);
+            smallPowerupIcons[i] = new ImageIcon("src/assets/powerups/"+powerupIconFiles[i]+".png").getImage().getScaledInstance(30,30,Image.SCALE_DEFAULT);
         }
     }
 
@@ -41,6 +44,30 @@ public class Powerups{
         powerups.add(new ExtendedMag());
         powerups.add(new FireBullet());
         return powerups;
+    }
+
+    public Image[] getSmallPowerupIcons() {
+        return smallPowerupIcons;
+    }
+
+    public void setSmallPowerupIcons(Image[] smallPowerupIcons) {
+        this.smallPowerupIcons = smallPowerupIcons;
+    }
+
+    public Image[] getPowerupIcons() {
+        return powerupIcons;
+    }
+
+    public void setPowerupIcons(Image[] powerupIcons) {
+        this.powerupIcons = powerupIcons;
+    }
+
+    public int[] getActivepowers() {
+        return activepowers;
+    }
+
+    public void setActivepowers(int[] activepowers) {
+        this.activepowers = activepowers;
     }
 
     public int getPower(int power) {

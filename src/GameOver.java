@@ -9,9 +9,6 @@ public class GameOver extends JPanel implements KeyListener, ActionListener, Mou
 
 	private final boolean[] keys;
 
-	private static int WIDTH = AAdventure.getGameWidth(), HEIGHT = AAdventure.getGameHeight();
-	private static int tarX, tarY;
-
 	public GameOver(AAdventure a) {
 		mainFrame = a;
 		keys = new boolean[KeyEvent.KEY_LAST+1];
@@ -25,14 +22,6 @@ public class GameOver extends JPanel implements KeyListener, ActionListener, Mou
 		timer = new Timer(25, this); // manages frames
 		timer.start();
 	}
-
-	// getter and setter for mouse pos, lives, and level
-	public static int getTarX() {return tarX;}
-	public static int getTarY() {return tarY;}
-	public static int getWIDTH() {return WIDTH;}
-	public static void setWIDTH(int w) {WIDTH = w;}
-	public static int getHEIGHT() {return HEIGHT;}
-	public static void setHEIGHT(int h) {HEIGHT = h;}
 
 	// MouseListener
 	@Override

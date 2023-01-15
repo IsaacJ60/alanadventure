@@ -155,7 +155,7 @@ class Snake {
     }
     public double getY(boolean adjusted) { // gets y
         if (adjusted) { // whether you want y relative to the gameplay window
-            return y-GamePanel.getAlan().getOffset()+GamePanel.getAlan().getScreenOffset();
+            return y-AAdventure.getGame().getAlan().getOffset()+AAdventure.getGame().getAlan().getScreenOffset();
         } else {
             return y;
         }
@@ -289,7 +289,7 @@ class Snail {
     }
     public double getY(boolean adjusted) { // gets y
         if (adjusted) { // whether you want y relative to the gameplay window
-            return y-GamePanel.getAlan().getOffset()+GamePanel.getAlan().getScreenOffset();
+            return y-AAdventure.getGame().getAlan().getOffset()+AAdventure.getGame().getAlan().getScreenOffset();
         } else {
             return y;
         }
@@ -389,7 +389,7 @@ class Jelly{
     }
     public double getY(boolean adjusted) { // gets y
         if (adjusted) { // whether you want y relative to the gameplay window
-            return y-GamePanel.getAlan().getOffset()+GamePanel.getAlan().getScreenOffset();
+            return y-AAdventure.getGame().getAlan().getOffset()+AAdventure.getGame().getAlan().getScreenOffset();
         } else {
             return y;
         }
@@ -408,9 +408,9 @@ class Jelly{
     }
     public void move(Graphics g, Alan alan, Map map) {
         // distance calculations
-        double distX = x - GamePanel.getAlan().getX(false);
+        double distX = x - AAdventure.getGame().getAlan().getX(false);
         // how far away the enemy is compared to alan
-        double distY = y - GamePanel.getAlan().getY(false);
+        double distY = y - AAdventure.getGame().getAlan().getY(false);
         double distance = Math.sqrt(Math.pow(distX, 2) + Math.pow(distY, 2)); // pythag theorem
         // adding up how many frames movement has been in x direction, capping out at +-20 to limit terminal velocity
         if (distX < 0 && velX < maxVelX && moveRight) {
@@ -577,7 +577,7 @@ class Bat{
     }
     public double getY(boolean adjusted) { // gets y
         if (adjusted) { // whether you want y relative to the gameplay window
-            return y-GamePanel.getAlan().getOffset()+GamePanel.getAlan().getScreenOffset();
+            return y-AAdventure.getGame().getAlan().getOffset()+AAdventure.getGame().getAlan().getScreenOffset();
         } else {
             return y;
         }
@@ -596,9 +596,9 @@ class Bat{
     }
     public void move() {
         // distance calculations
-        double distX = x - GamePanel.getAlan().getX(false);
+        double distX = x - AAdventure.getGame().getAlan().getX(false);
         // how far away the enemy is compared to alan
-        double distY = y - GamePanel.getAlan().getY(false);
+        double distY = y - AAdventure.getGame().getAlan().getY(false);
         double distance = Math.sqrt(Math.pow(distX, 2) + Math.pow(distY, 2)); // pythag theorem
         // adding up how many frames movement has been in x direction, capping out at +-20 to limit terminal velocity
         if (distX < 0 && velX < maxVelX) {

@@ -1,27 +1,24 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.ArrayList;
 
-//TODO: GIVE REWARD EVERY X LEVELS
+//TODO: DISPLAY LEVEL STATS
 
-public class LevelClear extends JPanel implements KeyListener, ActionListener, MouseListener {
+public class SettingsPanel extends JPanel implements KeyListener, ActionListener, MouseListener {
     Timer timer;
 
     AAdventure mainFrame;
 
-    private static boolean[] keys;
+    private final boolean[] keys;
+
+    Settings settings;
 
     private int WIDTH = AAdventure.getGameWidth(), HEIGHT = AAdventure.getGameHeight();
-    private int tarX, tarY;
-    private int[] randomPowerups = new int[3];
+    private int alpha = 0;
 
-    private final Background bg;
-
-    private int alpha;
-
-    public LevelClear(AAdventure a) {
+    public SettingsPanel(AAdventure a) {
         mainFrame = a;
-        alpha = 255;
         keys = new boolean[KeyEvent.KEY_LAST+1];
         setPreferredSize(new Dimension(WIDTH, HEIGHT));
         setFocusable(true);
@@ -30,20 +27,21 @@ public class LevelClear extends JPanel implements KeyListener, ActionListener, M
         addMouseListener(this);
         addKeyListener(this);
 
-        bg = new Background();
+        ArrayList<ArrayList<Property>> properties = new ArrayList<>();
+        properties.add(new ArrayList<>());
+        properties.get(0).add(new Property("Move Left"));
+        properties.get(0).add(new Property("Move Right"));
+        properties.get(0).add(new Property("Jump"));
+
+        settings = new Settings(properties);
 
         timer = new Timer(25, this); // manages frames
         timer.start();
     }
 
-    // getter and setter for mouse pos, lives, and level
-    public void setAlpha(int a) {alpha = a;}
-    public void setRandomPowerups(int a, int b, int c) {randomPowerups = new int[]{a,b,c};}
-    public static void resetSpace() {keys[Util.space] = false;}
-
     // MouseListener
     @Override
-    public void mouseClicked(MouseEvent e) {;}
+    public void mouseClicked(MouseEvent e) {}
     @Override
     public void mouseEntered(MouseEvent e) {;}
     @Override
@@ -59,7 +57,7 @@ public class LevelClear extends JPanel implements KeyListener, ActionListener, M
     public void keyPressed(KeyEvent e) {
         int key = e.getKeyCode();
         keys[key] = true;
-//        GameManager.requestSettings(keys);
+        GameManager.requestSettings(keys);
     }
 
     @Override
@@ -82,18 +80,10 @@ public class LevelClear extends JPanel implements KeyListener, ActionListener, M
     }
     @Override
     public void paint(Graphics g) {
-        g.setColor(Color.BLACK);
-        g.fillRect(0,0,900,700);
-        bg.draw(g, new Map(new Block[100][9]), true, false, false);
-
-        // UI ELEMENTS
-        GameManager.getGemManager().displayGems(g,false,true, AAdventure.getGame().getAlan());
-        UI.displayAll(g, AAdventure.getGame().getAlan(), AAdventure.getGame().getPowerups());
-
-        AAdventure.getGame().getPowerups().choosePower(g, randomPowerups, keys);
-
-        alpha = Util.increaseOpacity(alpha, false);
+        alpha = Util.increaseOpacity(alpha, true);
         Util.overlay(g,0,0,0,alpha);
+        //TODO: key binding & control help display
+        settings.draw(g);
     }
 }
 

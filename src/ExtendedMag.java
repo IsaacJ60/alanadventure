@@ -6,7 +6,7 @@ public class ExtendedMag implements usePowers {
     public void usePower(Alan alan, Graphics g) {
         // runs once
         alan.getWeapon().setCapacity(alan.getWeapon().getCapacity()+Util.MAGINCREASE);
-        alan.getWeapon().setAmmo(alan.getWeapon().getCapacity()+Util.MAGINCREASE);
+        alan.getWeapon().setAmmo(alan.getWeapon().getCapacity());
     }
 }
 

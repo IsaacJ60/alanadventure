@@ -1,6 +1,8 @@
 import javax.swing.*;
 import java.awt.*;
+import java.io.*;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 public class Shop {
     private final ArrayList<ArrayList<Cosmetics>> allItems;
@@ -28,6 +30,22 @@ public class Shop {
         this.offsetVel = 20;
         this.offsetVelMax = 20;
         this.equippedItems = new int[allItems.size()];
+
+        try {
+            Scanner f = new Scanner(new BufferedReader(new FileReader("src/assets/shop/items.txt")));
+            if (f.hasNext()) {
+                for (ArrayList<Cosmetics> allItem : this.allItems) {
+                    for (Cosmetics cosmetics : allItem) {
+                        if (f.nextInt() == 1) {
+                            cosmetics.setOwned(true);
+                        }
+                    }
+                }
+            }
+            f.close();
+        } catch (FileNotFoundException ex) {
+            System.out.println(ex + "dummy");
+        }
     }
 
     public void addCosmetic(int type, Cosmetics c) {allItems.get(type).add(c);}
@@ -77,6 +95,22 @@ public class Shop {
                     if (!item.getOwned()) {
                         gems.setTotalGems(gems.getTotalGems() - item.getCost());
                         item.setOwned(true);
+
+                        try {
+                            PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("src/assets/shop/items.txt")));
+                            for (ArrayList<Cosmetics> allItem : this.allItems) {
+                                for (Cosmetics cosmetics : allItem) {
+                                    if (cosmetics.getOwned()) {
+                                        out.println(1);
+                                    } else {
+                                        out.println(0);
+                                    }
+                                }
+                            }
+                            out.close();
+                        } catch (IOException ex) {
+                            throw new RuntimeException(ex);
+                        }
                     }
                     switch (item.getType()) {
                         case "BACKGROUNDS" -> {
@@ -85,8 +119,8 @@ public class Shop {
                         }
                         case "BLASTERS" -> {
                             equippedItems[selectedType] = selectedItem;
-                            Intro.getAlan().setWeapon(item.getBlaster());
-                            GamePanel.getAlan().setWeapon(item.getBlaster());
+                            AAdventure.getIntro().getAlan().setWeapon(item.getBlaster());
+                            AAdventure.getGame().getAlan().setWeapon(item.getBlaster());
                         }
                     }
                 }

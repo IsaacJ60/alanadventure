@@ -23,7 +23,9 @@ public class GameManager {
         int prevGems = 0;
         try {
             Scanner f = new Scanner(new BufferedReader(new FileReader("src/assets/gems/gems.txt")));
-            prevGems = f.nextInt();
+            if (f.hasNext()) {
+                prevGems = f.nextInt();
+            }
         } catch (FileNotFoundException ex) {
             System.out.println(ex + "dummy");
         }
@@ -88,13 +90,13 @@ public class GameManager {
         if (restart) {
             AAdventure.setCurrPanel("INTRO");
             Util.setLevel(l);
-            Intro.getEnemyManager().clearEnemies();
-            Intro.getAlan().getWeapon().setBullets(new ArrayList<>());
-            Intro.setAlan(new Alan(40, HEIGHT/2+50, GamePanel.getAlan().getWeapon(), 4, GamePanel.getAlan().getMaxHealth(), GamePanel.getAlan().getHealthProgress(), Util.a, Util.d)); // resetting alan
-            GamePanel.setAlan(new Alan(180, HEIGHT/2-50, GamePanel.getAlan().getWeapon(), 4, GamePanel.getAlan().getMaxHealth(), GamePanel.getAlan().getHealthProgress(), Util.a, Util.d)); // resetting alan
-            Intro.setAlpha(0);
-            GamePanel.setAlpha(255);
-            GamePanel.setPowerups(new Powerups());
+            AAdventure.getIntro().getEnemyManager().clearEnemies();
+            AAdventure.getIntro().getAlan().getWeapon().setBullets(new ArrayList<>());
+            AAdventure.getIntro().setAlan(new Alan(40, HEIGHT/2+50, Blaster.getBlasters().get(Blaster.MACHINEGUN), 4, AAdventure.getGame().getAlan().getMaxHealth(), AAdventure.getGame().getAlan().getHealthProgress(), Util.a, Util.d)); // resetting alan
+            AAdventure.getGame().setAlan(new Alan(180, HEIGHT/2-50, AAdventure.getGame().getAlan().getWeapon(), 4, AAdventure.getGame().getAlan().getMaxHealth(), AAdventure.getGame().getAlan().getHealthProgress(), Util.a, Util.d)); // resetting alan
+            AAdventure.getIntro().setAlpha(0);
+            AAdventure.getGame().setAlpha(255);
+            AAdventure.getGame().setPowerups(new Powerups());
             gemManager.setTotalGems(gemManager.getTotalGems()+gemManager.getGems());
             gemManager.setGems(0);
             gemManager.setActiveGems(new ArrayList<>());
@@ -105,7 +107,7 @@ public class GameManager {
                 int a = Util.rand.nextInt(1,Powerups.powers.length-1);
                 int b = Util.rand.nextInt(a+1, Powerups.powers.length);
                 int c = Util.rand.nextInt(0,a);
-                LevelClear.setRandomPowerups(a,b,c);
+                AAdventure.getLevelClear().setRandomPowerups(a,b,c);
                 LevelClear.resetSpace();
                 GamePanel.resetMovementKeys();
                 Powerups.selectionTimer.start();
@@ -128,16 +130,17 @@ public class GameManager {
                 maplist.addMap(tmp);
             }
 
+            AAdventure.getGame().getAlan().getWeapon().setAmmo(AAdventure.getGame().getAlan().getWeapon().getCapacity());
             gemManager.setActiveGems(new ArrayList<>());
             gemManager.setTotalGems(gemManager.getTotalGems()+gemManager.getGems());
-            GamePanel.getEnemyManager().clearEnemies();
+            AAdventure.getGame().getEnemyManager().clearEnemies();
 //            GamePanel.getEnemyManager().addJelly(300,2000);
-            GamePanel.getEnemyManager().generateSnakes(MapList.getBlocksWithoutWallImages(), GamePanel.getAlan());
-            GamePanel.getEnemyManager().generateSnails(MapList.getBlocksWithoutWallImages(), GamePanel.getAlan());
+            AAdventure.getGame().getEnemyManager().generateSnakes(MapList.getBlocksWithoutWallImages(), AAdventure.getGame().getAlan());
+            AAdventure.getGame().getEnemyManager().generateSnails(MapList.getBlocksWithoutWallImages(), AAdventure.getGame().getAlan());
 //            GamePanel.getEnemyManager().generateJellies(MapList.getBlocksWithoutWallImages(), GamePanel.getAlan());
             //            GamePanel.getEnemyManager().generateBats(MapList.getBlocksWithoutWallImages(), GamePanel.getAlan());
             //TODO: perhaps make a reset() function in alan to avoid bugs from recreating an instance each level
-            GamePanel.setAlan(new Alan(180, HEIGHT/2-50, GamePanel.getAlan().getWeapon(), GamePanel.getAlan().getHealth(), GamePanel.getAlan().getMaxHealth(), GamePanel.getAlan().getHealthProgress(), Util.a, Util.d)); // resetting alan
+            AAdventure.getGame().setAlan(new Alan(180, HEIGHT/2-50, AAdventure.getGame().getAlan().getWeapon(), AAdventure.getGame().getAlan().getHealth(), AAdventure.getGame().getAlan().getMaxHealth(), AAdventure.getGame().getAlan().getHealthProgress(), Util.a, Util.d)); // resetting alan
         }
 
         try {

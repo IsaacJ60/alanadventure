@@ -1,85 +1,41 @@
-import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
+import java.util.ArrayList;
 
-//TODO: DISPLAY LEVEL STATS
+public class Settings {
+    private final ArrayList<ArrayList<Property>> properties;
+    private int settingType, settingItem, offsetY;
 
-public class Settings extends JPanel implements KeyListener, ActionListener, MouseListener {
-    Timer timer;
-
-    AAdventure mainFrame;
-
-    private final boolean[] keys;
-
-    private static int WIDTH = AAdventure.getGameWidth(), HEIGHT = AAdventure.getGameHeight();
-    private static int tarX, tarY, alpha = 0;
-
-    public Settings(AAdventure a) {
-        mainFrame = a;
-        keys = new boolean[KeyEvent.KEY_LAST+1];
-        setPreferredSize(new Dimension(WIDTH, HEIGHT));
-        setFocusable(true);
-        requestFocus();
-        // adding listener for events
-        addMouseListener(this);
-        addKeyListener(this);
-
-        timer = new Timer(25, this); // manages frames
-        timer.start();
+    public Settings(ArrayList<ArrayList<Property>> properties) {
+        this.properties = properties;
+        this.offsetY = 0;
+        this.settingItem = 0;
+        this.settingType = 0;
     }
 
-    // getter and setter for mouse pos, lives, and level
-    public static int getTarX() {return tarX;}
-    public static int getTarY() {return tarY;}
-    public static int getWIDTH() {return WIDTH;}
-    public static void setWIDTH(int w) {WIDTH = w;}
-    public static int getHEIGHT() {return HEIGHT;}
-    public static void setHEIGHT(int h) {HEIGHT = h;}
-
-    // MouseListener
-    @Override
-    public void mouseClicked(MouseEvent e) {}
-    @Override
-    public void mouseEntered(MouseEvent e) {;}
-    @Override
-    public void mouseExited(MouseEvent e) {;}
-    @Override
-    public void mousePressed(MouseEvent e) {;}
-    @Override
-    public void mouseReleased(MouseEvent e) {;}
-    @Override
-    public void keyTyped(KeyEvent e) {;}
-
-    @Override
-    public void keyPressed(KeyEvent e) {
-        int key = e.getKeyCode();
-        keys[key] = true;
-        GameManager.requestSettings(keys);
+    public void draw(Graphics g) {
+        for (int i = 0; i < properties.get(settingType).size(); i++) {
+            drawSetting(g, Background.getWallLeftPos(), i*100+offsetY, properties.get(settingType).get(settingItem));
+        }
     }
 
-    @Override
-    public void keyReleased(KeyEvent e) {
-        int key = e.getKeyCode();
-        keys[key] = false;
-    }
-
-    // ActionListener
-    @Override
-    public void actionPerformed(ActionEvent e) {
-//        Point mouse = MouseInfo.getPointerInfo().getLocation(); // loc of mouse on screen
-//        Point offset = getLocationOnScreen(); // loc of panel
-//        // getting mouse pos
-//        tarX = mouse.x - offset.x;
-//        tarY = mouse.y - offset.y;
-        requestFocus();
-        mainFrame.start();
-        repaint();
-    }
-    @Override
-    public void paint(Graphics g) {
-        alpha = Util.increaseOpacity(alpha, true);
-        Util.overlay(g,0,0,0,alpha);
-        //TODO: key binding & control help display
+    public void drawSetting(Graphics g, int x, int y, Property p) {
+        g.setColor(Color.WHITE);
+        g.drawRect(x,y,200,20);
     }
 }
 
+class Property {
+    private String name;
+
+    Property(String name) {
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+}
