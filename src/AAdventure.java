@@ -11,10 +11,10 @@ public class AAdventure extends JFrame { // frame
     private static GameOver gameOver;
     private static ShopPanel shop;
 
-    Sound sound;
-
-    GameMusic introMusic;
-    GameMusic gameMusic;
+    // sound
+    private Sound sound;
+    private GameMusic introMusic;
+    private GameMusic gameMusic;
 
     private static final int WIDTH = 900, HEIGHT = 700;
     public static int getGameWidth() {return WIDTH;}
