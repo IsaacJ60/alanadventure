@@ -17,7 +17,7 @@ public class GameManager {
 
     public static Block[][] introblocks;
     public static Map intromap;
-    private final static int rows = 100, levelCount = 100;
+    private final static int rows = 200, levelCount = 100;
 
     public static void loadGems() {
         int prevGems = 0;
@@ -134,11 +134,10 @@ public class GameManager {
             gemManager.setActiveGems(new ArrayList<>());
             gemManager.setTotalGems(gemManager.getTotalGems()+gemManager.getGems());
             AAdventure.getGame().getEnemyManager().clearEnemies();
-//            GamePanel.getEnemyManager().addJelly(300,2000);
             AAdventure.getGame().getEnemyManager().generateSnakes(MapList.getBlocksWithoutWallImages(), AAdventure.getGame().getAlan());
             AAdventure.getGame().getEnemyManager().generateSnails(MapList.getBlocksWithoutWallImages(), AAdventure.getGame().getAlan());
-//            GamePanel.getEnemyManager().generateJellies(MapList.getBlocksWithoutWallImages(), GamePanel.getAlan());
-            //            GamePanel.getEnemyManager().generateBats(MapList.getBlocksWithoutWallImages(), GamePanel.getAlan());
+            AAdventure.getGame().getEnemyManager().generateJellies(MapList.getBlocksWithoutWallImages(), AAdventure.getGame().getAlan());
+//                        GamePanel.getEnemyManager().generateBats(MapList.getBlocksWithoutWallImages(), GamePanel.getAlan());
             //TODO: perhaps make a reset() function in alan to avoid bugs from recreating an instance each level
             AAdventure.getGame().setAlan(new Alan(180, HEIGHT/2-50, AAdventure.getGame().getAlan().getWeapon(), AAdventure.getGame().getAlan().getHealth(), AAdventure.getGame().getAlan().getMaxHealth(), AAdventure.getGame().getAlan().getHealthProgress(), Util.a, Util.d)); // resetting alan
         }

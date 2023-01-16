@@ -186,7 +186,7 @@ public class Alan {
     }
 
     public int move(boolean[] keys, Graphics g, Map map, Powerups powerups, EnemyManager enemies) {
-        getEnemyCollision(weapon, enemies.getSnakes(), enemies.getSnails()); // collision between alan and snakes
+        getEnemyCollision(weapon, enemies.getSnakes(), enemies.getSnails(), enemies.getJellies()); // collision between alan and snakes
         getCollision(g,this, map); // getting collision between player and blocks
         alanRect.setLocation(x+5,y); // setting rect location
         boolean wallCollideLeft = false, wallCollideRight = false;
@@ -300,8 +300,9 @@ public class Alan {
         }
     }
 
-    public void getEnemyCollision(Blaster blaster, ArrayList<Snake> snakes, ArrayList<Snail> snails) {
+    public void getEnemyCollision(Blaster blaster, ArrayList<Snake> snakes, ArrayList<Snail> snails, ArrayList<Jelly> jellies) {
         ArrayList<Snake> removalSnake = new ArrayList<>();
+        ArrayList<Jelly> removalJelly = new ArrayList<>();
 
         for (Snake s:snakes) {
             if (getRect().intersects(s.getRect())) {
@@ -335,12 +336,35 @@ public class Alan {
             }
         }
 
+        for (Jelly j:jellies) {
+            if (getRect().intersects(j.getRect())) {
+                if(velY > 0 && y+height > j.getY(false)){
+                    blaster.setAmmo(blaster.getCapacity());
+                    removalJelly.add(j);
+                    velY = -8;
+                    GameManager.getGemManager().spawnGems((int)j.getX(false),(int)j.getY(false), 3);
+                }
+                else{
+                    if (invulTimer.getElapsedTime() >= 2) {
+//                        System.out.println("-1 hp");
+                        health--;
+                        invulTimer.restart();
+                    } else {
+//                        System.out.print(".");
+                    }
+                }
+            }
+        }
+
         if(health == 0){
             GameManager.gameOver();
         }
 
         for(Snake s:removalSnake){
             snakes.remove(s);
+        }
+        for(Jelly j:removalJelly){
+            jellies.remove(j);
         }
     }
 
@@ -500,6 +524,7 @@ public class Alan {
         } else {
             moveRight = true;
         }
+//        System.out.println("alan: "+prevRow+" "+nextRow);
     }
 
     // drawing alan in different states and directions
