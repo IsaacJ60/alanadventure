@@ -3,7 +3,7 @@ import java.util.ArrayList;
 import java.util.Random;
 
 //TODO:
-// INCOMPLETE - INTEGRATE SIDE WALLS INTO BLOCK LIST
+// DONE - INTEGRATE SIDE WALLS INTO BLOCK LIST
 // DONE - create good patterns for platform and boxes
 // IN PROGRESS - keep track of index errors and out of bounds
 

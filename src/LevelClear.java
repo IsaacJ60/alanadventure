@@ -87,7 +87,7 @@ public class LevelClear extends JPanel implements KeyListener, ActionListener, M
         bg.draw(g, new Map(new Block[100][9]), true, false, false);
 
         // UI ELEMENTS
-        GameManager.getGemManager().displayGems(g,false,true, AAdventure.getGame().getAlan());
+        GameManager.getGemManager().displayGemUI(g,false,true, AAdventure.getGame().getAlan());
         UI.displayAll(g, AAdventure.getGame().getAlan(), AAdventure.getGame().getPowerups());
 
         AAdventure.getGame().getPowerups().choosePower(g, randomPowerups, keys);

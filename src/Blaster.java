@@ -7,17 +7,25 @@ import java.util.ArrayList;
 
 public class Blaster {
     String name;
-    private int damage, capacity, speed, lastX, lastY, ammo, bloom, amount;
+    private int damage;
+    private int capacity;
+    private int speed;
+    private int lastX;
+    private int lastY;
+    private int ammo;
+    private int bloom;
+    private int amount;
     private double firerate;
     private Image defaultBullet, equippedBullet;
 
     private boolean alanShoot;
-    ArrayList<Image> explosion;
-    ArrayList<Bullet> bullets;
-    ArrayList<Integer> blastPlaces;
-    ArrayList<Block> blastBlocks;
-    Util.CustomTimer shootTimer;
+    private ArrayList<Image> explosion;
+    private ArrayList<Bullet> bullets;
+    private ArrayList<Integer> blastPlaces;
+    private ArrayList<Block> blastBlocks;
+    private Util.CustomTimer shootTimer;
 
+    // all game blasters
     private static ArrayList<Blaster> blasters;
     private static Blaster machinegun, shotgun, riflegun;
     public static int MACHINEGUN = 0, SHOTGUN = 1, RIFLEGUN = 2;
@@ -136,14 +144,14 @@ public class Blaster {
 
     public boolean getEnemyCollision(Bullet b, ArrayList<Snake> snakes, ArrayList<Snail> snails) {
         ArrayList<Snake> removalSnake = new ArrayList<>();
-        ArrayList<Snail> removalSnail= new ArrayList<>();
+        ArrayList<Snail> removalSnail = new ArrayList<>();
 
         for (Snake s:snakes) {
             if (s.getRect().intersects(b.getRect())) {
                 s.setHealth(s.getHealth()-damage);
                 if (s.getHealth() <= 0) {
                     removalSnake.add(s);
-                    GameManager.getGemManager().spawnGems((int)s.getX(false),(int)s.getY(false), 3);
+                    GameManager.getGemManager().spawnGems((int) s.getX(false), (int) s.getY(false), 3);
                 }
 
                 for(Snake r:removalSnake){
@@ -198,6 +206,7 @@ public class Blaster {
         return false;
     }
 
+    // recursively find all blocks that are touching the one shot
     private void gunpowderEffect(Block[][] blocks, int row, int col) {
         blocks[row][col].setType(Block.AIR);
         blastPlaces.add(0);
@@ -270,32 +279,16 @@ class Bullet {
         this.x = x;
         this.y = y;
         this.img = img;
-        width = 8;
-        height = 16;
+        this.width = 8;
+        this.height = 16;
         this.rect = new Rectangle(x,y,width, height);
     }
 
-    public double getX(boolean adjusted) { // gets x
-        if (adjusted) { // whether you want x relative to the gameplay window
-            return x + Background.getWallLeftPos();
-        } else {
-            return x;
-        }
-    }
-
-    public int getY(boolean adjusted, Alan alan) { // gets y
-        if (adjusted) { // whether you want y relative to the gameplay window
-            return y-alan.getOffset() + alan.getScreenOffset();
-        } else {
-            return y;
-        }
-    }
+    public double getX(boolean adjusted) {return (adjusted ? x + Background.getWallLeftPos() : x);}
+    public int getY(boolean adjusted, Alan alan) {return (adjusted ? y-alan.getOffset()+alan.getScreenOffset() : y);}
     public Rectangle getRect(){return rect;}
-    public void setX(int x) {this.x = x;}
-    public void setY(int y) {
-        this.y = y;
-        this.rect.setLocation((int)this.x, this.y);
-    }
+    public void setX(int x) {this.x = x; this.rect.setLocation((int)this.x, this.y);}
+    public void setY(int y) {this.y = y; this.rect.setLocation((int)this.x, this.y);}
     public Image getImg() {return img;}
     public void setImg(Image img) {this.img = img;}
     public int getStartY() {return startY;}

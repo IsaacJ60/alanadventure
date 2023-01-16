@@ -39,21 +39,8 @@ public class Block {
     public void setType(int type) {this.type = type;}
     public int getType() {return type;}
 
-    public int getX(boolean adjusted) {
-        if (adjusted) {
-            return x+Background.getWallLeftPos();
-        } else {
-            return x;
-        }
-    }
-
-    public int getY(boolean adjusted, Alan alan) {
-        if (adjusted) {
-            return y-alan.getOffset()+alan.getScreenOffset();
-        } else {
-            return y;
-        }
-    }
+    public int getX(boolean adjusted) {return (adjusted ? x + Background.getWallLeftPos() : x);}
+    public int getY(boolean adjusted, Alan alan) {return (adjusted ? y-alan.getOffset()+alan.getScreenOffset() : y);}
 
     public int getY() {
         return y;

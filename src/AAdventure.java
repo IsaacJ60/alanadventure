@@ -42,6 +42,7 @@ public class AAdventure extends JFrame { // frame
 
         GameManager.loadLevels();
         GameManager.loadGems();
+        GameManager.loadBlasters();
         Util.loadFonts();
 
         sound = new Sound();

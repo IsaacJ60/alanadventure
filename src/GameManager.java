@@ -7,11 +7,14 @@ import java.util.Scanner;
 
 public class GameManager {
 
+    // width and height of panel
     private static final int WIDTH = AAdventure.getGameWidth(), HEIGHT = AAdventure.getGameHeight();
 
+    // maplist for main mode
     private static MapList maplist;
     public static MapList getMaplist() {return maplist;}
 
+    // gem manager for full game
     private static Gems gemManager;
     public static Gems getGemManager() {return gemManager;}
 
@@ -30,6 +33,20 @@ public class GameManager {
             System.out.println(ex + "dummy");
         }
         gemManager = new Gems(prevGems);
+    }
+
+    public static void saveGems() {
+        try {
+            PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("src/assets/gems/gems.txt")));
+            out.print(gemManager.getTotalGems());
+            out.close();
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+    public static void loadBlasters() {
+        Blaster.loadGuns();
     }
 
     public static void loadLevels() {
@@ -93,14 +110,13 @@ public class GameManager {
             AAdventure.getIntro().getEnemyManager().clearEnemies();
             AAdventure.getIntro().getAlan().getWeapon().setBullets(new ArrayList<>());
             AAdventure.getIntro().setAlan(new Alan(40, HEIGHT/2+50, Blaster.getBlasters().get(Blaster.MACHINEGUN), 4, AAdventure.getGame().getAlan().getMaxHealth(), AAdventure.getGame().getAlan().getHealthProgress(), Util.a, Util.d)); // resetting alan
-            AAdventure.getGame().setAlan(new Alan(180, HEIGHT/2-50, AAdventure.getGame().getAlan().getWeapon(), 4, AAdventure.getGame().getAlan().getMaxHealth(), AAdventure.getGame().getAlan().getHealthProgress(), Util.a, Util.d)); // resetting alan
             AAdventure.getIntro().setAlpha(0);
+            AAdventure.getGame().setAlan(new Alan(180, HEIGHT/2-50, AAdventure.getGame().getAlan().getWeapon(), 4, AAdventure.getGame().getAlan().getMaxHealth(), AAdventure.getGame().getAlan().getHealthProgress(), Util.a, Util.d)); // resetting alan
             AAdventure.getGame().setAlpha(255);
             AAdventure.getGame().setPowerups(new Powerups());
             gemManager.setTotalGems(gemManager.getTotalGems()+gemManager.getGems());
             gemManager.setGems(0);
             gemManager.setActiveGems(new ArrayList<>());
-            //TODO: reset bullets and ammo capacity
         } else {
             if (l != 1) {
                 AAdventure.setCurrPanel("LEVELCLEAR"); // changing panel to level clear panel
@@ -117,18 +133,7 @@ public class GameManager {
 
             Util.setLevel(l); // setting level to l
 
-            // lazy load next map
-            if (MapList.getAllMaps().size() == Util.getLevel()+1) {
-                Map tmp = new Map(rows);
-                for (int j = 4; j < 7; j++) {
-                    tmp.placeBlock(15,j,Block.PLAT,Util.INDEX,Util.NEUTRAL);
-                }
-                for (int j = 1; j < 10; j++) {
-                    tmp.placeBlock(rows-3,j,Block.BOX,Util.INDEX,Util.NEUTRAL);
-                    tmp.placeBlock(rows-2,j,Block.WALL,Util.INDEX,Util.NEUTRAL);
-                }
-                maplist.addMap(tmp);
-            }
+            loadNextMap();
 
             AAdventure.getGame().getAlan().getWeapon().setAmmo(AAdventure.getGame().getAlan().getWeapon().getCapacity());
             gemManager.setActiveGems(new ArrayList<>());
@@ -143,12 +148,21 @@ public class GameManager {
             AAdventure.getGame().setAlan(new Alan(180, HEIGHT/2-50, AAdventure.getGame().getAlan().getWeapon(), AAdventure.getGame().getAlan().getHealth(), AAdventure.getGame().getAlan().getMaxHealth(), AAdventure.getGame().getAlan().getHealthProgress(), Util.a, Util.d)); // resetting alan
         }
 
-        try {
-            PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("src/assets/gems/gems.txt")));
-            out.print(gemManager.getTotalGems());
-            out.close();
-        } catch (IOException ex) {
-            throw new RuntimeException(ex);
+        saveGems();
+    }
+
+    public static void loadNextMap() {
+        // lazy load next map
+        if (MapList.getAllMaps().size() == Util.getLevel()+1) {
+            Map tmp = new Map(rows);
+            for (int j = 4; j < 7; j++) {
+                tmp.placeBlock(15,j,Block.PLAT,Util.INDEX,Util.NEUTRAL);
+            }
+            for (int j = 1; j < 10; j++) {
+                tmp.placeBlock(rows-3,j,Block.BOX,Util.INDEX,Util.NEUTRAL);
+                tmp.placeBlock(rows-2,j,Block.WALL,Util.INDEX,Util.NEUTRAL);
+            }
+            maplist.addMap(tmp);
         }
     }
 

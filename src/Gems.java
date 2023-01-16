@@ -1,37 +1,21 @@
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.Random;
 
 public class Gems {
-    public static Random rand = new Random();
+
+    // gem counts
     private int totalGems;
     private int gems;
 
+    // gem images
     private final static ArrayList<Image> gemS = new ArrayList<>();
     private final static ArrayList<Image> gemM = new ArrayList<>();
     private final static ArrayList<Image> gemL = new ArrayList<>();
     private static Image gemL0 = null;
     private ArrayList<Gem> activeGems = new ArrayList<>();
 
-    public Gems() {
-        gems = 0; totalGems = 0;
-
-        for (int i = 0; i < 4; i++) {
-            gemS.add(new ImageIcon("src/assets/gems/gemS"+i+"B.png").getImage());
-            gemS.set(i, gemS.get(i).getScaledInstance((gemS.get(i).getWidth(null)*2), (gemS.get(i).getHeight(null)*2), Image.SCALE_DEFAULT));
-        }
-        for (int i = 0; i < 4; i++) {
-            gemM.add(new ImageIcon("src/assets/gems/gemM"+i+"B.png").getImage());
-            gemM.set(i, gemM.get(i).getScaledInstance((gemM.get(i).getWidth(null)*2), (gemM.get(i).getHeight(null)*2), Image.SCALE_DEFAULT));
-        }
-        for (int i = 0; i < 4; i++) {
-            gemL.add(new ImageIcon("src/assets/gems/gemL"+i+"B.png").getImage());
-            gemL.set(i, gemL.get(i).getScaledInstance((gemL.get(i).getWidth(null)*2), (gemL.get(i).getHeight(null)*2), Image.SCALE_DEFAULT));
-        }
-        gemL0 = new ImageIcon("src/assets/gems/gemL0BB.png").getImage().getScaledInstance(30,30,Image.SCALE_DEFAULT);
-    }
-
+    // initialize gem manager with set amount of total gems
     public Gems(int g) {
         gems = 0; totalGems = g;
 
@@ -50,6 +34,7 @@ public class Gems {
         gemL0 = new ImageIcon("src/assets/gems/gemL0BB.png").getImage().getScaledInstance(30,30,Image.SCALE_DEFAULT);
     }
 
+    // getters and setters
     public void setGems(int g) {gems = g;}
     public int getGems() {return gems;}
     public void addGems(int g) {gems+=g;}
@@ -63,7 +48,8 @@ public class Gems {
     public ArrayList<Gem> getActiveGems() {return activeGems;}
     public void setActiveGems(ArrayList<Gem> activeGems) {this.activeGems = activeGems;}
 
-    public void displayGems(Graphics g, boolean total, boolean current, Alan alan) {
+    // drawing gem UI
+    public void displayGemUI(Graphics g, boolean total, boolean current, Alan alan) {
         int xPos = 65;
         int gemsOffset = 0;
         g.setFont(Util.fontTextSmall);
@@ -80,16 +66,19 @@ public class Gems {
         }
     }
 
+    // spawn certain amount of gems
     public void spawnGems(int x, int y, int amount) {
         for (int i = 0; i < amount; i++) {
-            activeGems.add(new Gem(x,y-20,rand.nextInt(-5,5),rand.nextInt(-4,-1)));
+            activeGems.add(new Gem(x,y-20,Util.rand.nextInt(-5,5),Util.rand.nextInt(-4,-1)));
         }
     }
 
+    // displaying gems on screen
     public void drawGems(Graphics g, Alan alan, Map map) {
+        // iterating through all active gems
         for (int i = activeGems.size() - 1; i >= 0; i--) {
             Gem activeGem = activeGems.get(i);
-            if (activeGem.isClaimed()) {
+            if (activeGem.isClaimed()) { // checking if they have been claimed, remove if so and increment gem counter
                 gems += activeGem.getSize();
                 activeGems.remove(i);
             }
@@ -97,6 +86,7 @@ public class Gems {
             if (activeGem.getGemTimer().getElapsedTime() > 10 || activeGem.getY(false, alan) > map.getRows()*Util.BLOCKLENGTH-200) {
                 activeGems.remove(i);
             }
+            // drawer gem
             activeGem.draw(g, alan, map);
         }
     }
@@ -115,9 +105,10 @@ class Gem {
 
     private Util.CustomTimer gemTimer = new Util.CustomTimer();
 
+    // creating gem with initial x and y coords and velocities
     Gem(int x, int y, int initialX, int initialY) {
         // random gem size
-        switch (Gems.rand.nextInt(0,2)) {
+        switch (Util.rand.nextInt(0,2)) {
             case 0 -> {
                 anim = Gems.getGemS();
                 size = 1;
@@ -149,22 +140,11 @@ class Gem {
     public Util.CustomTimer getGemTimer() {return gemTimer;}
     public boolean isClaimed() {return claimed;}
     public int getSize() {return size;}
-    public int getX(boolean adjusted) { // gets x
-        if (adjusted) { // whether you want x relative to the gameplay window
-            return this.x + Background.getWallLeftPos();
-        } else {
-            return this.x;
-        }
-    }
-    public int getY(boolean adjusted, Alan alan) { // gets x
-        if (adjusted) { // whether you want x relative to the gameplay window
-            return this.y-alan.getOffset()+alan.getScreenOffset();
-        } else {
-            return this.y;
-        }
-    }
+    public int getX(boolean adjusted) {return (adjusted ? x + Background.getWallLeftPos() : x);}
+    public int getY(boolean adjusted, Alan alan) {return (adjusted ? y-alan.getOffset()+alan.getScreenOffset() : y);}
 
-    public boolean retrieved(Alan alan) {
+    // check if collision occurs
+    public boolean alanCollision(Alan alan) {
         if (alan.getRect().intersects(rect)) {
             GameManager.getGemManager().addGems(size);
             return true;
@@ -172,6 +152,7 @@ class Gem {
         return false;
     }
 
+    // moving gems
     public void move(Alan alan, Map map, Graphics g) {
         getCollision(alan, map, g);
         x += (int)velX;
@@ -187,6 +168,7 @@ class Gem {
         rect.setLocation(x,y);
     }
 
+    // getting collision with blocks
     public void getCollision(Alan alan, Map map, Graphics g) {
         Block[][] blocks = map.getMap();
         int nextRow = getY(false,alan)/Util.BLOCKLENGTH+1;
@@ -200,7 +182,7 @@ class Gem {
         // top down collision
         for (int i = 0; i < map.getColumns(); i++) {
             int blockType = blocks[nextRow][i].getType();
-            if (blockType != Block.AIR) { // if block isn't air, check for distance to player
+            if (blockType != Block.AIR) {
                 // only check top when velocity is positive (going down)
                 if ((blockType == Block.WALL || blockType == Block.BOX || blockType == Block.PLAT) && velY >= 0) {
                     // checkig player has a chance of colliding with block (x value within range of block x values)
@@ -271,6 +253,7 @@ class Gem {
         }
     }
 
+    // drawing gem
     public void draw(Graphics g, Alan alan, Map map) {
         move(alan, map, g);
         g.drawImage(anim.get((int)animFrame), getX(true), getY(true, alan), null);

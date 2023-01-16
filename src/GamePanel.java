@@ -32,8 +32,6 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener, Mo
 
         bg = new Background(); // background exclusive to game class
 
-        Blaster.loadGuns();
-
         alan = new Alan(180, HEIGHT/2-50, Blaster.getBlasters().get(Blaster.MACHINEGUN), 4, 4, 0, Util.a, Util.d);
 
         powers = new Powerups();
@@ -99,7 +97,6 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener, Mo
 //        // getting mouse pos
 //        tarX = mouse.x - offset.x;
 //        tarY = mouse.y - offset.y;
-        // move ball & paddle
         requestFocus();
         mainFrame.start();
         repaint();
@@ -121,7 +118,7 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener, Mo
         alan.draw(g, keys, MapList.getAllMaps().get(Util.getLevel()), powers, enemyManager);
 
         // UI ELEMENTS
-        GameManager.getGemManager().displayGems(g,false,true, alan);
+        GameManager.getGemManager().displayGemUI(g,false,true, alan);
         UI.displayAll(g, alan, powers);
 
         alpha = Util.increaseOpacity(alpha, false);

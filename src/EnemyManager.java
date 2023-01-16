@@ -146,13 +146,7 @@ class Snake {
     public void setHealth(int health) {
         this.health = health;
     }
-    public double getX(boolean adjusted) { // gets x
-        if (adjusted) { // whether you want x relative to the gameplay window
-            return x + Background.getWallLeftPos();
-        } else {
-            return x;
-        }
-    }
+    public double getX(boolean adjusted) {return (adjusted ? x + Background.getWallLeftPos() : x);}
     public double getY(boolean adjusted) { // gets y
         if (adjusted) { // whether you want y relative to the gameplay window
             return y-AAdventure.getGame().getAlan().getOffset()+AAdventure.getGame().getAlan().getScreenOffset();

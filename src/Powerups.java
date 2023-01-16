@@ -142,3 +142,67 @@ public class Powerups{
     }
 }
 
+class ExtendedMag implements usePowers {
+
+    @Override
+    public void usePower(Alan alan, Graphics g) {
+        // runs once
+        alan.getWeapon().setCapacity(alan.getWeapon().getCapacity()+Util.MAGINCREASE);
+        alan.getWeapon().setAmmo(alan.getWeapon().getCapacity());
+    }
+}
+
+class FireBullet implements usePowers {
+
+    @Override
+    public void usePower(Alan alan, Graphics g) {
+        alan.getWeapon().setEquippedBullet("bulletFire");
+        alan.getWeapon().setDamage(alan.getWeapon().getDamage()*2);
+    }
+}
+
+class Gunpowder implements usePowers {
+
+    @Override
+    public void usePower(Alan alan, Graphics g) {
+        ;
+    }
+}
+
+class LaserSight implements usePowers {
+
+    @Override
+    public void usePower(Alan alan, Graphics g) {
+        g.setColor(Color.RED);
+        g.fillRect((int) (alan.getX(true)+alan.getRect().getWidth()/2),
+                (int) (alan.getY(true) + alan.getRect().getHeight()/2+5),
+                2,
+                alan.getY(true)+500);
+    }
+}
+
+class RapidFire implements usePowers {
+
+    @Override
+    public void usePower(Alan alan, Graphics g) {
+        alan.setWeaponSpeed(20);
+    }
+}
+
+class Youth implements usePowers {
+
+    @Override
+    public void usePower(Alan alan, Graphics g) {
+        if (alan.getHealth() < alan.getMaxHealth()) {
+            alan.setHealth(alan.getHealth()+1);
+        } else {
+            if (alan.getHealthProgress() < 3) { // TODO: magic number
+                alan.setHealthProgress(alan.getHealthProgress()+1);
+            } else {
+                alan.setMaxHealth(alan.getMaxHealth()+1);
+                alan.setHealth(alan.getHealth()+1);
+                alan.setHealthProgress(0);
+            }
+        }
+    }
+}

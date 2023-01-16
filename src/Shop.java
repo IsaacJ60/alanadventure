@@ -91,11 +91,11 @@ public class Shop {
             } else if (keys[Util.space]) {
                 shopTimer.restart();
                 //HINT: BUY STUFF
-                if (item.purchase(gems)) {
-                    if (!item.getOwned()) {
+                if (!item.getOwned()) {
+                    if (item.purchase(gems)) {
                         gems.setTotalGems(gems.getTotalGems() - item.getCost());
+                        GameManager.saveGems();
                         item.setOwned(true);
-
                         try {
                             PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("src/assets/shop/items.txt")));
                             for (ArrayList<Cosmetics> allItem : this.allItems) {
@@ -112,6 +112,8 @@ public class Shop {
                             throw new RuntimeException(ex);
                         }
                     }
+                }
+                if (item.getOwned()) {
                     switch (item.getType()) {
                         case "BACKGROUNDS" -> {
                             equippedItems[selectedType] = selectedItem;
