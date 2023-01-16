@@ -48,6 +48,7 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener, Mo
     public Alan getAlan() {return alan;}
     public void setAlan(Alan a) {alan = a;}
     public EnemyManager getEnemyManager(){return enemyManager;}
+    public int getAlpha() {return alpha;}
     public void setAlpha(int a) {alpha = a;}
     public Powerups getPowerups() {return powers;}
     public void setPowerups(Powerups powerups) {powers = powerups;}
@@ -121,7 +122,9 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener, Mo
         GameManager.getGemManager().displayGemUI(g,false,true, alan);
         UI.displayAll(g, alan, powers);
 
-        alpha = Util.increaseOpacity(alpha, false);
+        if (alan.getY(false)/Util.BLOCKLENGTH < 30) {
+            alpha = Util.increaseOpacity(alpha, false);
+        }
         Util.overlay(g,0,0,0,alpha);
     }
 }

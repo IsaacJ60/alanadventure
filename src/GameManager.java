@@ -20,7 +20,7 @@ public class GameManager {
 
     public static Block[][] introblocks;
     public static Map intromap;
-    private final static int rows = 100, levelCount = 100;
+    private final static int rows = 500, levelCount = 100;
 
     public static void loadGems() {
         int prevGems = 0;
@@ -54,15 +54,7 @@ public class GameManager {
 
         createIntro();
 
-        Map tmp = new Map(rows);
-        for (int j = 4; j < 7; j++) {
-            tmp.placeBlock(15,j,Block.PLAT,Util.INDEX,Util.NEUTRAL);
-        }
-        for (int j = 1; j < 10; j++) {
-            tmp.placeBlock(rows-3,j,Block.BOX,Util.INDEX,Util.NEUTRAL);
-            tmp.placeBlock(rows-2,j,Block.WALL,Util.INDEX,Util.NEUTRAL);
-        }
-            maplist.addMap(tmp);
+        loadNextMap();
     }
 
     public static void createIntro() {
@@ -107,6 +99,7 @@ public class GameManager {
         if (restart) {
             AAdventure.setCurrPanel("INTRO");
             Util.setLevel(l);
+            AAdventure.getIntro().resetMovementKeys();
             AAdventure.getIntro().getEnemyManager().clearEnemies();
             AAdventure.getIntro().getAlan().getWeapon().setBullets(new ArrayList<>());
             AAdventure.getIntro().setAlan(new Alan(40, HEIGHT/2+50, Blaster.getBlasters().get(Blaster.MACHINEGUN), 4, AAdventure.getGame().getAlan().getMaxHealth(), AAdventure.getGame().getAlan().getHealthProgress(), Util.a, Util.d)); // resetting alan
@@ -155,6 +148,8 @@ public class GameManager {
         // lazy load next map
         if (MapList.getAllMaps().size() == Util.getLevel()+1) {
             Map tmp = new Map(rows);
+
+            // starting platform
             for (int j = 4; j < 7; j++) {
                 tmp.placeBlock(15,j,Block.PLAT,Util.INDEX,Util.NEUTRAL);
             }
@@ -162,6 +157,28 @@ public class GameManager {
                 tmp.placeBlock(rows-3,j,Block.BOX,Util.INDEX,Util.NEUTRAL);
                 tmp.placeBlock(rows-2,j,Block.WALL,Util.INDEX,Util.NEUTRAL);
             }
+
+            // ending structure
+            for (int i = 1; i < 4; i++) {
+                tmp.placeBlock(rows-30,i,Block.WALL,Util.INDEX,Util.NEUTRAL);
+                tmp.getBlock(rows-30,i).setTile(MapList.wallTop);
+            }
+            for (int i = rows-30; i < rows-1; i++) {
+                tmp.placeBlock(i,3,Block.WALL,Util.INDEX,Util.NEUTRAL);
+                tmp.getBlock(i,3).setTile(MapList.wallSideRight);
+            }
+            for (int i = 7; i < 10; i++) {
+                tmp.placeBlock(rows-30,i,Block.WALL,Util.INDEX,Util.NEUTRAL);
+                tmp.getBlock(rows-30,i).setTile(MapList.wallTop);
+            }
+            for (int i = rows-30; i < rows-1; i++) {
+                tmp.placeBlock(i,7,Block.WALL,Util.INDEX,Util.NEUTRAL);
+                tmp.getBlock(i,7).setTile(MapList.wallSideLeft);
+            }
+
+            tmp.getBlock(rows-30,3).setTile(MapList.wallTopRight);
+            tmp.getBlock(rows-30,7).setTile(MapList.wallTopLeft);
+
             maplist.addMap(tmp);
         }
     }

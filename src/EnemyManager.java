@@ -29,7 +29,7 @@ public class EnemyManager{
     public void addBat(int x, int y) {bats.add(new Bat(x,y));}
     public void generateSnakes(Block[][] blocks, Alan alan) {
         Random rand = new Random();
-        for(int i=Util.GENERATIONSTART; i<blocks.length-1; i++){
+        for(int i=Util.GENERATIONSTART; i<blocks.length-30; i++){
             for(int j=1; j<blocks[i].length-1; j++) {
                 if ((blocks[i-1][j].getType() == Block.AIR && blocks[i][j].getType() != Block.AIR && blocks[i][j].getType() != Block.SPIKE) && (blocks[i-1][j-1].getType() == Block.AIR && blocks[i][j-1].getType() != Block.AIR)) {
                     if(rand.nextInt(100)<=35) {
@@ -41,7 +41,7 @@ public class EnemyManager{
     }
     public void generateSnails(Block[][] blocks, Alan alan){
         Random rand = new Random();
-        for(int i=Util.GENERATIONSTART; i< blocks.length-1; i++){
+        for(int i=Util.GENERATIONSTART; i< blocks.length-30; i++){
             for(int j=1; j<blocks[i].length-1; j++) {
                 if(blocks[i][j-1].getType() == Block.AIR && blocks[i][j].getType() == Block.WALL && blocks[i+1][j-1].getType() == Block.AIR && blocks[i+1][j].getType() == Block.WALL) {
                     if(rand.nextInt(100)<=20) {
@@ -53,7 +53,7 @@ public class EnemyManager{
     }
     public void generateJellies(Block[][] blocks, Alan alan){
         Random rand = new Random();
-        for(int i=Util.GENERATIONSTART; i< blocks.length-1; i++){
+        for(int i=Util.GENERATIONSTART; i< blocks.length-30; i++){
             for(int j=1; j<blocks[i].length-1; j++) {
                 if(blocks[i][j-1].getType() == Block.AIR) {
                     if(rand.nextInt(100)<=.5) {
@@ -66,7 +66,7 @@ public class EnemyManager{
     public void generateBats(Block[][] blocks, Alan alan){
         Random rand = new Random();
         for(int i=Util.GENERATIONSTART; i< blocks.length; i++){
-            for(int j=1; j<blocks[i].length-1; j++) {
+            for(int j=1; j<blocks[i].length-30; j++) {
                 if(blocks[i][j-1].getType() == Block.AIR) {
                     if(rand.nextInt(100)<=2) {
                         addBat(blocks[i][j].getX(false), blocks[i][j].getY(false, alan));

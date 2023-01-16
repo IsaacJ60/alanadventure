@@ -319,6 +319,10 @@ public class Alan {
 
         //HINT: CHANGING LEVELS HERE
         // USE GAMEMANAGER TO SWITCH TO NEXT LEVEL WHEN ALAN REACHES CERTAIN POINT
+        if (nextRow > map.getRows()-30) {
+            AAdventure.getGame().setAlpha(Util.increaseOpacity(AAdventure.getGame().getAlpha(), true));
+        }
+
         if (nextRow == map.getRows()-15) {
             AAdventure.getLevelClear().setAlpha(255);
             Powerups.selectionTimer.restart();

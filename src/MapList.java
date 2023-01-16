@@ -66,8 +66,8 @@ public class MapList {
         for (int i = firstVisibleRow; i < lastVisibleRow; i++) {
 
             // TMP CODE TO DISPLAY ROW NUMBERS
-            g.setColor(Color.WHITE);
-            g.drawString(String.valueOf(i), 230, blocks[i][0].getY(true, alan)+20);
+//            g.setColor(Color.WHITE);
+//            g.drawString(String.valueOf(i), 230, blocks[i][0].getY(true, alan)+20);
 
 //            if (includeWalls) {
 //                drawWalls(g, blocks, i, alan);
@@ -228,7 +228,7 @@ class Map {
     }
 
     public void generateSemiRandomizedFreeStandingBreakableBoxBlocksWithThreeRandomSpawnPatterns(String s) {
-        for (int i = Util.GENERATIONSTART; i < rows-5; i+=Util.MAXCHUNKSIZE) {
+        for (int i = Util.GENERATIONSTART; i < rows-Util.GENERATIONEND; i+=Util.MAXCHUNKSIZE) {
             //HINT: getting type of wall, if doesn't match any types then don't spawn
             // - increasing bound decreases wall spawns
             int boxType = rand.nextInt(0,10);
@@ -256,7 +256,7 @@ class Map {
     }
 
     public void generatePlatBlocks() {
-        for (int i = Util.GENERATIONSTART; i < rows-5; i+=Util.MAXCHUNKSIZE) {
+        for (int i = Util.GENERATIONSTART; i < rows-Util.GENERATIONEND; i+=Util.MAXCHUNKSIZE) {
             //HINT: getting type of wall, if doesn't match any types then don't spawn
             // - increasing bound decreases wall spawns
             int platType = rand.nextInt(0,7);
@@ -310,7 +310,7 @@ class Map {
 
     // GENERATING WALL BLOCKS
     public void generateWallBlocks() {
-        for (int i = Util.GENERATIONSTART; i < rows-10; i+=Util.MAXCHUNKSIZE) {
+        for (int i = Util.GENERATIONSTART; i < rows-Util.GENERATIONEND; i+=Util.MAXCHUNKSIZE) {
             //HINT: getting type of wall, if doesn't match any types then don't spawn
             // - increasing bound decreases wall spawns
             int wallType = rand.nextInt(0,7);

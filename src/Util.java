@@ -24,6 +24,7 @@ public class Util {
     public static final int BLOCKLENGTH = 35;
     public static final int MAXCHUNKSIZE = 3;
     public static final int GENERATIONSTART = 30;
+    public static final int GENERATIONEND = 35;
     public static final int INDEX = 3, COORDS = 4;
     public static final int LEFT = 5, RIGHT = 6, TOP = 7, BOTTOM = 8, NEUTRAL = 9;
     public static final int FADEVEL = 14;
