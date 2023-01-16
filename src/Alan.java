@@ -174,6 +174,7 @@ public class Alan {
         }
     }
     public Rectangle getRect(){return new Rectangle(x,y,width,height);}
+    public Rectangle getBoots(){return new Rectangle(x,y+height,width,1);}
 
     public void changeState(int MODE, int d, boolean forceChange) { // changes state
         if (state != MODE || d != dir) {
@@ -306,7 +307,7 @@ public class Alan {
 
         for (Snake s:snakes) {
             if (getRect().intersects(s.getRect())) {
-                if(velY > 0 && y+height > s.getY(false)){
+                if(getBoots().intersects(s.getRect()) && velY > 0 && y+height > s.getY(false)){
                     blaster.setAmmo(blaster.getCapacity());
                     removalSnake.add(s);
                     velY = -8;
@@ -338,7 +339,7 @@ public class Alan {
 
         for (Jelly j:jellies) {
             if (getRect().intersects(j.getRect())) {
-                if(velY > 0 && y+height > j.getY(false)){
+                if(getBoots().intersects(j.getRect()) && velY > 0 && y+height > j.getY(false)){
                     blaster.setAmmo(blaster.getCapacity());
                     removalJelly.add(j);
                     velY = -8;

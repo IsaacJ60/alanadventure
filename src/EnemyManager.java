@@ -449,7 +449,7 @@ class Jelly{
 //                        g.drawRect(block.getX(true), block.getY(true, alan)+1, 1, Util.BLOCKLENGTH-2);
                         if (getRect().intersects(leftSide)) {
                             x += 2*accelFactor;
-                            velX = -1;
+                            velX = -.5;
                             accelX = 0;
                         }
                     }
@@ -465,7 +465,7 @@ class Jelly{
 //                        g.drawRect(block.getX(true) + Util.BLOCKLENGTH, block.getY(true, alan)+1, 1, Util.BLOCKLENGTH-2);
                         if (getRect().intersects(rightSide)) {
                             x -= 2*accelFactor;
-                            velX = 1;
+                            velX = .5;
                             accelX = 0;
                         }
                     }
@@ -478,7 +478,7 @@ class Jelly{
                     Rectangle topSide = new Rectangle(block.getX(false)+1, block.getY(false, alan), Util.BLOCKLENGTH-2, 1);
                     if (getRect().intersects(topSide)) {
                         y -= 2*accelFactor;
-                        velY = -1;
+                        velY = -.5;
                         accelY = 0;
                     }
                 }
@@ -489,10 +489,10 @@ class Jelly{
                 Block block = blocks[prevRow][i];
                 // only check bottom collision in solid blocks and when going upwards in y-dir
                 if (block.getType() == Block.WALL || block.getType() == Block.BOX) {
-                    Rectangle bottomSide = new Rectangle(block.getX(false)+1, block.getY(false, alan) + height, Util.BLOCKLENGTH-2, 1);
+                    Rectangle bottomSide = new Rectangle(block.getX(false)+1, block.getY(false, alan) + Util.BLOCKLENGTH, Util.BLOCKLENGTH-2, 1);
                     if (getRect().intersects(bottomSide)) {
                         y += 2*accelFactor;
-                        velY = 1;
+                        velY = .5;
                         accelY = 0;
                     }
                 }
@@ -501,6 +501,18 @@ class Jelly{
 //            ArrayList<Jelly> jellies = AAdventure.getGame().getEnemyManager().getJellies();
 //            for(Jelly j:jellies){
 //                if(getRect().intersects(j.getRect()) && this!=j){
+//                    if(velX>0){
+//                        x = j.getX(false)-width;
+//                    }
+//                    else{
+//                        x = j.getX(false) + width;
+//                    }
+//                    if(velY>0){
+//                        y = j.getY(false)-height;
+//                    }
+//                    else{
+//                        y = j.getY(false) + height;
+//                    }
 //                    velX *= -0.75;
 //                    velY *= -0.75;
 //                    accelX *= -1;
@@ -509,7 +521,7 @@ class Jelly{
 //                    j.velY *= -0.75;
 //                    j.accelX *= -1;
 //                    j.accelY *= -1;
-//
+//                    break;
 //                }
 //            }
 
