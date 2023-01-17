@@ -127,6 +127,7 @@ public class Alan {
     public Blaster getWeapon() {return weapon;} // gets current weapon
     public void setWeapon(Blaster weapon) {this.weapon = weapon;} // sets current weapon
     public void setWeaponSpeed(int s) {weapon.setSpeed(s);}
+    public double getVelX() {return velX;}
     public void setHealth(int h) {health = h;}
     public void setHealthProgress(int h) {healthProgress = h;}
     public void setMaxHealth(int h) {maxHealth = h;}
@@ -139,6 +140,7 @@ public class Alan {
     public int getX(boolean adjusted) {return (adjusted ? x + Background.getWallLeftPos() : x);}
     public int getY(boolean adjusted) {return (adjusted ? y-offset+screenOffset : y);}
     public Rectangle getRect(){return new Rectangle(x,y,width,height);}
+    public Rectangle getBoots(){return new Rectangle(x,y+height,width,1);}
 
     public void changeState(int MODE, int d, boolean forceChange) { // changes state
         if (state != MODE || d != dir) {
@@ -152,7 +154,7 @@ public class Alan {
 
     // return int represents walls that player colliding with
     public int move(boolean[] keys, Graphics g, Map map, Powerups powerups, EnemyManager enemies) {
-        getEnemyCollision(enemies.getSnakes(), enemies.getSnails()); // collision between alan and snakes
+        getEnemyCollision(enemies.getSnakes(), enemies.getSnails(), enemies.getJellies()); // collision between alan and snakes
         getCollision(g,this, map); // getting collision between player and blocks
         alanRect.setLocation(x+5,y); // setting rect location
         boolean wallCollideLeft = false, wallCollideRight = false;
@@ -273,12 +275,13 @@ public class Alan {
         weapon.animation(g,this, map, powerups, enemies);
     }
 
-    public void getEnemyCollision(ArrayList<Snake> snakes, ArrayList<Snail> snails) {
+    public void getEnemyCollision(ArrayList<Snake> snakes, ArrayList<Snail> snails, ArrayList<Jelly> jellies) {
         ArrayList<Snake> removalSnake = new ArrayList<>();
+        ArrayList<Jelly> removalJelly = new ArrayList<>();
 
         for (Snake s : snakes) {
             if (getRect().intersects(s.getRect())) {
-                if (velY > 0 && y+height > s.getY(false)) {
+                if(getBoots().intersects(s.getRect()) && velY > 0 && y+height > s.getY(false)){
                     weapon.setAmmo(weapon.getCapacity());
                     removalSnake.add(s);
                     velY = -8;
@@ -302,12 +305,35 @@ public class Alan {
             }
         }
 
+        for (Jelly j:jellies) {
+            if (getRect().intersects(j.getRect())) {
+                if(getBoots().intersects(j.getRect()) && velY > 0 && y+height > j.getY(false)){
+                    blaster.setAmmo(blaster.getCapacity());
+                    removalJelly.add(j);
+                    velY = -8;
+                    GameManager.getGemManager().spawnGems((int)j.getX(false),(int)j.getY(false), 3);
+                }
+                else{
+                    if (invulTimer.getElapsedTime() >= 2) {
+//                        System.out.println("-1 hp");
+                        health--;
+                        invulTimer.restart();
+                    } else {
+//                        System.out.print(".");
+                    }
+                }
+            }
+        }
+
+        if(health == 0){
+            GameManager.gameOver();
+        }
+
         for(Snake s : removalSnake){
             snakes.remove(s);
         }
-
-        if (health == 0) {
-            GameManager.gameOver();
+        for(Jelly j:removalJelly){
+            jellies.remove(j);
         }
     }
 

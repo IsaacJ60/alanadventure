@@ -121,7 +121,7 @@ public class Blaster {
         ArrayList<Bullet> rm = new ArrayList<>(); // removal list for bullets
         for (Bullet b : bullets) { // go through all bullets
             // enemy collisions
-            if (getEnemyCollision(b, enemies.getSnakes(), enemies.getSnails())) {
+            if (getEnemyCollision(b, enemies.getSnakes(), enemies.getSnails(), enemies.getJellies())) {
                 rm.add(b);
             }
             // block collisions
@@ -142,9 +142,10 @@ public class Blaster {
         }
     }
 
-    public boolean getEnemyCollision(Bullet b, ArrayList<Snake> snakes, ArrayList<Snail> snails) {
+    public boolean getEnemyCollision(Bullet b, ArrayList<Snake> snakes, ArrayList<Snail> snails, ArrayList<Jelly> jellies) {
         ArrayList<Snake> removalSnake = new ArrayList<>();
-        ArrayList<Snail> removalSnail = new ArrayList<>();
+        ArrayList<Snail> removalSnail= new ArrayList<>();
+        ArrayList<Jelly> removalJelly = new ArrayList<>();
 
         for (Snake s:snakes) {
             if (s.getRect().intersects(b.getRect())) {
@@ -171,6 +172,21 @@ public class Blaster {
 
                 for(Snail r:removalSnail){
                     snails.remove(r);
+                }
+                return true;
+            }
+        }
+        for (Jelly j:jellies) {
+            if (j.getRect().intersects(b.getRect())) {
+                j.isHit();
+                j.setHealth(j.getHealth()-damage);
+                if (j.getHealth() <= 0) {
+                    removalJelly.add(j);
+                    GameManager.getGemManager().spawnGems((int)j.getX(false),(int)j.getY(false), 3);
+                }
+
+                for(Jelly r:removalJelly){
+                    jellies.remove(r);
                 }
                 return true;
             }
