@@ -30,11 +30,12 @@ public class EnemyManager{
     public void addBat(int x, int y) {bats.add(new Bat(x,y));}
     public void generateSnakes(Block[][] blocks, Alan alan) {
         Random rand = new Random();
-        for(int i=Util.GENERATIONSTART; i<blocks.length-1; i++){
+        for(int i=Util.GENERATIONSTART; i<blocks.length-4; i++){
             for(int j=1; j<blocks[i].length-1; j++) {
                 if ((blocks[i-1][j].getType() == Block.AIR && blocks[i][j].getType() != Block.AIR && blocks[i][j].getType() != Block.SPIKE) && (blocks[i-1][j-1].getType() == Block.AIR && blocks[i][j-1].getType() != Block.AIR)) {
-                    if(rand.nextInt(100)<=35) {
+                    if(rand.nextInt(100)<=80) {
                         addSnake(blocks[i][j].getX(false), blocks[i][j].getY(false, alan));
+                        i += Util.MAXCHUNKSIZE;
                     }
                 }
             }
@@ -42,11 +43,12 @@ public class EnemyManager{
     }
     public void generateSnails(Block[][] blocks, Alan alan){
         Random rand = new Random();
-        for(int i=Util.GENERATIONSTART; i< blocks.length-1; i++){
+        for(int i=Util.GENERATIONSTART; i< blocks.length-4; i++){
             for(int j=1; j<blocks[i].length-1; j++) {
                 if(blocks[i][j-1].getType() == Block.AIR && blocks[i][j].getType() == Block.WALL && blocks[i+1][j-1].getType() == Block.AIR && blocks[i+1][j].getType() == Block.WALL) {
-                    if(rand.nextInt(100)<=20) {
+                    if(rand.nextInt(100)<=30) {
                         addSnail(blocks[i][j].getX(false), blocks[i][j].getY(false, alan), Snail.RIGHT, Snail.UP);
+                        i += Util.MAXCHUNKSIZE;
                     }
                 }
             }
@@ -57,7 +59,7 @@ public class EnemyManager{
         for(int i=Util.GENERATIONSTART; i< blocks.length-1; i++){
             for(int j=1; j<blocks[i].length-1; j++) {
                 if(blocks[i][j].getType() == Block.AIR && blocks[i][j+1].getType() == Block.AIR) {
-                    if(rand.nextInt(100)<=.5) {
+                    if(rand.nextInt(100)<=.6) {
                         addJelly(blocks[i][j].getX(false), blocks[i][j].getY(false, alan));
 //                        return;
                     }
@@ -357,10 +359,10 @@ class Snail {
 class Jelly{
     private final int width, height;
     private int health;
-    private double x, y;
+    private double x, y, snapX, snapY;
     private double speed, velX, velY, maxVelX, maxVelY, accelX, accelY, accelFactor; // the speed and acceleration the enemy has
     private double animFrame;
-    private boolean moveLeft, moveRight, moveUp, moveDown;
+    private boolean hit;
 
     ArrayList<Image> idle = new ArrayList<>();
     public Jelly(int x, int y) {
@@ -376,7 +378,7 @@ class Jelly{
         this.accelY = 0;
         this.accelFactor = .06;
         animFrame = 0;
-        moveLeft = moveRight = moveUp = moveDown = false;
+        hit = false;
         for (int i = 0; i < 4; i++) {
             idle.add(new ImageIcon("src/assets/enemies/jelly/idle/jellyIdle" + i + ".png").getImage().getScaledInstance(width, height, Image.SCALE_DEFAULT));
             idle.set(i, idle.get(i).getScaledInstance((idle.get(i).getWidth(null)*2), (idle.get(i).getHeight(null)*2), Image.SCALE_DEFAULT));
@@ -402,6 +404,11 @@ class Jelly{
     public void setY(int y) {
         this.y = y;
     }
+//    public static double getVelY() {return velY;}
+//    public void setVelX(int velX) {this.velX = velX;}
+//    public static void setVelY(double vy) {velY = vy;}
+//    public void setAccelX(int accelX) {this.accelX = accelX;}
+//    public void setAccelY(int accelY) {this.accelY = accelY;}
     public int getHealth() {
         return health;
     }
@@ -409,6 +416,7 @@ class Jelly{
         this.health = health;
     }
     public Rectangle getRect(){return new Rectangle((int)x,(int)y,width,height);}
+    public void isHit() {hit = true;}
     public void move(Graphics g, Alan alan, Map map) {
         // distance calculations
         double distX = x - AAdventure.getGame().getAlan().getX(false);
@@ -430,7 +438,11 @@ class Jelly{
             }
             // moving the enemy
             velX = ((-1 / distance) * distX) * speed + accelX; // -1 so the enemy moves TOWARDS alan, just 1 would make the enemy run away from alan
-            velY = ((-1 / distance) * distY) * speed + accelY; // frames*accel so the enemy speeds up/down for a more "natural" look, instead of perfectly tracking alan
+            velY = ((-1 / distance) * distY) * speed + accelY;
+            if(hit) {
+                accelY = 4;
+                hit = false;
+            }
 
             Block[][] blocks = map.getMap();
             // getting rows with same y values as jelly
@@ -439,34 +451,38 @@ class Jelly{
             int prevCol = (int) getX(false) / Util.BLOCKLENGTH;
             int nextCol = prevCol + 1;
 
-            // right left collision
-            for(int r=prevRow; r<=nextRow; r++) {
-                for (int i = 0; i < map.getColumns(); i++) {
-                    Block block = blocks[r][i];
-                    if (block.getType() == Block.WALL || block.getType() == Block.BOX) {
-                        Rectangle leftSide = new Rectangle(block.getX(false), block.getY(false, alan)+1, 1, Util.BLOCKLENGTH-2);
-//                        g.setColor(Color.CYAN);
-//                        g.drawRect(block.getX(true), block.getY(true, alan)+1, 1, Util.BLOCKLENGTH-2);
-                        if (getRect().intersects(leftSide)) {
-                            x += 2*accelFactor;
-                            velX = -.5;
-                            accelX = 0;
-                        }
-                    }
-                }
-            }
+            snapX = -1;
+            snapY = -1;
             // left right collision
             for(int r=prevRow; r<=nextRow; r++) {
                 for (int i = 0; i < map.getColumns(); i++) {
                     Block block = blocks[r][i];
                     if (block.getType() == Block.WALL || block.getType() == Block.BOX) {
-                        Rectangle rightSide = new Rectangle(block.getX(false) + Util.BLOCKLENGTH, block.getY(false, alan)+1, 1, Util.BLOCKLENGTH-2);
+                        Rectangle leftSide = new Rectangle(block.getX(false), block.getY(false, alan)+2, 1, Util.BLOCKLENGTH-3);
+//                        g.setColor(Color.CYAN);
+//                        g.drawRect(block.getX(true), block.getY(true, alan)+1, 1, Util.BLOCKLENGTH-2);
+                        if (getRect().intersects(leftSide)) {
+                            snapX = block.getX(false) - width - .5;
+                            velX = -.5;
+                            accelX = 0;
+                            break;
+                        }
+                    }
+                }
+            }
+            // right left collision
+            for(int r=prevRow; r<=nextRow; r++) {
+                for (int i = map.getColumns()-1; i >= 0; i--) {
+                    Block block = blocks[r][i];
+                    if (block.getType() == Block.WALL || block.getType() == Block.BOX) {
+                        Rectangle rightSide = new Rectangle(block.getX(false) + Util.BLOCKLENGTH, block.getY(false, alan)+2, 1, Util.BLOCKLENGTH-3);
 //                        g.setColor(Color.MAGENTA);
 //                        g.drawRect(block.getX(true) + Util.BLOCKLENGTH, block.getY(true, alan)+1, 1, Util.BLOCKLENGTH-2);
                         if (getRect().intersects(rightSide)) {
-                            x -= 2*accelFactor;
+                            snapX = block.getX(false) + Util.BLOCKLENGTH + .5;
                             velX = .5;
                             accelX = 0;
+                            break;
                         }
                     }
                 }
@@ -475,8 +491,9 @@ class Jelly{
             for (int i = 0; i < map.getColumns(); i++) {
                 Block block = blocks[nextRow][i];
                 if (block.getType() == Block.WALL || block.getType() == Block.BOX) {
-                    Rectangle topSide = new Rectangle(block.getX(false)+1, block.getY(false, alan), Util.BLOCKLENGTH-2, 1);
+                    Rectangle topSide = new Rectangle(block.getX(false)+2, block.getY(false, alan), Util.BLOCKLENGTH-3, 1);
                     if (getRect().intersects(topSide)) {
+                        snapY = block.getY(false, alan) - height - 0.5;
                         y -= 2*accelFactor;
                         velY = -.5;
                         accelY = 0;
@@ -489,8 +506,9 @@ class Jelly{
                 Block block = blocks[prevRow][i];
                 // only check bottom collision in solid blocks and when going upwards in y-dir
                 if (block.getType() == Block.WALL || block.getType() == Block.BOX) {
-                    Rectangle bottomSide = new Rectangle(block.getX(false)+1, block.getY(false, alan) + Util.BLOCKLENGTH, Util.BLOCKLENGTH-2, 1);
+                    Rectangle bottomSide = new Rectangle(block.getX(false)+2, block.getY(false, alan) + Util.BLOCKLENGTH, Util.BLOCKLENGTH-3, 1);
                     if (getRect().intersects(bottomSide)) {
+                        snapY = block.getY(false, alan) + Util.BLOCKLENGTH + 0.5;
                         y += 2*accelFactor;
                         velY = .5;
                         accelY = 0;
@@ -498,21 +516,28 @@ class Jelly{
                 }
             }
 
+            if(snapX != -1){
+                x = snapX;
+            }
+//            if(snapY != -1){
+//                y = snapY;
+//            }
+
 //            ArrayList<Jelly> jellies = AAdventure.getGame().getEnemyManager().getJellies();
 //            for(Jelly j:jellies){
 //                if(getRect().intersects(j.getRect()) && this!=j){
-//                    if(velX>0){
-//                        x = j.getX(false)-width;
-//                    }
-//                    else{
-//                        x = j.getX(false) + width;
-//                    }
-//                    if(velY>0){
-//                        y = j.getY(false)-height;
-//                    }
-//                    else{
-//                        y = j.getY(false) + height;
-//                    }
+////                    if(velX>0){
+////                        x = j.getX(false)-width;
+////                    }
+////                    else{
+////                        x = j.getX(false) + width;
+////                    }
+////                    if(velY>0){
+////                        y = j.getY(false)-height;
+////                    }
+////                    else{
+////                        y = j.getY(false) + height;
+////                    }
 //                    velX *= -0.75;
 //                    velY *= -0.75;
 //                    accelX *= -1;

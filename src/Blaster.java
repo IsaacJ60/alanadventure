@@ -169,6 +169,7 @@ public class Blaster {
         }
         for (Jelly j:jellies) {
             if (j.getRect().intersects(b.getRect())) {
+                j.isHit();
                 j.setHealth(j.getHealth()-damage);
                 if (j.getHealth() <= 0) {
                     removalJelly.add(j);
