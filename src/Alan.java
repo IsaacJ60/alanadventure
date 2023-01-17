@@ -29,10 +29,10 @@ public class Alan {
     private int health, maxHealth, healthProgress; // current health, health capacity, and progress to +1 maximum health
 
     // MOVEMENT UTIL
-    private int keyLeft, keyRight;
+    private int keyLeft, keyRight, keyJump;
 
     // MOVEMENT LIMITERS AND VELOCITIES
-    private boolean moveLeft = true, moveRight = true;
+    private boolean moveLeft = true, moveRight = true, hop;
 
     private double velX, velY, jerk; // movement speed & screenoffset jerk
     private final double maxVelX, maxVelY, accelX, accelY; // velocity & acceleration
@@ -54,7 +54,7 @@ public class Alan {
     Util.CustomTimer jumpTimer = new Util.CustomTimer();
     Util.CustomTimer invulTimer = new Util.CustomTimer();
 
-    public Alan(int x, int y, Blaster weapon, int health, int maxHealth, int healthProgress, int keyLeft, int keyRight) {
+    public Alan(int x, int y, Blaster weapon, int health, int maxHealth, int healthProgress, int keyLeft, int keyRight, int keyJump) {
         // position and movement
         this.x = x;
         this.y = y;
@@ -64,14 +64,16 @@ public class Alan {
         this.width = 20;
         this.height = 30;
         this.maxVelX = 7;
-        this.maxVelY = 13;
-        this.accelY = 1.0;
+        this.maxVelY = 14;
+        this.accelY = 1;
         this.accelX = 0.7;
         this.animFrame = 0;
+        this.hop = true;
 
         //movement keybinds
         this.keyLeft = keyLeft;
         this.keyRight = keyRight;
+        this.keyJump = keyJump;
 
         //hitbox
         this.alanRect = new Rectangle(x+5,y,width,height); // adding 5 because the frames for alan's animation has transparency on the sides
@@ -128,8 +130,12 @@ public class Alan {
     public void setHealth(int h) {health = h;}
     public void setHealthProgress(int h) {healthProgress = h;}
     public void setMaxHealth(int h) {maxHealth = h;}
+    public int getKeyLeft() {return keyLeft;}
+    public int getKeyRight() {return keyRight;}
+    public int getKeyJump() {return keyJump;}
     public void setKeyLeft(int k) {keyLeft = k;}
     public void setKeyRight(int k) {keyRight = k;}
+    public void setKeyJump(int k) {keyJump = k;}
     public int getX(boolean adjusted) {return (adjusted ? x + Background.getWallLeftPos() : x);}
     public int getY(boolean adjusted) {return (adjusted ? y-offset+screenOffset : y);}
     public Rectangle getRect(){return new Rectangle(x,y,width,height);}
@@ -146,18 +152,18 @@ public class Alan {
 
     // return int represents walls that player colliding with
     public int move(boolean[] keys, Graphics g, Map map, Powerups powerups, EnemyManager enemies) {
-        getEnemyCollision(weapon, enemies.getSnakes(), enemies.getSnails()); // collision between alan and snakes
+        getEnemyCollision(enemies.getSnakes(), enemies.getSnails()); // collision between alan and snakes
         getCollision(g,this, map); // getting collision between player and blocks
         alanRect.setLocation(x+5,y); // setting rect location
         boolean wallCollideLeft = false, wallCollideRight = false;
 
         // allow jump only if not jumping or falling and if space pressed
         if (AAdventure.getCurrPanel().equals("GAME")) {
-            if (keys[Util.space] && !AAdventure.getGame().getPrevSpaced() && state != JUMP && state != FALL) {
+            if (keys[keyJump] && !AAdventure.getGame().getPrevSpaced() && state != JUMP && state != FALL) {
                 changeState(JUMP, dir, false);
             }
         } else {
-            if (keys[Util.space] && state != JUMP && state != FALL) {
+            if (keys[keyJump] && state != JUMP && state != FALL) {
                 changeState(JUMP, dir, false);
             }
         }
@@ -267,13 +273,13 @@ public class Alan {
         weapon.animation(g,this, map, powerups, enemies);
     }
 
-    public void getEnemyCollision(Blaster blaster, ArrayList<Snake> snakes, ArrayList<Snail> snails) {
+    public void getEnemyCollision(ArrayList<Snake> snakes, ArrayList<Snail> snails) {
         ArrayList<Snake> removalSnake = new ArrayList<>();
 
         for (Snake s : snakes) {
             if (getRect().intersects(s.getRect())) {
                 if (velY > 0 && y+height > s.getY(false)) {
-                    blaster.setAmmo(blaster.getCapacity());
+                    weapon.setAmmo(weapon.getCapacity());
                     removalSnake.add(s);
                     velY = -8;
                     GameManager.getGemManager().spawnGems((int)s.getX(false),(int)s.getY(false), 3);
@@ -373,14 +379,19 @@ public class Alan {
                 // if originally falling, change state to idle now that player is grounded
                 if (state == FALL) {
                     weapon.setAmmo(weapon.getCapacity());
+                    if (hop) {
+                        hop = false;
+                        velY = -5;
+                    }
                     changeState(IDLE, dir, false);
                 }
             } else { // in the case that the player has not reached block/ground
                 if (velY == 0) { // starts falling velocity at 3 (if velocity is 0, when player just starts to fall)
-                    velY = 5;
-                }
-                else if (velY < maxVelY) { // increase velocity if not reached max y vel
+                    velY = 3;
+                } else if (velY < maxVelY) { // increase velocity if not reached max y vel
                     velY += accelY;
+                } else {
+                    hop = true;
                 }
                 changeState(FALL, dir, false); // change state to falling
             }

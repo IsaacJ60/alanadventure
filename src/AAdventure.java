@@ -33,7 +33,7 @@ public class AAdventure extends JFrame { // frame
     public static GamePanel getGame() {return game;}
     public static Intro getIntro() {return intro;}
     public static LevelClear getLevelClear() {return levelClear;}
-    public static SettingsPanel getSettings() {return settings;}
+    public static SettingsPanel getSettingsPanel() {return settings;}
     public static GameOver getGameOver() {return gameOver;}
     public static ShopPanel getShop() {return shop;}
 

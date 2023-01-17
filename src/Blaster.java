@@ -98,7 +98,7 @@ public class Blaster {
     // SHOOT - CHECKS IF PLAYER WANTS TO SHOOT AND IF TIMER ALLOWS, ADDS BULLET IF ALLOWED
     public boolean shoot(boolean[] keys, int velY, Graphics g, Alan alan) {
         blastAnim(g, alan);
-        if (keys[Util.space]) {
+        if (keys[alan.getKeyJump()]) {
             if (alan.getState() == Alan.FALL && shootTimer.getElapsedTime() > firerate && velY > 0) {
                 if (useAmmo(amount)) {
                     shootTimer.restart();

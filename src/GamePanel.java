@@ -32,7 +32,7 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener, Mo
 
         bg = new Background(); // background exclusive to game class
 
-        alan = new Alan(180, HEIGHT/2-50, Blaster.getBlasters().get(Blaster.MACHINEGUN), 4, 4, 0, Util.a, Util.d);
+        alan = new Alan(180, HEIGHT/2-50, Blaster.getBlasters().get(Blaster.MACHINEGUN), 4, 4, 0, Util.a, Util.d, Util.space);
 
         powers = new Powerups();
 
@@ -93,11 +93,6 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener, Mo
     // ActionListener
     @Override
     public void actionPerformed(ActionEvent e) {
-//        Point mouse = MouseInfo.getPointerInfo().getLocation(); // loc of mouse on screen
-//        Point offset = getLocationOnScreen(); // loc of panel
-//        // getting mouse pos
-//        tarX = mouse.x - offset.x;
-//        tarY = mouse.y - offset.y;
         requestFocus();
         mainFrame.start();
         repaint();

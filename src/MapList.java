@@ -39,6 +39,7 @@ public class MapList {
 
     // add map to maps arraylist
     public void addMap(Map map) {maps.add(map);}
+    public void setMaps(ArrayList<Map> m) {maps = m;}
     // get all maps
     public static ArrayList<Map> getAllMaps() {return maps;}
     // get blocks for level
@@ -212,12 +213,11 @@ class Map {
 
     // GENERATE ALL BLOCKS FOR LEVEL
     public void generateBlocks() {
-        generatePlatBlocks();
         generateWallBlocks(); // BOX BLOCKS GENERATED WITHIN WALL BLOCKS
         generateSemiRandomizedFreeStandingBreakableBoxBlocksWithThreeRandomSpawnPatterns("generateSemiRandomizedFreeStandingBreakableBoxBlocksWithThreeRandomSpawnPatterns");
         generateCompletelyNonRandomizedSideWallBlocksWithFixedSizeOfStandardBlockLengthInsteadOfCustomLengthOfTwentyTwoPixels("        mgun = new Blaster(\"Machine Gun\", 10,8,13, \"bulletB\");\n");
+        generatePlatBlocks();
     }
-
     public void generateCompletelyNonRandomizedSideWallBlocksWithFixedSizeOfStandardBlockLengthInsteadOfCustomLengthOfTwentyTwoPixels(String s) {
         for (int i = 0; i < rows; i++) {
             placeBlock(i,0,Block.WALL,Util.INDEX,Util.LEFT);
@@ -231,7 +231,7 @@ class Map {
         for (int i = Util.GENERATIONSTART; i < rows-Util.GENERATIONEND; i+=Util.MAXCHUNKSIZE) {
             //HINT: getting type of wall, if doesn't match any types then don't spawn
             // - increasing bound decreases wall spawns
-            int boxType = rand.nextInt(0,10);
+            int boxType = rand.nextInt(0,20);
             //NOTE - 3 PATTERNS ARE:
             // - PILLAR (3x3 to 1x3 to 1x1)
             // - FUNNEL (2 sides funnel into centre)
@@ -256,7 +256,7 @@ class Map {
     }
 
     public void generatePlatBlocks() {
-        for (int i = Util.GENERATIONSTART; i < rows-Util.GENERATIONEND; i+=Util.MAXCHUNKSIZE) {
+        for (int i = Util.GENERATIONSTART; i < rows-Util.GENERATIONEND; i+=Util.MAXCHUNKSIZE*2) {
             //HINT: getting type of wall, if doesn't match any types then don't spawn
             // - increasing bound decreases wall spawns
             int platType = rand.nextInt(0,7);
@@ -267,14 +267,29 @@ class Map {
             switch (platType) {
                 case 0 -> generateFlat(i,1);
                 case 1 -> generateFlat(i,2);
-                case 2 -> generateFlat(i,3);
             }
         }
     }
 
     public void generateFlat(int row, int length) {
-        int start = rand.nextInt(1,columns-length-1);
-        for (int i = start; i < length; i++) {
+        int start;
+        if (rand.nextInt(0, 3) == 0) {
+            start = rand.nextInt(4, 6);
+        } else {
+            start = rand.nextInt(1, columns - length - 1);
+        }
+        for (int i = start; i < start+length; i++) {
+            if (i == start) {
+                if (getBlock(row, i-1).getType() != Block.AIR) {
+                    continue;
+                }
+            } else if (i == start+length-1) {
+                if (getBlock(row, i+1).getType() != Block.AIR) {
+                    continue;
+                }
+            } else if (getBlock(row, i).getType() != Block.AIR) {
+                continue;
+            }
             placeBlock(row, i, Block.PLAT, Util.INDEX, Util.NEUTRAL);
         }
     }
@@ -313,29 +328,42 @@ class Map {
         for (int i = Util.GENERATIONSTART; i < rows-Util.GENERATIONEND; i+=Util.MAXCHUNKSIZE) {
             //HINT: getting type of wall, if doesn't match any types then don't spawn
             // - increasing bound decreases wall spawns
-            int wallType = rand.nextInt(0,7);
+            int wallType = rand.nextInt(0,100);
             //NOTE - 3 PATTERNS ARE:
             // - PILLAR (3x3 to 1x3 to 1x1)
             // - FUNNEL (2 sides funnel into centre)
             // - CLIFF (1 side forms cliff structure)
-            switch (wallType) {
-                case 0 -> generatePillar(i, rand.nextInt(Util.LEFT, Util.RIGHT + 1), Block.WALL);
-                case 1 -> generateFunnel(i);
-                case 2 -> generateCliff(i, rand.nextInt(Util.LEFT, Util.RIGHT + 1), Block.WALL, 5);
+            int pillarSpawnRate = 14;
+            int funnelSpawnRate = pillarSpawnRate+16;
+            int cliffSpawnRate = funnelSpawnRate+20;
+            int largeCliffSpawnRate = cliffSpawnRate+8;
+            if (wallType < pillarSpawnRate) {
+                generatePillar(i, rand.nextInt(Util.LEFT, Util.RIGHT + 1), Block.WALL);
+            } else if (wallType < funnelSpawnRate) {
+                i += generateFunnel(i);
+            } else if (wallType < cliffSpawnRate) {
+                i += generateCliff(i, rand.nextInt(Util.LEFT, Util.RIGHT + 1), Block.WALL, 5, false);
+            } else if (wallType < largeCliffSpawnRate) {
+                i += generateCliff(i, rand.nextInt(Util.LEFT, Util.RIGHT + 1), Block.WALL, 8, true);
             }
         }
     }
 
     // FUNNEL IS JUST 2 OPPOSITE CLIFFS
-    public void generateFunnel(int i) {
-        generateCliff(i, Util.LEFT, Block.WALL, 4);
-        generateCliff(i, Util.RIGHT, Block.WALL, 4);
+    public int generateFunnel(int i) {
+        int d1 = generateCliff(i, Util.LEFT, Block.WALL, 4, false);
+        int d2 = generateCliff(i, Util.RIGHT, Block.WALL, 4, false);
+        return Math.max(d1, d2);
     }
 
     // GENERATING CLIFFS (TRIANGLE SHAPE) - ALONGSIDE GENERATING BOXES ON TOP
-    public void generateCliff(int r, int side, int type, int maxLen) {
-        int row = r;
-        int longest = rand.nextInt(2,maxLen);
+    public int generateCliff(int r, int side, int type, int maxLen, boolean tryLong) {
+        int row = r, longest;
+        if (tryLong) {
+            longest = rand.nextInt(maxLen-3,maxLen);
+        } else {
+            longest = rand.nextInt(2,maxLen);
+        }
         //HINT: CONTROLS CHANCE OF BOXES SPAWNING ON CLIFF
         if (rand.nextInt(0,1) == 0) {
             generateBoxBlocks(r-1, longest, Util.TOP, side); // GENERATE BOXES ON FUNNEL!
@@ -356,6 +384,7 @@ class Map {
                 row++;
             }
         }
+        return row-(r+2);
     }
 
     // CREATE PILLAR (RECTANGULAR SHAPED)

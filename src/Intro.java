@@ -35,7 +35,7 @@ public class Intro extends JPanel implements KeyListener, ActionListener, MouseL
 
         powers = new Powerups();
 
-        alan = new Alan(40, HEIGHT/2+50, Blaster.getBlasters().get(Blaster.MACHINEGUN), 4, 4, 0, Util.a, Util.d);
+        alan = new Alan(40, HEIGHT/2+50, Blaster.getBlasters().get(Blaster.MACHINEGUN), 4, 4, 0, Util.a, Util.d, Util.space);
 
         enemyManager = new EnemyManager();
 
@@ -110,7 +110,7 @@ public class Intro extends JPanel implements KeyListener, ActionListener, MouseL
         g.drawString("ALAN'S", 372,420-alan.getOffset()+alan.getScreenOffset());
         g.drawString("ADVENTURE", 322,475-alan.getOffset()+alan.getScreenOffset());
 
-        g.drawImage(shopLogo, Background.getWallRightPos()-50, 630-alan.getOffset()+alan.getScreenOffset(), null);
+        g.drawImage(shopLogo, Background.getWallRightPos()-50, 635-alan.getOffset()+alan.getScreenOffset(), null);
 
         if (alan.draw(g, keys, GameManager.intromap, powers, enemyManager) == Util.RIGHT) {
             AAdventure.setLastPanel(AAdventure.getCurrPanel());
