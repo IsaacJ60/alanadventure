@@ -308,7 +308,7 @@ public class Alan {
         for (Jelly j:jellies) {
             if (getRect().intersects(j.getRect())) {
                 if(getBoots().intersects(j.getRect()) && velY > 0 && y+height > j.getY(false)){
-                    blaster.setAmmo(blaster.getCapacity());
+                    weapon.setAmmo(weapon.getCapacity());
                     removalJelly.add(j);
                     velY = -8;
                     GameManager.getGemManager().spawnGems((int)j.getX(false),(int)j.getY(false), 3);
@@ -407,7 +407,7 @@ public class Alan {
                     weapon.setAmmo(weapon.getCapacity());
                     if (hop) {
                         hop = false;
-                        velY = -5;
+                        velY = -4;
                     }
                     changeState(IDLE, dir, false);
                 }
