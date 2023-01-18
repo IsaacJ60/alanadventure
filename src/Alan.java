@@ -407,7 +407,7 @@ public class Alan {
                     weapon.setAmmo(weapon.getCapacity());
                     if (hop) {
                         hop = false;
-                        velY = -4;
+//                        velY = -4;
                     }
                     changeState(IDLE, dir, false);
                 }

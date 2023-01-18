@@ -174,6 +174,10 @@ public class Settings {
     public void drawArrows(Graphics g) {
         g.drawImage(arrowLeft, 0, AAdventure.getGameHeight()/2-22, null);
         g.drawImage(arrowRight, AAdventure.getGameWidth()-22, AAdventure.getGameHeight()/2-22, null);
+
+        if (changeReady) {
+            g.drawImage(arrowLeftB, 0, AAdventure.getGameHeight()/2-22, null);
+            g.drawImage(arrowRightB, AAdventure.getGameWidth()-22, AAdventure.getGameHeight()/2-22, null);        }
     }
 
     public void resetButton(Graphics g, int mx, int my, Alan a1, Alan a2, boolean clicked) {
@@ -197,6 +201,7 @@ public class Settings {
             properties.get(0).get(0).setValue("A");
             properties.get(0).get(1).setValue("D");
             properties.get(0).get(2).setValue("SPACE");
+            changeReady = false;
         }
     }
 

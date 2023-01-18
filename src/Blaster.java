@@ -129,8 +129,6 @@ public class Blaster {
                 rm.add(b);
             } else if (b.getY(false,alan) > b.getStartY() + (powerups.getPower(Powerups.LASERSIGHT) == 1 ? Util.EXTENDEDBULLETRANGE : Util.BULLETRANGE)) { // powerup for laser
                 rm.add(b);
-            } else if (alan.getNearestY() < 10) {
-                rm.add(b);
             } else {
                 g.drawImage(b.getImg(), (int)b.getX(true), b.getY(true,alan), null);
                 b.setY(b.getY(false,alan) + speed);
@@ -295,7 +293,7 @@ class Bullet {
         this.x = x;
         this.y = y;
         this.img = img;
-        this.width = 8;
+        this.width = 12;
         this.height = 16;
         this.rect = new Rectangle(x,y,width, height);
     }
