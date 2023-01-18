@@ -8,6 +8,11 @@ public class Util {
     // GAME FONTS
     static Font fontTitle6, fontText, fontTextSmall, fontTextSmaller;
 
+    // GAME COLOURS
+    public static Color RED = new Color(255,4,4);
+    public static Color BLUE = new Color(0, 90, 168);
+    public static Color LIGHTBLUE = new Color(0, 121, 224);
+
     // GAME VARIABLES
     private static int level = 0;
     public static int getLevel() {return level;}

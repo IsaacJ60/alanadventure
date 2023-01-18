@@ -31,9 +31,9 @@ public class SettingsPanel extends JPanel implements KeyListener, ActionListener
 
         ArrayList<ArrayList<Property>> properties = new ArrayList<>();
         properties.add(new ArrayList<>());
-        properties.get(0).add(new Property("Move Left", "A", "KEYBINDS"));
-        properties.get(0).add(new Property("Move Right", "D", "KEYBINDS"));
-        properties.get(0).add(new Property("Jump", "SPACE", "KEYBINDS"));
+        properties.get(0).add(new Property("MOVE LEFT", "A", "KEYBINDS"));
+        properties.get(0).add(new Property("MOVE RIGHT", "D", "KEYBINDS"));
+        properties.get(0).add(new Property("JUMP", "SPACE", "KEYBINDS"));
 
         settings = new Settings(properties);
 

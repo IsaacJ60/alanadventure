@@ -9,7 +9,7 @@ public class Settings {
     private final ArrayList<ArrayList<Property>> properties;
     private int settingType, settingItem, offsetY, wantedOffsetY, offsetVel;
     private boolean changeReady;
-    private Rectangle resetRect;
+    private final Rectangle resetRect;
 
     private final Image arrowLeft = new ImageIcon("src/tiles/arrowL.png").getImage().getScaledInstance(22,44,Image.SCALE_DEFAULT),
             arrowRight = new ImageIcon("src/tiles/arrowR.png").getImage().getScaledInstance(22,44,Image.SCALE_DEFAULT),
@@ -43,15 +43,15 @@ public class Settings {
                         }
                         p.setValue(tmp);
                         switch (p.getName()) {
-                            case "Move Left" -> {
+                            case "MOVE LEFT" -> {
                                 AAdventure.getGame().getAlan().setKeyLeft(c);
                                 AAdventure.getIntro().getAlan().setKeyLeft(c);
                             }
-                            case "Move Right" -> {
+                            case "MOVE RIGHT" -> {
                                 AAdventure.getGame().getAlan().setKeyRight(c);
                                 AAdventure.getIntro().getAlan().setKeyRight(c);
                             }
-                            case "Jump" -> {
+                            case "JUMP" -> {
                                 AAdventure.getGame().getAlan().setKeyJump(c);
                                 AAdventure.getIntro().getAlan().setKeyJump(c);
                             }
@@ -109,15 +109,15 @@ public class Settings {
                     p.setValue(String.valueOf(c));
                 }
                 switch (p.getName()) {
-                    case "Move Left" -> {
+                    case "MOVE LEFT" -> {
                         a1.setKeyLeft(c);
                         a2.setKeyLeft(c);
                     }
-                    case "Move Right" -> {
+                    case "MOVE RIGHT" -> {
                         a1.setKeyRight(c);
                         a2.setKeyRight(c);
                     }
-                    case "Jump" -> {
+                    case "JUMP" -> {
                         a1.setKeyJump(c);
                         a2.setKeyJump(c);
                     }
@@ -205,6 +205,21 @@ public class Settings {
         }
     }
 
+    public void drawDescription(Graphics g) {
+        if (properties.get(settingType).get(settingItem).getType().equals("KEYBINDS")) {
+            g.setFont(Util.fontTextSmaller);
+            g.setColor(Util.LIGHTBLUE);
+            String keybindDescription0 = "W/S - scroll up/down (change selected)";
+            String keybindDescription1 = "first click - edit keybind";
+            String keybindDescription2 = "second click - exit edit mode";
+            String keybindDescription3 = "ESCAPE to EXIT";
+            g.drawString(keybindDescription0, AAdventure.getGameWidth()/2-(int)(keybindDescription0.length()*9.5)/2, (offsetY-90));
+            g.drawString(keybindDescription1, AAdventure.getGameWidth()/2-(int)(keybindDescription1.length()*9.5)/2, (offsetY-70));
+            g.drawString(keybindDescription2, AAdventure.getGameWidth()/2-(int)(keybindDescription2.length()*9.5)/2, (offsetY-50));
+            g.drawString(keybindDescription3, AAdventure.getGameWidth()/2-(int)(keybindDescription3.length()*9.5)/2, (offsetY-30));
+        }
+    }
+
     public void draw(Graphics g, boolean[] keys, boolean clicked, Alan a1, Alan a2, int mx, int my) {
         selectProperty(keys, clicked, a1, a2);
 
@@ -212,24 +227,27 @@ public class Settings {
 
         resetButton(g, mx, my, a1, a2, clicked);
 
+        drawDescription(g);
+
         for (int i = 0; i < properties.get(settingType).size(); i++) {
 
             Property property = properties.get(settingType).get(i);
 
             int x = (AAdventure.getGameWidth()/2)-(property.getWidth()/2), y = (i*property.getHeight()*2)+offsetY;
 
-            drawSetting(g, x, y, properties.get(settingType).get(i));
+            drawSetting(g, x, y, properties.get(settingType).get(i), properties.get(settingType).get(settingItem));
         }
     }
 
-    public void drawSetting(Graphics g, int x, int y, Property p) {
+    public void drawSetting(Graphics g, int x, int y, Property p, Property selected) {
         g.setColor(Color.WHITE);
         g.drawRect(x,y,p.getWidth(),p.getHeight());
         g.setFont(Util.fontText);
-        g.drawString(p.getType(), AAdventure.getGameWidth()/2 - (p.getType().length()*12), (offsetY-100));
+        g.drawString(p.getType(), AAdventure.getGameWidth()/2 - (p.getType().length()*12), (offsetY-130));
         g.setFont(Util.fontTextSmall);
-        g.drawString(p.getName(), x+5, y+20);
-        g.drawString(p.getValue(), x+300, y+20);
+        g.drawString(p.getName(), x+7, y+33);
+        g.setColor(changeReady && selected == p ? Util.BLUE : Util.RED);
+        g.drawString(p.getValue(), x+390 - (p.getValue().length()*15), y+33);
     }
 }
 

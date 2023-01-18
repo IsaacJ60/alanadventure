@@ -1,6 +1,5 @@
 import javax.swing.*;
 import java.awt.*;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -108,7 +107,14 @@ class Snake {
 	private int health;
 	private double x, y;
 	private int dir;
-	private double speed, velX, velY, maxVelY, accelY; // the speed and acceleration the enemy has
+	private double speed;
+
+	public double getVelX() {return velX;}
+
+	private double velX;
+	private double velY;
+	private double maxVelY;
+	private double accelY; // the speed and acceleration the enemy has
 	private double animFrame;
 
 	private final ArrayList<Image> idleL = new ArrayList<>();
@@ -121,7 +127,7 @@ class Snake {
 		this.y = y-height+1;
 		dir = RIGHT;
 		this.health = 10;
-		this.velX = 2;
+		this.velX = Util.rand.nextInt(1,4);
 		this.accelY = 1;
 		this.maxVelY = Util.rand.nextInt(5,13);
 		animFrame = 0;
@@ -238,6 +244,9 @@ class Snail {
 	private int width, height, dir;
 	private int health;
 	private double x, y;
+
+	public double getVelY() {return velY;}
+
 	private double velY; // the speed and acceleration the enemy has
 	private double animFrame;
 
@@ -354,17 +363,29 @@ class Snail {
 	}
 }
 
-class Jelly{
+class Jelly {
 	private final int width, height, imageWidth;
 	private int health;
 	private double x, y;
-	private double speed, velX, velY, maxVelX, maxVelY, accelX, accelY, accelFactor; // the speed and acceleration the enemy has
+	private double speed;
+
+	public double getVelX() {return velX;}
+
+	public double getVelY() {return velY;}
+
+	private double velX;
+	private double velY;
+	private double maxVelX;
+	private double maxVelY;
+	private double accelX;
+	private double accelY;
+	private double accelFactor; // the speed and acceleration the enemy has
 	private double animFrame;
 	private boolean moveLeft, moveRight, moveUp, moveDown;
 	private boolean hit;
 
 	ArrayList<Image> idle = new ArrayList<>();
-	public Jelly(int x, int y) {
+	public Jelly (int x, int y) {
 		this.x = x;
 		this.y = y;
 		this.width = 35;
@@ -410,7 +431,7 @@ class Jelly{
 	public void setHealth(int health) {
 		this.health = health;
 	}
-	public Rectangle getRect(){return new Rectangle((int)x,(int)y,width,height);}
+	public Rectangle getRect(){return new Rectangle((int) x,(int) y,width,height);}
 	public void isHit() {hit = true;}
 	public void move(Graphics g, Alan alan, Map map) {
 		// distance calculations

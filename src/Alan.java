@@ -173,19 +173,16 @@ public class Alan {
         // left right movement keys pressed
         if (keys[keyLeft] || keys[keyRight]) {
 
-            // accelerate when max speed not reached
-            velX = accelerate(velX, maxVelX, accelX);
-
             // if "A" key pressed and player allowed to move left
             if (keys[keyLeft] && moveLeft) {
                 // checking if switched direction, reset velocity
                 if (dir == Util.RIGHT) {
                     velX = 0;
                 }
+                velX = accelerate(velX, maxVelX, accelX, Util.LEFT);
                 // changing direction state to left
                 dir = Util.LEFT;
                 // changing horizontal position towards left
-                x -= velX;
                 // ensuring x doesn't go out of bounds
                 if (Math.max(x,0) == 0) {
                     wallCollideLeft = true;
@@ -198,12 +195,12 @@ public class Alan {
                 if (dir == Util.LEFT) {
                     velX = 0;
                 }
+                velX = accelerate(velX, maxVelX, accelX, Util.RIGHT);
                 // changing direction state to right
                 dir = Util.RIGHT;
                 // changing horizontal position towards right
-                x += velX;
                 // making sure player doesn't go out of bounds
-                if (Math.min(x,Background.getWallRightPos()-Background.getWallLeftPos()-width-10) != x) {
+                if (Math.min(x,Background.getWallRightPos()-Background.getWallLeftPos()-width-15) != x) {
                     wallCollideRight = true;
                 }
             }
@@ -214,8 +211,10 @@ public class Alan {
             }
         } else if (state != JUMP && state != FALL) {
             // if not pressing "A" or "D", and not in air, idling
-            velX = 0;
+            velX = accelerate(velX, maxVelX, accelX, Util.NEUTRAL);
             changeState(IDLE, dir, false);
+        } else {
+            velX = accelerate(velX, maxVelX, accelX, Util.NEUTRAL);
         }
 
         // JUMPING, logic inside function determines whether jump is performed or not
@@ -223,6 +222,7 @@ public class Alan {
 
         // increasing game-y value of player and offset
         y+=(int)velY;
+        x+=(int)velX;
         offset+=(int)velY;
 
         // applying additional offset to make stopping and accelerating smoother
@@ -248,9 +248,19 @@ public class Alan {
         }
     }
 
-    public double accelerate(double velX, double maxVelX, double accelX) {
-        if (velX < maxVelX) {
-            return velX + accelX;
+    public double accelerate(double velX, double maxVelX, double accelX, int dir) {
+        if (dir == Util.LEFT) {
+            if (velX > -1*maxVelX) {
+                return velX - accelX;
+            }
+        }
+        if (dir == Util.RIGHT) {
+            if (velX < maxVelX) {
+                return velX + accelX;
+            }
+        }
+        if (dir == Util.NEUTRAL) {
+            return (Math.abs(velX) < 2 ? 0 : velX/2);
         }
         return velX;
     }
@@ -275,6 +285,19 @@ public class Alan {
         weapon.animation(g,this, map, powerups, enemies);
     }
 
+    public void knockback(Snake snake) {
+        velX = Math.max((velX < 0 ? 5 : -5), velX*-1);
+        velY = -3;
+    }
+
+    public void knockback(Jelly j) {
+        velX *= -1;
+    }
+
+    public void knockback(Snail snail) {
+        velX *= -1;
+    }
+
     public void getEnemyCollision(ArrayList<Snake> snakes, ArrayList<Snail> snails, ArrayList<Jelly> jellies) {
         ArrayList<Snake> removalSnake = new ArrayList<>();
         ArrayList<Jelly> removalJelly = new ArrayList<>();
@@ -290,6 +313,7 @@ public class Alan {
                 else {
                     if (invulTimer.getElapsedTime() >= 2) {
                         health--;
+                        knockback(s);
                         invulTimer.restart();
                     }
                 }
@@ -300,6 +324,7 @@ public class Alan {
             if (getRect().intersects(s.getRect())) {
                 if (invulTimer.getElapsedTime() >= 2) {
                     health--;
+                    knockback(s);
                     invulTimer.restart();
                 }
             }
@@ -315,11 +340,9 @@ public class Alan {
                 }
                 else{
                     if (invulTimer.getElapsedTime() >= 2) {
-//                        System.out.println("-1 hp");
                         health--;
+                        knockback(j);
                         invulTimer.restart();
-                    } else {
-//                        System.out.print(".");
                     }
                 }
             }
@@ -461,7 +484,7 @@ public class Alan {
                                 if (y+height > block.getY(false,alan) && y < block.getY(false,alan) + Util.BLOCKLENGTH) {
                                     if (x-(block.getX(false)+Util.BLOCKLENGTH) < nearestLeftX) {
                                         nearestLeftX = Math.abs(x-(block.getX(false)+Util.BLOCKLENGTH));
-                                        snapX = block.getX(false)+Util.BLOCKLENGTH+1;
+                                        snapX = block.getX(false)+Util.BLOCKLENGTH+(int)Math.abs(velX);
                                     }
                                 }
                             }
@@ -469,7 +492,7 @@ public class Alan {
                     }
                 }
             }
-            if (nearestLeftX <= velX) {
+            if (nearestLeftX <= Math.abs(velX)) {
                 moveLeft = false;
                 x = snapX;
             } else {
@@ -486,7 +509,7 @@ public class Alan {
                                 if (y + height > block.getY(false,alan) && y < block.getY(false,alan) + Util.BLOCKLENGTH) {
                                     if (Math.abs(block.getX(false) - (x + width)) < nearestRightX) {
                                         nearestRightX = Math.abs(block.getX(false) - (x + width));
-                                        snapX = block.getX(false) - width - 5;
+                                        snapX = block.getX(false) - width - 5 - (int)Math.abs(velX);
                                     }
                                 }
                             }
@@ -494,7 +517,7 @@ public class Alan {
                     }
                 }
             }
-            if (nearestRightX <= velX) {
+            if (nearestRightX <= Math.abs(velX)) {
                 moveRight = false;
                 x = snapX;
             } else {
