@@ -71,15 +71,11 @@ public class LevelClear extends JPanel implements KeyListener, ActionListener, M
     // ActionListener
     @Override
     public void actionPerformed(ActionEvent e) {
-//        Point mouse = MouseInfo.getPointerInfo().getLocation(); // loc of mouse on screen
-//        Point offset = getLocationOnScreen(); // loc of panel
-//        // getting mouse pos
-//        tarX = mouse.x - offset.x;
-//        tarY = mouse.y - offset.y;
         requestFocus();
         mainFrame.start();
         repaint();
     }
+
     @Override
     public void paint(Graphics g) {
         g.setColor(Color.BLACK);

@@ -27,6 +27,7 @@ public class Alan {
     private final Rectangle alanRect; // hitbox
     private int x, y;
     private int health, maxHealth, healthProgress; // current health, health capacity, and progress to +1 maximum health
+    private int combo;
 
     // MOVEMENT UTIL
     private int keyLeft, keyRight, keyJump;
@@ -155,7 +156,7 @@ public class Alan {
 
     // return int represents walls that player colliding with
     public int move(boolean[] keys, Graphics g, Map map, Powerups powerups, EnemyManager enemies) {
-        getEnemyCollision(enemies.getSnakes(), enemies.getSnails(), enemies.getJellies()); // collision between alan and snakes
+        getEnemyCollision(enemies.getSnakes(), enemies.getCrawlers(), enemies.getSnails(), enemies.getJellies()); // collision between alan and snakes
         getCollision(g,this, map); // getting collision between player and blocks
         alanRect.setLocation(x+5,y); // setting rect location
         boolean wallCollideLeft = false, wallCollideRight = false;
@@ -291,6 +292,11 @@ public class Alan {
         velY = -3;
     }
 
+    public void knockback(Crawler crawler) {
+        velX = Math.max((velX < 0 ? 5 : -5), velX*-1);
+        velY = -3;
+    }
+
     public void knockback(Jelly j) {
         velX = (velX >= 0 ? -maxVelX*1.5 : maxVelX*1.5);
     }
@@ -299,13 +305,14 @@ public class Alan {
         velX = (velX >= 0 ? -maxVelX*1.5 : maxVelX*1.5);
     }
 
-    public void getEnemyCollision(ArrayList<Snake> snakes, ArrayList<Snail> snails, ArrayList<Jelly> jellies) {
+    public void getEnemyCollision(ArrayList<Snake> snakes, ArrayList<Crawler> crawlers, ArrayList<Snail> snails, ArrayList<Jelly> jellies) {
         ArrayList<Snake> removalSnake = new ArrayList<>();
         ArrayList<Jelly> removalJelly = new ArrayList<>();
 
         for (Snake s : snakes) {
             if (getRect().intersects(s.getRect())) {
                 if(getBoots().intersects(s.getRect()) && velY > 0 && y+height > s.getY(false)){
+                    combo++;
                     weapon.setAmmo(weapon.getCapacity());
                     removalSnake.add(s);
                     velY = -8;
@@ -317,6 +324,16 @@ public class Alan {
                         knockback(s);
                         invulTimer.restart();
                     }
+                }
+            }
+        }
+
+        for (Crawler c: crawlers) {
+            if (getRect().intersects(c.getRect())) {
+                if (invulTimer.getElapsedTime() >= 2) {
+                    health--;
+                    knockback(c);
+                    invulTimer.restart();
                 }
             }
         }
@@ -334,6 +351,7 @@ public class Alan {
         for (Jelly j:jellies) {
             if (getRect().intersects(j.getRect())) {
                 if(getBoots().intersects(j.getRect()) && velY > 0 && y+height > j.getY(false)){
+                    combo++;
                     weapon.setAmmo(weapon.getCapacity());
                     removalJelly.add(j);
                     velY = -8;
@@ -407,6 +425,8 @@ public class Alan {
             if (nearestBlockY <= velY+5) {
 
                 // set velocity in y-dir to be 0
+                // display combo
+                combo = 0;
                 velY = 0;
 
                 // if snapping is needed (player went too far passed top of block and is now somewhat stuck in block)
