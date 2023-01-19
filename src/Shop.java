@@ -7,12 +7,11 @@ import java.util.Scanner;
 public class Shop {
     private final ArrayList<ArrayList<Cosmetics>> allItems;
     private int selectedItem;
-    private int[] equippedItems;
+    private final int[] equippedItems;
     private int selectedType;
     private double offsetY;
     private int wantedOffsetY;
     private double offsetVel;
-    private final double offsetVelMax;
 
     private final Image arrowLeft = new ImageIcon("src/tiles/arrowL.png").getImage().getScaledInstance(22,44,Image.SCALE_DEFAULT),
             arrowRight = new ImageIcon("src/tiles/arrowR.png").getImage().getScaledInstance(22,44,Image.SCALE_DEFAULT),
@@ -28,20 +27,40 @@ public class Shop {
         this.offsetY = AAdventure.getGameHeight()/2.0-30.0;
         this.wantedOffsetY = (int)offsetY;
         this.offsetVel = 20;
-        this.offsetVelMax = 20;
         this.equippedItems = new int[allItems.size()];
 
         try {
             Scanner f = new Scanner(new BufferedReader(new FileReader("src/assets/shop/items.txt")));
             if (f.hasNext()) {
-                for (ArrayList<Cosmetics> allItem : this.allItems) {
-                    for (Cosmetics cosmetics : allItem) {
-                        if (f.nextInt() == 1) {
+                ArrayList<ArrayList<Cosmetics>> items = this.allItems;
+                for (int i = 0; i < items.size(); i++) {
+                    ArrayList<Cosmetics> allItem = items.get(i);
+                    for (int j = 0; j < allItem.size(); j++) {
+                        Cosmetics cosmetics = allItem.get(j);
+                        int status = f.nextInt();
+                        if (status == 2) {
+                            cosmetics.setOwned(true);
+                            selectedType = i;
+                            selectedItem = j;
+                            switch (cosmetics.getType()) {
+                                case "BACKGROUNDS" -> {
+                                    equippedItems[selectedType] = selectedItem;
+                                    Background.setBg(allItems.get(selectedType).get(selectedItem).getEnlargedImg());
+                                }
+                                case "BLASTERS" -> {
+                                    equippedItems[selectedType] = selectedItem;
+                                    AAdventure.getIntro().getAlan().setWeapon(cosmetics.getBlaster());
+                                    AAdventure.getGame().getAlan().setWeapon(cosmetics.getBlaster());
+                                }
+                            }
+                        } else if (status == 1) {
                             cosmetics.setOwned(true);
                         }
                     }
                 }
             }
+            selectedItem = 0;
+            selectedType = 0;
             f.close();
         } catch (FileNotFoundException ex) {
             System.out.println(ex + "dummy");
@@ -49,6 +68,29 @@ public class Shop {
     }
 
     public void addCosmetic(int type, Cosmetics c) {allItems.get(type).add(c);}
+
+    public void saveItems() {
+        try {
+            PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("src/assets/shop/items.txt")));
+            ArrayList<ArrayList<Cosmetics>> items = this.allItems;
+            for (int j = 0; j < items.size(); j++) {
+                ArrayList<Cosmetics> allItem = items.get(j);
+                for (int i = 0; i < allItem.size(); i++) {
+                    Cosmetics cosmetics = allItem.get(i);
+                    if (equippedItems[j] == i && cosmetics.getOwned()) {
+                        out.println(2);
+                    } else if (cosmetics.getOwned()) {
+                        out.println(1);
+                    } else {
+                        out.println(0);
+                    }
+                }
+            }
+            out.close();
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
 
     public void selectItem(boolean[] keys, Gems gems) {
 
@@ -96,24 +138,9 @@ public class Shop {
                         gems.setTotalGems(gems.getTotalGems() - item.getCost());
                         GameManager.saveGems();
                         item.setOwned(true);
-                        try {
-                            PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("src/assets/shop/items.txt")));
-                            for (ArrayList<Cosmetics> allItem : this.allItems) {
-                                for (Cosmetics cosmetics : allItem) {
-                                    if (cosmetics.getOwned()) {
-                                        out.println(1);
-                                    } else {
-                                        out.println(0);
-                                    }
-                                }
-                            }
-                            out.close();
-                        } catch (IOException ex) {
-                            throw new RuntimeException(ex);
-                        }
+                        saveItems();
                     }
-                }
-                if (item.getOwned()) {
+                } else {
                     switch (item.getType()) {
                         case "BACKGROUNDS" -> {
                             equippedItems[selectedType] = selectedItem;
@@ -125,6 +152,7 @@ public class Shop {
                             AAdventure.getGame().getAlan().setWeapon(item.getBlaster());
                         }
                     }
+                    saveItems();
                 }
             }
         }
