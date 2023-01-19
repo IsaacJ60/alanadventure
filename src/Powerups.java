@@ -14,7 +14,7 @@ public class Powerups{
 
     private int[] activepowers;
 
-    private final String[] powerupIconFiles = {"rapidFire","gunpowder","laserSight","youth","extendedMag", "fireBullet"};
+    private final String[] powerupIconFiles = {"rapidFire","gunpowder","laserSight","youth","extended Mag", "fireBullet"};
 
     private Image[] powerupIcons, smallPowerupIcons;
     private int selected;
