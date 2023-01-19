@@ -102,9 +102,16 @@ public class GameManager {
             AAdventure.getIntro().resetMovementKeys();
             AAdventure.getIntro().getEnemyManager().clearEnemies();
             AAdventure.getIntro().getAlan().getWeapon().setBullets(new ArrayList<>());
-            AAdventure.getIntro().setAlan(new Alan(40, HEIGHT/2+50, Blaster.getBlasters().get(Blaster.MACHINEGUN), 4, AAdventure.getGame().getAlan().getMaxHealth(), AAdventure.getGame().getAlan().getHealthProgress(), AAdventure.getGame().getAlan().getKeyLeft(), AAdventure.getGame().getAlan().getKeyRight(), AAdventure.getGame().getAlan().getKeyJump())); // resetting alan
+            Blaster weapon = AAdventure.getGame().getAlan().getWeapon();
+            if (AAdventure.getGame().getPowerups().getPower(Powerups.FIREBULLET) == Powerups.PASSIVE) {
+                weapon.setDamage(weapon.getDamage()/2);
+                weapon.setEquippedBullet("bullet" + AAdventure.getGame().getAlan().getWeapon().getName() + "B");
+            }
+            weapon.setCapacity(weapon.getOriginalCapacity());
+            weapon.setSpeed(weapon.getOriginalSpeed());
+            AAdventure.getIntro().setAlan(new Alan(40, HEIGHT/2+50, weapon, 4, 4, 0, AAdventure.getGame().getAlan().getKeyLeft(), AAdventure.getGame().getAlan().getKeyRight(), AAdventure.getGame().getAlan().getKeyJump())); // resetting alan
             AAdventure.getIntro().setAlpha(0);
-            AAdventure.getGame().setAlan(new Alan(180, HEIGHT/2-50, AAdventure.getGame().getAlan().getWeapon(), 4, AAdventure.getGame().getAlan().getMaxHealth(), AAdventure.getGame().getAlan().getHealthProgress(), AAdventure.getGame().getAlan().getKeyLeft(), AAdventure.getGame().getAlan().getKeyRight(), AAdventure.getGame().getAlan().getKeyJump())); // resetting alan
+            AAdventure.getGame().setAlan(new Alan(180, HEIGHT/2-50, weapon, 4, 4, 0, AAdventure.getGame().getAlan().getKeyLeft(), AAdventure.getGame().getAlan().getKeyRight(), AAdventure.getGame().getAlan().getKeyJump())); // resetting alan
             AAdventure.getGame().setAlpha(255);
             AAdventure.getGame().setPowerups(new Powerups());
             gemManager.setTotalGems(gemManager.getTotalGems()+gemManager.getGems());

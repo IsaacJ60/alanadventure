@@ -8,8 +8,8 @@ import java.util.ArrayList;
 public class Blaster {
     String name;
     private int damage;
-    private int capacity;
-    private int speed;
+    private int capacity, originalCapacity;
+    private int speed, originalSpeed;
     private int lastX;
     private int lastY;
     private int ammo;
@@ -33,8 +33,10 @@ public class Blaster {
     public Blaster(String name, int damage, int capacity, int speed, int bloom, double firerate, int amount, String file) {
         if (capacity == -1) {
             this.capacity = Util.UNLIMITED;
+            this.originalCapacity = this.capacity;
         } else {
             this.capacity = capacity;
+            this.originalCapacity = this.capacity;
         }
         bullets = new ArrayList<>();
         blastPlaces = new ArrayList<>();
@@ -43,6 +45,7 @@ public class Blaster {
         this.name = name;
         this.damage = damage;
         this.speed = speed;
+        this.originalSpeed = speed;
         this.ammo = this.capacity;
         this.bloom = bloom;
         this.firerate = firerate;
@@ -73,10 +76,12 @@ public class Blaster {
     public void setEquippedBullet(String s) {equippedBullet = new ImageIcon("src/assets/alan/shoot/bullets/"+s+".png").getImage().getScaledInstance(16,28,Image.SCALE_DEFAULT);}
     public void setBullets(ArrayList<Bullet> b) {bullets = b;}
     public static ArrayList<Blaster> getBlasters() {return blasters;}
+    public int getOriginalCapacity() {return originalCapacity;}
+    public int getOriginalSpeed() {return originalSpeed;}
 
     public static void loadGuns() {
         blasters = new ArrayList<>();
-        machinegun = new Blaster("Machine Gun", 10,8,13, 2,0.12,1,"bulletMachineB");
+        machinegun = new Blaster("Machine Gun", 10,8,13, 2,0.12,1,"bulletMachine GunB");
         blasters.add(machinegun);
         shotgun = new Blaster("Shotgun", 5,12,13, 5,0.24,3,"bulletShotgunB");
         blasters.add(shotgun);

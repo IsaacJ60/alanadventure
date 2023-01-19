@@ -35,6 +35,13 @@ public class SettingsPanel extends JPanel implements KeyListener, ActionListener
         properties.get(0).add(new Property("MOVE RIGHT", "D", "KEYBINDS"));
         properties.get(0).add(new Property("JUMP", "SPACE", "KEYBINDS"));
 
+        properties.add(new ArrayList<>());
+        properties.get(1).add(new Property("SHOP ACCESS:", "ENTER THROUGH RIGHT SIDE OF START", "HELP"));
+        properties.get(1).add(new Property("SHOP USE:", "SCROLL/CYCLE THROUGH ITEMS USING WASD", "HELP"));
+        properties.get(1).add(new Property("ALAN CONTROLS:", "A/D/SPACE - DEFAULT KEYBINDS", "HELP"));
+        properties.get(1).add(new Property("ALAN SHOOT:", "PRESS SPACE AFTER JUMPING TO SHOOT", "HELP"));
+        properties.get(1).add(new Property("ENEMIES:", "DIE FROM BULLETS OR BEING JUMPED ON", "HELP"));
+
         settings = new Settings(properties);
 
         timer = new Timer(25, this); // manages frames

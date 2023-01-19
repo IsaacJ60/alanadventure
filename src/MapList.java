@@ -338,7 +338,7 @@ class Map {
             int cliffSpawnRate = funnelSpawnRate+20;
             int largeCliffSpawnRate = cliffSpawnRate+8;
             if (wallType < pillarSpawnRate) {
-                generatePillar(i, rand.nextInt(Util.LEFT, Util.RIGHT + 1), Block.WALL);
+                i += generatePillar(i, rand.nextInt(Util.LEFT, Util.RIGHT + 1), Block.WALL);
             } else if (wallType < funnelSpawnRate) {
                 i += generateFunnel(i);
             } else if (wallType < cliffSpawnRate) {
@@ -388,7 +388,7 @@ class Map {
     }
 
     // CREATE PILLAR (RECTANGULAR SHAPED)
-    public void generatePillar(int r, int side, int type) {
+    public int generatePillar(int r, int side, int type) {
         //HINT: LENGTH AND WIDTH OF PILLAR
         int x = rand.nextInt(0,3), y = rand.nextInt(1,4);
         if (side == Util.LEFT) {
@@ -404,6 +404,7 @@ class Map {
                 }
             }
         }
+        return y;
     }
 
     // adding tile objects to wall blocks so allows us to not go through logic that checks that wall type a wall block is

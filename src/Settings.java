@@ -34,26 +34,28 @@ public class Settings {
             if (f.hasNext()) {
                 for (ArrayList<Property> props : this.properties) {
                     for (Property p : props) {
-                        String tmp = f.nextLine();
-                        char c;
-                        if (tmp.equals("SPACE")) {
-                            c = Util.space;
-                        } else {
-                            c = tmp.charAt(0);
-                        }
-                        p.setValue(tmp);
-                        switch (p.getName()) {
-                            case "MOVE LEFT" -> {
-                                AAdventure.getGame().getAlan().setKeyLeft(c);
-                                AAdventure.getIntro().getAlan().setKeyLeft(c);
+                        if (p.getType().equals("KEYBINDS")) {
+                            String tmp = f.nextLine();
+                            char c;
+                            if (tmp.equals("SPACE")) {
+                                c = Util.space;
+                            } else {
+                                c = tmp.charAt(0);
                             }
-                            case "MOVE RIGHT" -> {
-                                AAdventure.getGame().getAlan().setKeyRight(c);
-                                AAdventure.getIntro().getAlan().setKeyRight(c);
-                            }
-                            case "JUMP" -> {
-                                AAdventure.getGame().getAlan().setKeyJump(c);
-                                AAdventure.getIntro().getAlan().setKeyJump(c);
+                            p.setValue(tmp);
+                            switch (p.getName()) {
+                                case "MOVE LEFT" -> {
+                                    AAdventure.getGame().getAlan().setKeyLeft(c);
+                                    AAdventure.getIntro().getAlan().setKeyLeft(c);
+                                }
+                                case "MOVE RIGHT" -> {
+                                    AAdventure.getGame().getAlan().setKeyRight(c);
+                                    AAdventure.getIntro().getAlan().setKeyRight(c);
+                                }
+                                case "JUMP" -> {
+                                    AAdventure.getGame().getAlan().setKeyJump(c);
+                                    AAdventure.getIntro().getAlan().setKeyJump(c);
+                                }
                             }
                         }
                     }
@@ -86,7 +88,9 @@ public class Settings {
     public void readyToChange(boolean clicked) {
         if (clicked) {
             SettingsPanel.setClicked(false);
-            changeReady = !changeReady;
+            if (properties.get(settingType).get(settingItem).getType().equals("KEYBINDS")) {
+                changeReady = !changeReady;
+            }
         }
     }
 
@@ -144,11 +148,15 @@ public class Settings {
                 settingsTimer.restart();
                 if (settingType > 0) {
                     settingType--;
+                    wantedOffsetY += property.getHeight()*2 * (settingItem);
+                    settingItem = 0;
                 }
             } else if (keys[Util.d]) {
                 settingsTimer.restart();
                 if (settingType < properties.size() - 1) {
                     settingType++;
+                    wantedOffsetY += property.getHeight()*2 * (settingItem);
+                    settingItem = 0;
                 }
             } else if (keys[Util.w]) {
                 settingsTimer.restart();
@@ -183,25 +191,27 @@ public class Settings {
     public void resetButton(Graphics g, int mx, int my, Alan a1, Alan a2, boolean clicked) {
         g.setColor(Color.WHITE);
         g.fillRect((int) resetRect.getX(), (int) resetRect.getY(),(int) resetRect.getWidth(),(int) resetRect.getHeight());
-        g.setColor(Color.BLACK);
+        g.setColor(resetRect.contains(mx, my) ? Util.RED : Color.BLACK);
         g.setFont(Util.fontText);
         g.drawString("RESET", (int) resetRect.getX()+35, (int) resetRect.getY()+40);
 
-        checkReset(mx, my, a1, a2, clicked);
+        checkReset(g, mx, my, a1, a2, clicked);
     }
 
-    public void checkReset(int mx, int my, Alan a1, Alan a2, boolean clicked) {
-        if (resetRect.contains(mx, my) && clicked) {
-            a1.setKeyJump(Util.space);
-            a1.setKeyLeft(Util.a);
-            a1.setKeyRight(Util.d);
-            a2.setKeyJump(Util.space);
-            a2.setKeyLeft(Util.a);
-            a2.setKeyRight(Util.d);
-            properties.get(0).get(0).setValue("A");
-            properties.get(0).get(1).setValue("D");
-            properties.get(0).get(2).setValue("SPACE");
-            changeReady = false;
+    public void checkReset(Graphics g, int mx, int my, Alan a1, Alan a2, boolean clicked) {
+        if (resetRect.contains(mx, my)) {
+            if (clicked) {
+                a1.setKeyJump(Util.space);
+                a1.setKeyLeft(Util.a);
+                a1.setKeyRight(Util.d);
+                a2.setKeyJump(Util.space);
+                a2.setKeyLeft(Util.a);
+                a2.setKeyRight(Util.d);
+                properties.get(0).get(0).setValue("A");
+                properties.get(0).get(1).setValue("D");
+                properties.get(0).get(2).setValue("SPACE");
+                changeReady = false;
+            }
         }
     }
 
@@ -225,8 +235,6 @@ public class Settings {
 
         drawArrows(g);
 
-        resetButton(g, mx, my, a1, a2, clicked);
-
         drawDescription(g);
 
         for (int i = 0; i < properties.get(settingType).size(); i++) {
@@ -237,6 +245,8 @@ public class Settings {
 
             drawSetting(g, x, y, properties.get(settingType).get(i), properties.get(settingType).get(settingItem));
         }
+
+        resetButton(g, mx, my, a1, a2, clicked);
     }
 
     public void drawSetting(Graphics g, int x, int y, Property p, Property selected) {
@@ -247,7 +257,7 @@ public class Settings {
         g.setFont(Util.fontTextSmall);
         g.drawString(p.getName(), x+7, y+33);
         g.setColor(changeReady && selected == p ? Util.BLUE : Util.RED);
-        g.drawString(p.getValue(), x+390 - (p.getValue().length()*15), y+33);
+        g.drawString(p.getValue(), 830 - (p.getValue().length()*15), y+33);
     }
 }
 
@@ -262,7 +272,7 @@ class Property {
         this.name = name;
         this.value = value;
         this.type = type;
-        this.width = 400;
+        this.width = 800;
         this.height = 50;
     }
 
