@@ -155,7 +155,7 @@ public class Alan {
 
     // return int represents walls that player colliding with
     public int move(boolean[] keys, Graphics g, Map map, Powerups powerups, EnemyManager enemies) {
-        getEnemyCollision(enemies.getSnakes(), enemies.getSnails(), enemies.getJellies()); // collision between alan and snakes
+        getEnemyCollision(enemies.getSnakes(), enemies.getCrawlers(), enemies.getSnails(), enemies.getJellies()); // collision between alan and snakes
         getCollision(g,this, map); // getting collision between player and blocks
         alanRect.setLocation(x+5,y); // setting rect location
         boolean wallCollideLeft = false, wallCollideRight = false;
@@ -291,6 +291,11 @@ public class Alan {
         velY = -3;
     }
 
+    public void knockback(Crawler crawler) {
+        velX = Math.max((velX < 0 ? 5 : -5), velX*-1);
+        velY = -3;
+    }
+
     public void knockback(Jelly j) {
         velX *= -1;
     }
@@ -299,7 +304,7 @@ public class Alan {
         velX *= -1;
     }
 
-    public void getEnemyCollision(ArrayList<Snake> snakes, ArrayList<Snail> snails, ArrayList<Jelly> jellies) {
+    public void getEnemyCollision(ArrayList<Snake> snakes, ArrayList<Crawler> crawlers, ArrayList<Snail> snails, ArrayList<Jelly> jellies) {
         ArrayList<Snake> removalSnake = new ArrayList<>();
         ArrayList<Jelly> removalJelly = new ArrayList<>();
 
@@ -317,6 +322,16 @@ public class Alan {
                         knockback(s);
                         invulTimer.restart();
                     }
+                }
+            }
+        }
+
+        for (Crawler c: crawlers) {
+            if (getRect().intersects(c.getRect())) {
+                if (invulTimer.getElapsedTime() >= 2) {
+                    health--;
+                    knockback(c);
+                    invulTimer.restart();
                 }
             }
         }

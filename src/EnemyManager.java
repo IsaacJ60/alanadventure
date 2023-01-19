@@ -13,34 +13,42 @@ import java.util.Random;
 
 public class EnemyManager{
 	private ArrayList<Snake> snakes = new ArrayList<>();
+	private ArrayList<Crawler> crawlers = new ArrayList<>();
 	private ArrayList<Snail> snails = new ArrayList<>();
 	private ArrayList<Jelly> jellies = new ArrayList<>();
 	private ArrayList<Bat> bats = new ArrayList<>();
 
 	public ArrayList<Snake> getSnakes() {return snakes;}
+	public ArrayList<Crawler> getCrawlers() {return crawlers;}
 	public ArrayList<Snail> getSnails() {return snails;}
 	public ArrayList<Jelly> getJellies() {return jellies;}
 	public ArrayList<Bat> getBats() {return bats;}
 
-	// HINT: modify enemy health here
 	public void addSnake(int x, int y) {snakes.add(new Snake(x,y));}
 	public void addSnail(int x, int y, int horiDir, int vertDir) {snails.add(new Snail(x,y,horiDir,vertDir));}
+	public void addCrawler(int x, int y) {crawlers.add(new Crawler(x,y));}
 	public void addJelly(int x, int y) {jellies.add(new Jelly(x,y));}
 	public void addBat(int x, int y) {bats.add(new Bat(x,y));}
-	public void generateSnakes(Block[][] blocks, Alan alan) {
+	public void generateSnakesAndCrawlers(Block[][] blocks, Alan alan) {
 		Random rand = new Random();
-		for(int i=Util.GENERATIONSTART; i<blocks.length-3; i++){
+		for(int i=Util.GENERATIONSTART; i<blocks.length-Util.GENERATIONEND; i++){
 			for(int j=1; j<blocks[i].length-1; j++) {
 				if ((blocks[i-1][j].getType() == Block.AIR && blocks[i][j].getType() != Block.AIR && blocks[i][j].getType() != Block.SPIKE) && (blocks[i-1][j-1].getType() == Block.AIR && blocks[i][j-1].getType() != Block.AIR)) {
-                    addSnake(blocks[i][j].getX(false), blocks[i][j].getY(false, alan));
-                    i += Util.MAXCHUNKSIZE;
+					if(rand.nextInt(100)<=60) {
+						addSnake(blocks[i][j].getX(false), blocks[i][j].getY(false, alan));
+					}
+					else{
+						addCrawler(blocks[i][j].getX(false), blocks[i][j].getY(false, alan));
+					}
+					i += Util.MAXCHUNKSIZE;
+
                 }
 			}
 		}
 	}
 	public void generateSnails(Block[][] blocks, Alan alan){
 		Random rand = new Random();
-		for(int i=Util.GENERATIONSTART; i< blocks.length-3; i++){
+		for(int i=Util.GENERATIONSTART; i< blocks.length-Util.GENERATIONEND; i++){
 			for(int j=1; j<blocks[i].length-1; j++) {
 				if(blocks[i][j-1].getType() == Block.AIR && blocks[i][j].getType() == Block.WALL && blocks[i+1][j-1].getType() == Block.AIR && blocks[i+1][j].getType() == Block.WALL) {
 					if(rand.nextInt(100)<=80) {
@@ -53,7 +61,7 @@ public class EnemyManager{
 	}
 	public void generateJellies(Block[][] blocks, Alan alan){
 		Random rand = new Random();
-		for(int i=Util.GENERATIONSTART; i< blocks.length-1; i++){
+		for(int i=Util.GENERATIONSTART; i< blocks.length-Util.GENERATIONEND; i++){
 			for(int j=1; j<blocks[i].length-1; j++) {
 				if(blocks[i][j].getType() == Block.AIR) {
 					if(rand.nextInt(100)<=.5) {
@@ -66,7 +74,7 @@ public class EnemyManager{
 	}
 	public void generateBats(Block[][] blocks, Alan alan){
 		Random rand = new Random();
-		for(int i=Util.GENERATIONSTART; i< blocks.length; i++){
+		for(int i=Util.GENERATIONSTART; i< blocks.length-Util.GENERATIONEND; i++){
 			for(int j=1; j<blocks[i].length-1; j++) {
 				if(blocks[i][j-1].getType() == Block.AIR) {
 					if(rand.nextInt(100)<=2) {
@@ -79,6 +87,7 @@ public class EnemyManager{
 
 	public void clearEnemies(){
 		snakes.clear();
+		crawlers.clear();
 		snails.clear();
 		jellies.clear();
 		bats.clear();
@@ -88,6 +97,9 @@ public class EnemyManager{
 		Block[][] blocks = map.getMap();
 		for(Snake s : snakes){
 			s.draw(g, blocks);
+		}
+		for(Crawler c: crawlers){
+			c.draw(g, blocks);
 		}
 		for(Snail s : snails){
 			s.draw(g, blocks);
@@ -124,7 +136,7 @@ class Snake {
 		this.width = 32;
 		this.height = 18;
 		this.x = x;
-		this.y = y-height+1;
+		this.y = y-height;
 		dir = RIGHT;
 		this.health = 10;
 		this.velX = Util.rand.nextInt(1,4);
@@ -231,6 +243,128 @@ class Snake {
 			}
 			g.drawImage(idleR.get((int) animFrame), (int) getX(true), (int)getY(true), null);
 		}
+
+//        g.setColor(Color.YELLOW);
+//        g.drawRect((int)getX(true), (int)getY(true), width, height);
+	}
+}
+
+class Crawler {
+	private final int LEFT = 0, RIGHT = 1;
+	private int width, height;
+	private int health;
+	private double x, y;
+	private int dir;
+	private double speed;
+
+	public double getVelX() {return velX;}
+
+	private double velX;
+	private double velY;
+	private double maxVelY;
+	private double accelY; // the speed and acceleration the enemy has
+	private double animFrame;
+
+	private final ArrayList<Image> idle = new ArrayList<>();
+
+	public Crawler(int x, int y) {
+		this.width = 32;
+		this.height = 22;
+		this.x = x;
+		this.y = y-height;
+		dir = RIGHT;
+		this.health = 10;
+		this.velX = Util.rand.nextInt(1,3);
+		this.accelY = 1;
+		this.maxVelY = Util.rand.nextInt(5,13);
+		animFrame = 0;
+
+		for (int i = 0; i < 2; i++) {
+			idle.add(new ImageIcon("src/assets/enemies/crawler/idle/crawlerIdle" + i + ".png").getImage());
+		}
+	}
+
+	public void setX(int x) {
+		this.x = x;
+	}
+	public void setY(int y) {
+		this.y = y;
+	}
+	public int getHealth() {
+		return health;
+	}
+	public void setHealth(int health) {
+		this.health = health;
+	}
+	public double getX(boolean adjusted) { // gets x
+		if (adjusted) { // whether you want x relative to the gameplay window
+			return x + Background.getWallLeftPos();
+		} else {
+			return x;
+		}
+	}
+	public double getY(boolean adjusted) { // gets y
+		if (adjusted) { // whether you want y relative to the gameplay window
+			return y-AAdventure.getGame().getAlan().getOffset()+AAdventure.getGame().getAlan().getScreenOffset();
+		} else {
+			return y;
+		}
+	}
+	public Rectangle getRect(){return new Rectangle((int)x,(int)y,width,height);}
+
+	public void move(Block[][] blocks){
+		int currRow = (int)y/Util.BLOCKLENGTH;
+		int grndRow = currRow+1; // add one to get the row of blocks the snake is standing on
+		int currColL = (int)x/Util.BLOCKLENGTH;
+		int currColC = (int)(x+width/2)/Util.BLOCKLENGTH;
+		int currColR = (int)(x+width)/Util.BLOCKLENGTH;
+
+		if(blocks[grndRow][currColC].getType() != Block.AIR) {
+			y = grndRow * Util.BLOCKLENGTH - height;
+			velY = 0;
+			if (dir == LEFT) {
+				if (x <= 0) {
+					dir = RIGHT;
+					x += velX;
+				} else {
+					if (blocks[grndRow][currColL].getType() != Block.AIR && blocks[grndRow - 1][currColL].getType() == Block.AIR) {
+						x -= velX;
+					} else {
+						dir = Util.RIGHT;
+						x += velX;
+					}
+				}
+			} else {
+				if (x + width >= (blocks[0].length-1) * Util.BLOCKLENGTH) {
+					dir = LEFT;
+					x -= velX;
+				} else {
+					if (blocks[grndRow][currColR].getType() != Block.AIR && blocks[grndRow - 1][currColR].getType() == Block.AIR) {
+						x += velX;
+					} else {
+						dir = LEFT;
+						x -= velX;
+					}
+				}
+			}
+		}
+		else{
+			y+=velY;
+			if(velY < maxVelY){
+				velY += accelY;
+			}
+		}
+	}
+
+	public void draw(Graphics g, Block[][] blocks) {
+		move(blocks);
+
+		if ((int) animFrame == idle.size() - 1) {
+			animFrame = 0;
+		} else {
+			animFrame += 0.05;
+		}
+		g.drawImage(idle.get((int) animFrame), (int) getX(true), (int)getY(true), null);
 
 //        g.setColor(Color.YELLOW);
 //        g.drawRect((int)getX(true), (int)getY(true), width, height);

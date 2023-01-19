@@ -132,7 +132,7 @@ public class GameManager {
             gemManager.setActiveGems(new ArrayList<>());
             gemManager.setTotalGems(gemManager.getTotalGems()+gemManager.getGems());
             AAdventure.getGame().getEnemyManager().clearEnemies();
-            AAdventure.getGame().getEnemyManager().generateSnakes(MapList.getBlocksWithoutWallImages(), AAdventure.getGame().getAlan());
+            AAdventure.getGame().getEnemyManager().generateSnakesAndCrawlers(MapList.getBlocksWithoutWallImages(), AAdventure.getGame().getAlan());
             AAdventure.getGame().getEnemyManager().generateSnails(MapList.getBlocksWithoutWallImages(), AAdventure.getGame().getAlan());
             AAdventure.getGame().getEnemyManager().generateJellies(MapList.getBlocksWithoutWallImages(), AAdventure.getGame().getAlan());
 //                        GamePanel.getEnemyManager().generateBats(MapList.getBlocksWithoutWallImages(), GamePanel.getAlan());
