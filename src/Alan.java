@@ -105,7 +105,6 @@ public class Alan {
             ArrayList<Image> tmp = new ArrayList<>();
             for (int frame = 0; frame < animationFrameCounts[i]; frame++) {
                 tmp.add(new ImageIcon(path + animationFileNames[i] + (noframe[i] == 0 ? frame : "") + ".png").getImage());
-                tmp.set(frame, tmp.get(frame).getScaledInstance((tmp.get(frame).getWidth(null)*2), (tmp.get(frame).getHeight(null)*2), Image.SCALE_DEFAULT));
             }
             animations.add(tmp);
         }
@@ -141,6 +140,8 @@ public class Alan {
     public int getY(boolean adjusted) {return (adjusted ? y-offset+screenOffset : y);}
     public Rectangle getRect(){return new Rectangle(x,y,width,height);}
     public Rectangle getBoots(){return new Rectangle(x,y+height,width,1);}
+    public int getWidth() {return width;}
+    public int getHeight() {return height;}
 
     public void changeState(int MODE, int d, boolean forceChange) { // changes state
         if (state != MODE || d != dir) {

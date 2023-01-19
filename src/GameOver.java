@@ -67,7 +67,7 @@ public class GameOver extends JPanel implements KeyListener, ActionListener, Mou
 	}
 	@Override
 	public void paint(Graphics g) {
-		g.setColor(Color.red);
+		g.setColor(Color.black);
 		g.fillRect(0,0,900,700);
 		g.setColor(Color.yellow);
 		g.drawString("you died", 100, 100);
