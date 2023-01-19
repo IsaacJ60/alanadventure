@@ -27,6 +27,7 @@ public class Alan {
     private final Rectangle alanRect; // hitbox
     private int x, y;
     private int health, maxHealth, healthProgress; // current health, health capacity, and progress to +1 maximum health
+    private int combo;
 
     // MOVEMENT UTIL
     private int keyLeft, keyRight, keyJump;
@@ -311,6 +312,7 @@ public class Alan {
         for (Snake s : snakes) {
             if (getRect().intersects(s.getRect())) {
                 if(getBoots().intersects(s.getRect()) && velY > 0 && y+height > s.getY(false)){
+                    combo++;
                     weapon.setAmmo(weapon.getCapacity());
                     removalSnake.add(s);
                     velY = -8;
@@ -349,6 +351,7 @@ public class Alan {
         for (Jelly j:jellies) {
             if (getRect().intersects(j.getRect())) {
                 if(getBoots().intersects(j.getRect()) && velY > 0 && y+height > j.getY(false)){
+                    combo++;
                     weapon.setAmmo(weapon.getCapacity());
                     removalJelly.add(j);
                     velY = -8;
@@ -422,6 +425,8 @@ public class Alan {
             if (nearestBlockY <= velY+5) {
 
                 // set velocity in y-dir to be 0
+                // display combo
+                combo = 0;
                 velY = 0;
 
                 // if snapping is needed (player went too far passed top of block and is now somewhat stuck in block)
