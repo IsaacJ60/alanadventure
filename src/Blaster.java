@@ -96,7 +96,7 @@ public class Blaster {
     }
 
     // SHOOT - CHECKS IF PLAYER WANTS TO SHOOT AND IF TIMER ALLOWS, ADDS BULLET IF ALLOWED
-    public boolean shoot(boolean[] keys, int velY, Graphics g, Alan alan) {
+    public boolean shoot(boolean[] keys, int velY, Graphics g, Alan alan, Powerups powerups) {
         blastAnim(g, alan);
         if (keys[alan.getKeyJump()]) {
             if (alan.getState() == Alan.FALL && shootTimer.getElapsedTime() > firerate && velY > 0) {
@@ -104,9 +104,15 @@ public class Blaster {
                     shootTimer.restart();
                     // add bullet
                     for (int i = 0; i < amount; i++) {
+                        int newBloom;
+                        if (powerups.getPower(Powerups.LASERSIGHT) == 1) {
+                            newBloom = bloom/2;
+                        } else {
+                            newBloom = bloom;
+                        }
                         bullets.add(new Bullet(alan.getX(false) + (alan.getDir() == Util.LEFT ? 2 : 8), alan.getY(false) + alan.getVelY() + 10,
                                 alan.getY(false) + alan.getVelY() + 10,
-                                equippedBullet, Util.rand.nextDouble(bloom*-1,bloom)));
+                                equippedBullet, Util.rand.nextDouble(newBloom*-1,newBloom)));
                     }
                     alanShoot = true;
                     return true;

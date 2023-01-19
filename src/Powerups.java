@@ -15,6 +15,9 @@ public class Powerups{
     private int[] activepowers;
 
     private final String[] powerupIconFiles = {"rapidFire","gunpowder","laserSight","youth","extended Mag", "fireBullet"};
+    private final String[] powerupFlavours = {"Increase Bullet Speed", "Breaks Nearest Blocks",
+            "Farther Bullet Range + Laser", "+1 to HP or HP Overflow Bar", "Extends Current Magazine",
+            "Increase Bullet Damage"};
 
     private Image[] powerupIcons, smallPowerupIcons;
     private int selected;
@@ -136,6 +139,8 @@ public class Powerups{
                 g.setFont(Util.fontText);
                 g.setColor(Color.WHITE);
                 g.drawString(powerupIconFiles[chosen[i]].toUpperCase(), 900/2 - (powerupIconFiles[chosen[i]].length()*13), 200);
+                g.setFont(Util.fontTextSmaller);
+                g.drawString(powerupFlavours[chosen[i]].toUpperCase(), 900/2 - (powerupFlavours[chosen[i]].length()*5), 400);
             }
             g.drawImage(powerupIcons[chosen[i]], xPos + (i*90), 300, null);
         }

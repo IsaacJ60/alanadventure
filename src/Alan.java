@@ -279,7 +279,7 @@ public class Alan {
 
     public void shoot(boolean[] keys, Graphics g, Map map, Powerups powerups, EnemyManager enemies) {
         // SHOOTING, logic inside
-        if (weapon.shoot(keys, (int) velY, g, this)) {
+        if (weapon.shoot(keys, (int) velY, g, this, powerups)) {
             changeState(FALL, dir, true); // just to reset animframe
             velY-=velY*1.2;
         }
@@ -287,16 +287,16 @@ public class Alan {
     }
 
     public void knockback(Snake snake) {
-        velX = Math.max((velX < 0 ? 5 : -5), velX*-1);
+        velX = (velX >= 0 ? -maxVelX*1.5 : maxVelX*1.5);
         velY = -3;
     }
 
     public void knockback(Jelly j) {
-        velX *= -1;
+        velX = (velX >= 0 ? -maxVelX*1.5 : maxVelX*1.5);
     }
 
     public void knockback(Snail snail) {
-        velX *= -1;
+        velX = (velX >= 0 ? -maxVelX*1.5 : maxVelX*1.5);
     }
 
     public void getEnemyCollision(ArrayList<Snake> snakes, ArrayList<Snail> snails, ArrayList<Jelly> jellies) {
@@ -312,7 +312,7 @@ public class Alan {
                     GameManager.getGemManager().spawnGems((int)s.getX(false),(int)s.getY(false), 3);
                 }
                 else {
-                    if (invulTimer.getElapsedTime() >= 2) {
+                    if (invulTimer.getElapsedTime() >= 1.5) {
                         health--;
                         knockback(s);
                         invulTimer.restart();
