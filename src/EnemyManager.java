@@ -29,23 +29,23 @@ public class EnemyManager{
 	public void addBat(int x, int y) {bats.add(new Bat(x,y));}
 	public void generateSnakes(Block[][] blocks, Alan alan) {
 		Random rand = new Random();
-		for(int i=Util.GENERATIONSTART; i<blocks.length-1; i++){
+		for(int i=Util.GENERATIONSTART; i<blocks.length-3; i++){
 			for(int j=1; j<blocks[i].length-1; j++) {
 				if ((blocks[i-1][j].getType() == Block.AIR && blocks[i][j].getType() != Block.AIR && blocks[i][j].getType() != Block.SPIKE) && (blocks[i-1][j-1].getType() == Block.AIR && blocks[i][j-1].getType() != Block.AIR)) {
-					if(rand.nextInt(100)<=35) {
-						addSnake(blocks[i][j].getX(false), blocks[i][j].getY(false, alan));
-					}
-				}
+                    addSnake(blocks[i][j].getX(false), blocks[i][j].getY(false, alan));
+                    i += Util.MAXCHUNKSIZE;
+                }
 			}
 		}
 	}
 	public void generateSnails(Block[][] blocks, Alan alan){
 		Random rand = new Random();
-		for(int i=Util.GENERATIONSTART; i< blocks.length-1; i++){
+		for(int i=Util.GENERATIONSTART; i< blocks.length-3; i++){
 			for(int j=1; j<blocks[i].length-1; j++) {
 				if(blocks[i][j-1].getType() == Block.AIR && blocks[i][j].getType() == Block.WALL && blocks[i+1][j-1].getType() == Block.AIR && blocks[i+1][j].getType() == Block.WALL) {
-					if(rand.nextInt(100)<=20) {
+					if(rand.nextInt(100)<=80) {
 						addSnail(blocks[i][j].getX(false), blocks[i][j].getY(false, alan), Snail.RIGHT, Snail.UP);
+                        i += Util.MAXCHUNKSIZE;
 					}
 				}
 			}
@@ -55,10 +55,10 @@ public class EnemyManager{
 		Random rand = new Random();
 		for(int i=Util.GENERATIONSTART; i< blocks.length-1; i++){
 			for(int j=1; j<blocks[i].length-1; j++) {
-				if(blocks[i][j].getType() == Block.AIR && blocks[i][j+1].getType() == Block.AIR) {
+				if(blocks[i][j].getType() == Block.AIR) {
 					if(rand.nextInt(100)<=.5) {
 						addJelly(blocks[i][j].getX(false), blocks[i][j].getY(false, alan));
-//                        return;
+                        i += Util.MAXCHUNKSIZE;
 					}
 				}
 			}
@@ -134,11 +134,9 @@ class Snake {
 
 		for (int i = 0; i < 4; i++) {
 			idleL.add(new ImageIcon("src/assets/enemies/snake/idle/snakeIdleL" + i + ".png").getImage());
-			idleL.set(i, idleL.get(i).getScaledInstance((idleL.get(i).getWidth(null)*2), (idleL.get(i).getHeight(null)*2), Image.SCALE_DEFAULT));
 		}
 		for (int i = 0; i < 4; i++) {
 			idleR.add(new ImageIcon("src/assets/enemies/snake/idle/snakeIdleR" + i + ".png").getImage());
-			idleR.set(i, idleR.get(i).getScaledInstance((idleR.get(i).getWidth(null)*2), (idleR.get(i).getHeight(null)*2), Image.SCALE_DEFAULT));
 		}
 	}
 
@@ -267,22 +265,18 @@ class Snail {
 			this.x += Util.BLOCKLENGTH;
 			for (int i = 0; i < 4; i++) {
 				idleU.add(new ImageIcon("src/assets/enemies/snail/idle/snailIdleLU" + i + ".png").getImage());
-				idleU.set(i, idleU.get(i).getScaledInstance((idleU.get(i).getWidth(null)*2), (idleU.get(i).getHeight(null)*2), Image.SCALE_DEFAULT));
 			}
 			for (int i = 0; i < 4; i++) {
 				idleD.add(new ImageIcon("src/assets/enemies/snail/idle/snailIdleLD" + i + ".png").getImage());
-				idleD.set(i, idleD.get(i).getScaledInstance((idleU.get(i).getWidth(null)*2), (idleD.get(i).getHeight(null)*2), Image.SCALE_DEFAULT));
 			}
 		}
 		else{
 			this.x -= Util.BLOCKLENGTH;
 			for (int i = 0; i < 4; i++) {
 				idleU.add(new ImageIcon("src/assets/enemies/snail/idle/snailIdleRU" + i + ".png").getImage());
-				idleU.set(i, idleU.get(i).getScaledInstance((idleU.get(i).getWidth(null)*2), (idleU.get(i).getHeight(null)*2), Image.SCALE_DEFAULT));
 			}
 			for (int i = 0; i < 4; i++) {
 				idleD.add(new ImageIcon("src/assets/enemies/snail/idle/snailIdleRD" + i + ".png").getImage());
-				idleD.set(i, idleD.get(i).getScaledInstance((idleU.get(i).getWidth(null)*2), (idleD.get(i).getHeight(null)*2), Image.SCALE_DEFAULT));
 			}
 		}
 	}
@@ -402,7 +396,7 @@ class Jelly {
 		hit = false;
 		for (int i = 0; i < 4; i++) {
 			idle.add(new ImageIcon("src/assets/enemies/jelly/idle/jellyIdle" + i + ".png").getImage().getScaledInstance(imageWidth, height, Image.SCALE_DEFAULT));
-			idle.set(i, idle.get(i).getScaledInstance((idle.get(i).getWidth(null)*2), (idle.get(i).getHeight(null)*2), Image.SCALE_DEFAULT));
+//			idle.set(i, idle.get(i).getScaledInstance((idle.get(i).getWidth(null)*2), (idle.get(i).getHeight(null)*2), Image.SCALE_DEFAULT));
 		}
 	}
 	public double getX(boolean adjusted) { // gets x
@@ -435,12 +429,12 @@ class Jelly {
 	public void isHit() {hit = true;}
 	public void move(Graphics g, Alan alan, Map map) {
 		// distance calculations
-		double distX = x - AAdventure.getGame().getAlan().getX(false);
+		double distX = x + width/2 - AAdventure.getGame().getAlan().getX(false) - alan.getWidth()/2;
 		// how far away the enemy is compared to alan
-		double distY = y - AAdventure.getGame().getAlan().getY(false);
-		double distance = Math.sqrt(Math.pow(distX, 2) + Math.pow(distY, 2)); // pythag theorem
+		double distY = y + height/2 - AAdventure.getGame().getAlan().getY(false) - alan.getHeight()/2;
+		double distance = Math.hypot(distX, distY); // pythag theorem
 
-		if(distance<450) {
+		if(distance<350) {
 			// adding up how many frames movement has been in x direction, capping out at +-20 to limit terminal velocity
 			if (distX < 0 && velX < maxVelX) {
 				accelX += accelFactor;

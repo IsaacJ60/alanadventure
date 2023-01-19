@@ -14,7 +14,7 @@ public class Powerups{
 
     private int[] activepowers;
 
-    private final String[] powerupIconFiles = {"rapidfire","gunpowder","lasersight","youth","extended mag", "firebullet"};
+    private final String[] powerupIconFiles = {"rapidFire","gunpowder","laserSight","youth","extendedMag", "fireBullet"};
 
     private Image[] powerupIcons, smallPowerupIcons;
     private int selected;
@@ -29,8 +29,8 @@ public class Powerups{
         selected = 0;
         //HINT: add powerup icon images here!
         for (int i = 0; i < powers.length; i++) {
-            powerupIcons[i] = new ImageIcon("src/assets/powerups/"+powerupIconFiles[i]+".png").getImage().getScaledInstance(50,50,Image.SCALE_DEFAULT);
-            smallPowerupIcons[i] = new ImageIcon("src/assets/powerups/"+powerupIconFiles[i]+".png").getImage().getScaledInstance(30,30,Image.SCALE_DEFAULT);
+            powerupIcons[i] = new ImageIcon("src/assets/powerups/"+powerupIconFiles[i]+".png").getImage();
+            smallPowerupIcons[i] = new ImageIcon("src/assets/powerups/s"+powerupIconFiles[i]+".png").getImage();
         }
     }
 

@@ -21,15 +21,15 @@ public class Gems {
 
         for (int i = 0; i < 4; i++) {
             gemS.add(new ImageIcon("src/assets/gems/gemS"+i+"B.png").getImage());
-            gemS.set(i, gemS.get(i).getScaledInstance((gemS.get(i).getWidth(null)*2), (gemS.get(i).getHeight(null)*2), Image.SCALE_DEFAULT));
+//            gemS.set(i, gemS.get(i).getScaledInstance((gemS.get(i).getWidth(null)*2), (gemS.get(i).getHeight(null)*2), Image.SCALE_DEFAULT));
         }
         for (int i = 0; i < 4; i++) {
             gemM.add(new ImageIcon("src/assets/gems/gemM"+i+"B.png").getImage());
-            gemM.set(i, gemM.get(i).getScaledInstance((gemM.get(i).getWidth(null)*2), (gemM.get(i).getHeight(null)*2), Image.SCALE_DEFAULT));
+//            gemM.set(i, gemM.get(i).getScaledInstance((gemM.get(i).getWidth(null)*2), (gemM.get(i).getHeight(null)*2), Image.SCALE_DEFAULT));
         }
         for (int i = 0; i < 4; i++) {
             gemL.add(new ImageIcon("src/assets/gems/gemL"+i+"B.png").getImage());
-            gemL.set(i, gemL.get(i).getScaledInstance((gemL.get(i).getWidth(null)*2), (gemL.get(i).getHeight(null)*2), Image.SCALE_DEFAULT));
+//            gemL.set(i, gemL.get(i).getScaledInstance((gemL.get(i).getWidth(null)*2), (gemL.get(i).getHeight(null)*2), Image.SCALE_DEFAULT));
         }
         gemL0 = new ImageIcon("src/assets/gems/gemL0BB.png").getImage().getScaledInstance(30,30,Image.SCALE_DEFAULT);
     }

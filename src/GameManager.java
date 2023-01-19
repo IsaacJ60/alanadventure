@@ -30,7 +30,7 @@ public class GameManager {
                 prevGems = f.nextInt();
             }
         } catch (FileNotFoundException ex) {
-            System.out.println(ex + "dummy");
+            System.out.println(ex);
         }
         gemManager = new Gems(prevGems);
     }
