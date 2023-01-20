@@ -140,7 +140,7 @@ public class Blaster {
         ArrayList<Bullet> rm = new ArrayList<>(); // removal list for bullets
         for (Bullet b : bullets) { // go through all bullets
             // enemy collisions
-            if (getEnemyCollision(b, enemies.getSnakes(), enemies.getCrawlers(), enemies.getTurtles(), enemies.getSnails(), enemies.getJellies())) {
+            if (getEnemyCollision(b, enemies.getSnakes(), enemies.getCrawlers(), enemies.getTurtles(), enemies.getSnails(), enemies.getJellies(), enemies.getBats())) {
                 rm.add(b);
             }
             // block collisions
@@ -159,15 +159,16 @@ public class Blaster {
         }
     }
 
-    public boolean getEnemyCollision(Bullet b, ArrayList<Snake> snakes, ArrayList<Crawler> crawlers, ArrayList<Turtle> turtles, ArrayList<Snail> snails, ArrayList<Jelly> jellies) {
+    public boolean getEnemyCollision(Bullet bu, ArrayList<Snake> snakes, ArrayList<Crawler> crawlers, ArrayList<Turtle> turtles, ArrayList<Snail> snails, ArrayList<Jelly> jellies, ArrayList<Bat> bats) {
         ArrayList<Snake> removalSnake = new ArrayList<>();
         ArrayList<Crawler> removalCrawler = new ArrayList<>();
         ArrayList<Turtle> removalTurtle = new ArrayList<>();
         ArrayList<Snail> removalSnail= new ArrayList<>();
         ArrayList<Jelly> removalJelly = new ArrayList<>();
+        ArrayList<Bat> removalBat = new ArrayList<>();
 
         for (Snake s:snakes) {
-            if (s.getRect().intersects(b.getRect())) {
+            if (s.getRect().intersects(bu.getRect())) {
                 s.setHealth(s.getHealth()-damage);
                 if (s.getHealth() <= 0) {
                     removalSnake.add(s);
@@ -182,7 +183,7 @@ public class Blaster {
         }
 
         for (Crawler c:crawlers) {
-            if (c.getRect().intersects(b.getRect())) {
+            if (c.getRect().intersects(bu.getRect())) {
                 c.setHealth(c.getHealth()-damage);
                 if (c.getHealth() <= 0) {
                     removalCrawler.add(c);
@@ -197,14 +198,14 @@ public class Blaster {
         }
 
         for (Turtle t:turtles) {
-            if (t.getRect().intersects(b.getRect())) {
+            if (t.getRect().intersects(bu.getRect())) {
                 System.out.println("asdf");
                 return true;
             }
         }
 
         for (Snail s:snails) {
-            if (s.getRect().intersects(b.getRect())) {
+            if (s.getRect().intersects(bu.getRect())) {
                 s.setHealth(s.getHealth()-damage);
                 if (s.getHealth() <= 0) {
                     removalSnail.add(s);
@@ -217,8 +218,9 @@ public class Blaster {
                 return true;
             }
         }
+
         for (Jelly j:jellies) {
-            if (j.getRect().intersects(b.getRect())) {
+            if (j.getRect().intersects(bu.getRect())) {
                 j.isHit();
                 j.setHealth(j.getHealth()-damage);
                 if (j.getHealth() <= 0) {
@@ -228,6 +230,21 @@ public class Blaster {
 
                 for(Jelly r:removalJelly){
                     jellies.remove(r);
+                }
+                return true;
+            }
+        }
+
+        for (Bat b: bats) {
+            if (b.getRect().intersects(bu.getRect())) {
+                b.setHealth(b.getHealth()-damage);
+                if (b.getHealth() <= 0) {
+                    removalBat.add(b);
+                    GameManager.getGemManager().spawnGems((int)b.getX(false),(int)b.getY(false), 3);
+                }
+
+                for(Bat r:removalBat){
+                    bats.remove(r);
                 }
                 return true;
             }
