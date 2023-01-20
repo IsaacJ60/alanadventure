@@ -20,7 +20,8 @@ public class GameManager {
 
     public static Block[][] introblocks;
     public static Map intromap;
-    private final static int rows = 100, levelCount = 100;
+    private static int rows = 200;
+    private final static int levelCount = 100;
 
     public static void loadGems() {
         int prevGems = 0;
@@ -137,6 +138,8 @@ public class GameManager {
             }
 
             Util.setLevel(l); // setting level to l
+
+            rows += rows < 400 ? 50 : 0; // increment number of rows based on level
 
             loadNextMap();
 
