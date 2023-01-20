@@ -44,7 +44,7 @@ public class EnemyManager{
 					else if (Util.rand.nextInt(100)<=20){
 						addCrawler(blocks[i][j].getX(false), blocks[i][j].getY(false, alan));
 					}
-					if (Util.rand.nextInt(100) <= 20){
+					if (Util.rand.nextInt(100) <= 30){
 						addTurtle(blocks[i][j].getX(false), blocks[i][j].getY(false, alan));
 					}
 					i += Util.MAXCHUNKSIZE;
@@ -57,7 +57,7 @@ public class EnemyManager{
 		for(int i=Util.GENERATIONSTART; i< blocks.length-Util.GENERATIONEND; i++){
 			for(int j=1; j<blocks[i].length-1; j++) {
 				if(blocks[i][j-1].getType() == Block.AIR && blocks[i][j].getType() == Block.WALL && blocks[i+1][j-1].getType() == Block.AIR && blocks[i+1][j].getType() == Block.WALL) {
-					if(Util.rand.nextInt(100)<=80) {
+					if(Util.rand.nextInt(100)<=45) {
 						addSnail(blocks[i][j].getX(false), blocks[i][j].getY(false, alan), Snail.RIGHT, Snail.UP);
                         i += Util.MAXCHUNKSIZE;
 					}
@@ -551,8 +551,8 @@ class Turtle {
 			}
 		}
 
-        g.setColor(Color.YELLOW);
-        g.drawRect((int)getX(true), (int)getY(true), width, height);
+//        g.setColor(Color.YELLOW);
+//        g.drawRect((int)getX(true), (int)getY(true), width, height);
 	}
 }
 
