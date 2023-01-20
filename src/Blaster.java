@@ -41,11 +41,10 @@ public class Blaster {
     public Blaster(String name, int damage, int capacity, int speed, int bloom, double firerate, int amount, String file) {
         if (capacity == -1) {
             this.capacity = Util.UNLIMITED;
-            this.originalCapacity = this.capacity;
         } else {
             this.capacity = capacity;
-            this.originalCapacity = this.capacity;
         }
+        this.originalCapacity = this.capacity;
         bullets = new ArrayList<>();
         blastPlaces = new ArrayList<>();
         blastBlocks = new ArrayList<>();

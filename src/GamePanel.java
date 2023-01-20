@@ -43,6 +43,8 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener, Mo
 
         powers = new Powerups();
 
+        powers.activatePower(Powerups.RAPIDFIRE);
+
         enemyManager = new EnemyManager();
 
         timer = new Timer(25, this); // manages frames

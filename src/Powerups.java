@@ -216,7 +216,7 @@ class RapidFire implements usePowers {
     @Override
     public void usePower(Alan alan, Graphics g) {
         // increase weapon speed
-        alan.setWeaponSpeed((int) (alan.getWeapon().getSpeed()*1.5));
+        alan.setWeaponSpeed(20);
     }
 }
 

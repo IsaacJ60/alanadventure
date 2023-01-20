@@ -345,7 +345,7 @@ class Map {
 
     // FUNNEL IS JUST 2 OPPOSITE CLIFFS
     public int generateFunnel(int i) {
-        int d1 = generateCliff(i, Util.LEFT, Block.WALL, 5, false);
+        int d1 = generateCliff(i, Util.LEFT, Block.WALL, 4, false);
         int d2 = generateCliff(i, Util.RIGHT, Block.WALL, 4, false);
         return Math.max(d1, d2);
     }
