@@ -98,6 +98,12 @@ public class GameManager {
     public static void toLevel(int l, boolean restart) {
         if (restart) {
             AAdventure.setCurrPanel("INTRO");
+            // only add gems when dead, not after restart
+            if (AAdventure.getGame().getAlan().getHealth() == 0) {
+                gemManager.setTotalGems(gemManager.getTotalGems()+gemManager.getGems());
+                gemManager.setGems(0);
+                gemManager.setActiveGems(new ArrayList<>());
+            }
             ArrayList<Map> tmp = new ArrayList<>();
             tmp.add(intromap);
             maplist.setMaps(tmp);
@@ -117,9 +123,6 @@ public class GameManager {
             AAdventure.getGame().setAlan(new Alan(180, HEIGHT/2-50, weapon, 4, 4, 0, AAdventure.getGame().getAlan().getKeyLeft(), AAdventure.getGame().getAlan().getKeyRight(), AAdventure.getGame().getAlan().getKeyJump())); // resetting alan
             AAdventure.getGame().setAlpha(255);
             AAdventure.getGame().setPowerups(new Powerups());
-            gemManager.setTotalGems(gemManager.getTotalGems()+gemManager.getGems());
-            gemManager.setGems(0);
-            gemManager.setActiveGems(new ArrayList<>());
         } else {
             if (l != 1) {
                 AAdventure.setCurrPanel("LEVELCLEAR"); // changing panel to level clear panel
@@ -128,7 +131,6 @@ public class GameManager {
                 int c = Util.rand.nextInt(0,a);
                 AAdventure.getLevelClear().setRandomPowerups(a,b,c);
                 LevelClear.resetSpace();
-                GamePanel.resetMovementKeys();
                 Powerups.selectionTimer.start();
             } else {
                 AAdventure.setCurrPanel("GAME"); // set to game if on first intro part
@@ -151,6 +153,9 @@ public class GameManager {
         }
 
         saveGems();
+
+        AAdventure.getGame().resetMovementKeys();
+        AAdventure.getIntro().resetMovementKeys();
     }
 
     public static void loadNextMap() {

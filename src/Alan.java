@@ -302,7 +302,8 @@ public class Alan {
     }
 
     public void knockback(Snail snail) {
-        velX = (velX >= 0 ? -maxVelX*1.5 : maxVelX*1.5);
+        velX = (velX >= 0 ? -maxVelX : maxVelX);
+        velY = -6;
     }
 
     public void getEnemyCollision(ArrayList<Snake> snakes, ArrayList<Crawler> crawlers, ArrayList<Snail> snails, ArrayList<Jelly> jellies) {

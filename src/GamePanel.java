@@ -52,7 +52,7 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener, Mo
     public void setAlpha(int a) {alpha = a;}
     public Powerups getPowerups() {return powers;}
     public void setPowerups(Powerups powerups) {powers = powerups;}
-    public static void resetMovementKeys() {keys[Util.space] = false; keys[Util.a] = false; keys[Util.d] = false;}
+    public void resetMovementKeys() {keys[Util.space] = false; keys[Util.a] = false; keys[Util.d] = false;}
 
     // MouseListener
     @Override

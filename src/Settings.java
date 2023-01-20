@@ -9,7 +9,8 @@ public class Settings {
     private final ArrayList<ArrayList<Property>> properties;
     private int settingType, settingItem, offsetY, wantedOffsetY, offsetVel;
     private boolean changeReady;
-    private final Rectangle resetRect;
+    private final Rectangle resetRect, restartRect;
+    public static final int HELP = 0, KEYBINDS = 1;
 
     private final Image arrowLeft = new ImageIcon("src/tiles/arrowL.png").getImage().getScaledInstance(22,44,Image.SCALE_DEFAULT),
             arrowRight = new ImageIcon("src/tiles/arrowR.png").getImage().getScaledInstance(22,44,Image.SCALE_DEFAULT),
@@ -24,12 +25,14 @@ public class Settings {
         this.offsetY = AAdventure.getGameHeight()/2-30;
         this.wantedOffsetY = this.offsetY;
         this.settingItem = 0;
-        this.settingType = 0;
+        this.settingType = HELP;
         this.offsetVel = 20;
         this.changeReady = false;
         this.resetRect = new Rectangle(AAdventure.getGameWidth()/2-100, 650, 200, 50);
+        this.restartRect = new Rectangle(AAdventure.getGameWidth()/2-120, 650, 240, 50);
 
         try {
+            saveSettings();
             Scanner f = new Scanner(new BufferedReader(new FileReader("src/assets/settings/settings.txt")));
             if (f.hasNext()) {
                 for (ArrayList<Property> props : this.properties) {
@@ -57,6 +60,8 @@ public class Settings {
                                     AAdventure.getIntro().getAlan().setKeyJump(c);
                                 }
                             }
+                        } else if (p.getType().equals("HELP")) {
+                            String tmp = f.nextLine();
                         }
                     }
                 }
@@ -207,9 +212,9 @@ public class Settings {
                 a2.setKeyJump(Util.space);
                 a2.setKeyLeft(Util.a);
                 a2.setKeyRight(Util.d);
-                properties.get(0).get(0).setValue("A");
-                properties.get(0).get(1).setValue("D");
-                properties.get(0).get(2).setValue("SPACE");
+                properties.get(KEYBINDS).get(0).setValue("A");
+                properties.get(KEYBINDS).get(1).setValue("D");
+                properties.get(KEYBINDS).get(2).setValue("SPACE");
                 changeReady = false;
             }
         }
@@ -230,6 +235,24 @@ public class Settings {
         }
     }
 
+    public void restartButton(Graphics g, int mx, int my, Alan a1, Alan a2, boolean clicked) {
+        g.setColor(Color.WHITE);
+        g.fillRect((int) restartRect.getX(), (int) restartRect.getY(),(int) restartRect.getWidth(),(int) restartRect.getHeight());
+        g.setColor(restartRect.contains(mx, my) ? Util.RED : Color.BLACK);
+        g.setFont(Util.fontText);
+        g.drawString("RESTART", (int) restartRect.getX()+30, (int) restartRect.getY()+40);
+
+        checkRestart(g, mx, my, a1, a2, clicked);
+    }
+
+    public void checkRestart(Graphics g, int mx, int my, Alan a1, Alan a2, boolean clicked) {
+        if (restartRect.contains(mx, my)) {
+            if (clicked) {
+                GameManager.toLevel(0, true);
+            }
+        }
+    }
+
     public void draw(Graphics g, boolean[] keys, boolean clicked, Alan a1, Alan a2, int mx, int my) {
         selectProperty(keys, clicked, a1, a2);
 
@@ -246,7 +269,13 @@ public class Settings {
             drawSetting(g, x, y, properties.get(settingType).get(i), properties.get(settingType).get(settingItem));
         }
 
-        resetButton(g, mx, my, a1, a2, clicked);
+        if (properties.get(settingType).get(settingItem).getType().equals("KEYBINDS")) {
+            resetButton(g, mx, my, a1, a2, clicked);
+        } else if (properties.get(settingType).get(settingItem).getType().equals("HELP")) {
+            if (AAdventure.getLastPanel().equals("GAME")) {
+                restartButton(g, mx, my, a1, a2, clicked);
+            }
+        }
     }
 
     public void drawSetting(Graphics g, int x, int y, Property p, Property selected) {

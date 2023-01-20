@@ -30,17 +30,20 @@ public class SettingsPanel extends JPanel implements KeyListener, ActionListener
         addKeyListener(this);
 
         ArrayList<ArrayList<Property>> properties = new ArrayList<>();
-        properties.add(new ArrayList<>());
-        properties.get(0).add(new Property("MOVE LEFT", "A", "KEYBINDS"));
-        properties.get(0).add(new Property("MOVE RIGHT", "D", "KEYBINDS"));
-        properties.get(0).add(new Property("JUMP", "SPACE", "KEYBINDS"));
 
         properties.add(new ArrayList<>());
-        properties.get(1).add(new Property("SHOP ACCESS:", "ENTER THROUGH RIGHT SIDE OF START", "HELP"));
-        properties.get(1).add(new Property("SHOP USE:", "SCROLL/CYCLE THROUGH ITEMS USING WASD", "HELP"));
-        properties.get(1).add(new Property("ALAN CONTROLS:", "A/D/SPACE - DEFAULT KEYBINDS", "HELP"));
-        properties.get(1).add(new Property("ALAN SHOOT:", "PRESS SPACE AFTER JUMPING TO SHOOT", "HELP"));
-        properties.get(1).add(new Property("ENEMIES:", "DIE FROM BULLETS OR BEING JUMPED ON", "HELP"));
+        properties.get(Settings.HELP).add(new Property("SETTINGS ACCESS:", "ESCAPE TO ENTER/EXIT", "HELP"));
+        properties.get(Settings.HELP).add(new Property("SETTINGS CONTROLS:", "WASD TO CYCLE SCREENS & ITEMS", "HELP"));
+        properties.get(Settings.HELP).add(new Property("SHOP ACCESS:", "ENTER THROUGH RIGHT SIDE OF START", "HELP"));
+        properties.get(Settings.HELP).add(new Property("SHOP USE:", "SCROLL/CYCLE THROUGH ITEMS USING WASD", "HELP"));
+        properties.get(Settings.HELP).add(new Property("ALAN CONTROLS:", "A/D/SPACE - DEFAULT KEYBINDS", "HELP"));
+        properties.get(Settings.HELP).add(new Property("ALAN SHOOT:", "PRESS SPACE AFTER JUMPING TO SHOOT", "HELP"));
+        properties.get(Settings.HELP).add(new Property("ENEMIES:", "DIE FROM BULLETS OR BEING JUMPED ON", "HELP"));
+
+        properties.add(new ArrayList<>());
+        properties.get(Settings.KEYBINDS).add(new Property("MOVE LEFT", "A", "KEYBINDS"));
+        properties.get(Settings.KEYBINDS).add(new Property("MOVE RIGHT", "D", "KEYBINDS"));
+        properties.get(Settings.KEYBINDS).add(new Property("JUMP", "SPACE", "KEYBINDS"));
 
         settings = new Settings(properties);
 
