@@ -2,16 +2,14 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 
-//TODO: MOVEMENT AND OFFSET
-// PRIORITY - LOW-MEDIUM
-//   DONE - PLATFORM COLLISION
-//   DONE - acceleration
-//   DONE - JUMP
-//   DONE - calculate background position based on player offset
-// > GRAPHICS:
-//   DONE - finish other animations
-//   DONE - flip animation for opposite direction
-//   DONE - jump animation, 1 block gap, changing to idle
+/*
+Alan.java
+Isaac Jiang & Jayden Zhao
+Contains methods that display, move, and check collisions for the player.
+Stores information about the current weapon Alan is using, the state at which Alan is in.
+Also enables enemy collision as well as firing bullets
+This class also controls alan to block collision
+ */
 
 public class Alan {
     // CONSTANTS
@@ -409,15 +407,13 @@ public class Alan {
             // top down collision
             for (int i = 0; i < map.getColumns(); i++) {
                 int blockType = blocks[nextRow][i].getType();
-                if (blockType != Block.AIR) { // if block isn't air, check for distance to player
-                    // only check top when velocity is positive (going down)
-                    if ((blockType == Block.WALL || blockType == Block.BOX || blockType == Block.PLAT) && velY >= 0) {
-                        // checkig player has a chance of colliding with block (x value within range of block x values)
-                        if (x+width > blocks[nextRow][i].getX(false) && x < blocks[nextRow][i].getX(false) + Util.BLOCKLENGTH) {
-                            if (blocks[nextRow][i].getY(false, alan)-y < nearestBlockY) {
-                                // updating nearest distance
-                                nearestBlockY = Math.abs(blocks[nextRow][i].getY(false, alan)-(y+height));
-                            }
+                // only check top when velocity is positive (going down)
+                if ((blockType == Block.WALL || blockType == Block.BOX || blockType == Block.PLAT) && velY >= 0) {
+                    // checkig player has a chance of colliding with block (x value within range of block x values)
+                    if (x+width > blocks[nextRow][i].getX(false) && x < blocks[nextRow][i].getX(false) + Util.BLOCKLENGTH) {
+                        if (blocks[nextRow][i].getY(false, alan)-y < nearestBlockY) {
+                            // updating nearest distance
+                            nearestBlockY = Math.abs(blocks[nextRow][i].getY(false, alan)-(y+height));
                         }
                     }
                 }
@@ -450,10 +446,6 @@ public class Alan {
                 // if originally falling, change state to idle now that player is grounded
                 if (state == FALL) {
                     weapon.setAmmo(weapon.getCapacity());
-                    if (hop) {
-                        hop = false;
-//                        velY = -4;
-                    }
                     changeState(IDLE, dir, false);
                 }
             } else { // in the case that the player has not reached block/ground
@@ -461,8 +453,6 @@ public class Alan {
                     velY = 3;
                 } else if (velY < maxVelY) { // increase velocity if not reached max y vel
                     velY += accelY;
-                } else {
-                    hop = true;
                 }
                 changeState(FALL, dir, false); // change state to falling
             }
@@ -471,15 +461,13 @@ public class Alan {
             // bottom up collision checking
             for (int i = 0; i < map.getColumns(); i++) {
                 int blockType = blocks[prevRow][i].getType();
-                if (blockType != Block.AIR) {
-                    // only check bottom collision in solid blocks and when going upwards in y-dir
-                    if ((blockType == Block.WALL || blockType == Block.BOX) && velY < 0) {
-                        // checking if block is in collision boundary of Alan
-                        if (x+width > blocks[prevRow][i].getX(false) && x < blocks[prevRow][i].getX(false) + Util.BLOCKLENGTH) {
-                            if (Math.abs(y-(blocks[prevRow][i].getY(false,alan)+Util.BLOCKLENGTH)) < nearestAboveY) {
-                                // setting nearest distance
-                                nearestAboveY = Math.abs(y-(blocks[prevRow][i].getY(false,alan)+Util.BLOCKLENGTH));
-                            }
+                // only check bottom collision in solid blocks and when going upwards in y-dir
+                if ((blockType == Block.WALL || blockType == Block.BOX) && velY < 0) {
+                    // checking if block is in collision boundary of Alan
+                    if (x+width > blocks[prevRow][i].getX(false) && x < blocks[prevRow][i].getX(false) + Util.BLOCKLENGTH) {
+                        if (Math.abs(y-(blocks[prevRow][i].getY(false,alan)+Util.BLOCKLENGTH)) < nearestAboveY) {
+                            // setting nearest distance
+                            nearestAboveY = Math.abs(y-(blocks[prevRow][i].getY(false,alan)+Util.BLOCKLENGTH));
                         }
                     }
                 }
@@ -501,13 +489,11 @@ public class Alan {
                 for (int i = map.getColumns()-1; i >= 0; i--) {
                     Block block = blocks[r][i];
                     if (block.getX(false) < x) {
-                        if (block.getType() != Block.AIR) {
-                            if (block.getType() == Block.BOX || block.getType() == Block.WALL) {
-                                if (y+height > block.getY(false,alan) && y < block.getY(false,alan) + Util.BLOCKLENGTH) {
-                                    if (x-(block.getX(false)+Util.BLOCKLENGTH) < nearestLeftX) {
-                                        nearestLeftX = Math.abs(x-(block.getX(false)+Util.BLOCKLENGTH));
-                                        snapX = block.getX(false)+Util.BLOCKLENGTH+(int)Math.abs(velX);
-                                    }
+                        if (block.getType() == Block.BOX || block.getType() == Block.WALL) {
+                            if (y+height > block.getY(false,alan) && y < block.getY(false,alan) + Util.BLOCKLENGTH) {
+                                if (x-(block.getX(false)+Util.BLOCKLENGTH) < nearestLeftX) {
+                                    nearestLeftX = Math.abs(x-(block.getX(false)+Util.BLOCKLENGTH));
+                                    snapX = block.getX(false)+Util.BLOCKLENGTH+(int)Math.abs(velX);
                                 }
                             }
                         }
@@ -526,13 +512,11 @@ public class Alan {
                 for (int i = 0; i < map.getColumns(); i++) {
                     Block block = blocks[r][i];
                     if (block.getX(false) > x) {
-                        if (block.getType() != Block.AIR) {
-                            if (block.getType() == Block.BOX || block.getType() == Block.WALL) {
-                                if (y + height > block.getY(false,alan) && y < block.getY(false,alan) + Util.BLOCKLENGTH) {
-                                    if (Math.abs(block.getX(false) - (x + width)) < nearestRightX) {
-                                        nearestRightX = Math.abs(block.getX(false) - (x + width));
-                                        snapX = block.getX(false) - width - 5 - (int)Math.abs(velX);
-                                    }
+                        if (block.getType() == Block.BOX || block.getType() == Block.WALL) {
+                            if (y + height > block.getY(false,alan) && y < block.getY(false,alan) + Util.BLOCKLENGTH) {
+                                if (Math.abs(block.getX(false) - (x + width)) < nearestRightX) {
+                                    nearestRightX = Math.abs(block.getX(false) - (x + width));
+                                    snapX = block.getX(false) - width - 5 - (int)Math.abs(velX);
                                 }
                             }
                         }

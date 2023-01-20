@@ -1,9 +1,18 @@
 import javax.swing.*;
 import java.awt.*;
 
-//TODO: UI ELEMENTS
-// PRIORITY - LOW
-// - health, powerups, etc.
+/*
+Background.java
+Isaac Jiang & Jayden Zhao
+
+Contains methods that display background of a screen, and draws all screen content
+that is found inside of map
+
+Tile.java
+Isaac Jiang & Jayden Zhao
+
+Provides methods that allow easy access to sprites for blocks
+ */
 
 public class Background {
     private static int wallWidth, wallLeftPos, wallRightPos;

@@ -2,6 +2,13 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
+/*
+Paddle.java
+Jayden Zhao
+
+
+ */
+
 public class GameOver extends JPanel implements KeyListener, ActionListener, MouseListener {
 	Timer timer;
 

@@ -2,10 +2,18 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.Random;
 
-//TODO:
-// DONE - INTEGRATE SIDE WALLS INTO BLOCK LIST
-// DONE - create good patterns for platform and boxes
-// IN PROGRESS - keep track of index errors and out of bounds
+/*
+MapList.java
+Isaac Jiang
+Contains full list of maps and tiles that make up the maps.
+Contains methods that draw a map.
+
+Map.java
+Isaac Jiang
+Stores a 2d Array of Blocks, represeting a map.
+Contains methods to placeblocks, getblock, and to randomly generate a full level.
+Contains methods that randomly generate cliffs, breakable box blocks, platforms, and pillars
+ */
 
 public class MapList {
     // ALL MAPS
@@ -66,14 +74,6 @@ public class MapList {
         // only iterate through rows that are visible
         for (int i = firstVisibleRow; i < lastVisibleRow; i++) {
 
-            // TMP CODE TO DISPLAY ROW NUMBERS
-//            g.setColor(Color.WHITE);
-//            g.drawString(String.valueOf(i), 230, blocks[i][0].getY(true, alan)+20);
-
-//            if (includeWalls) {
-//                drawWalls(g, blocks, i, alan);
-//            }
-
             if (includeBlocks) {
                 // going through each block row
                 for (int j = 0; j < blocks[i].length; j++) {
@@ -107,10 +107,6 @@ public class MapList {
 
         // only iterate through rows that are visible
         for (int i = 0; i < 30; i++) {
-
-            // TMP CODE TO DISPLAY ROW NUMBERS
-//            g.setColor(Color.WHITE);
-//            g.drawString(String.valueOf(i), 230, blocks[i][0].getY(true, alan)+20);
 
             if (includeWalls) {
                 drawWalls(g, blocks, i);
@@ -214,11 +210,13 @@ class Map {
     // GENERATE ALL BLOCKS FOR LEVEL
     public void generateBlocks() {
         generateWallBlocks(); // BOX BLOCKS GENERATED WITHIN WALL BLOCKS
-        generateSemiRandomizedFreeStandingBreakableBoxBlocksWithThreeRandomSpawnPatterns("generateSemiRandomizedFreeStandingBreakableBoxBlocksWithThreeRandomSpawnPatterns");
-        generateCompletelyNonRandomizedSideWallBlocksWithFixedSizeOfStandardBlockLengthInsteadOfCustomLengthOfTwentyTwoPixels("        mgun = new Blaster(\"Machine Gun\", 10,8,13, \"bulletB\");\n");
+        GenerateHoveringBoxBlocks();
+        generateSideWalls();
         generatePlatBlocks();
     }
-    public void generateCompletelyNonRandomizedSideWallBlocksWithFixedSizeOfStandardBlockLengthInsteadOfCustomLengthOfTwentyTwoPixels(String s) {
+
+    // generates walls on sides of levels
+    public void generateSideWalls() {
         for (int i = 0; i < rows; i++) {
             placeBlock(i,0,Block.WALL,Util.INDEX,Util.LEFT);
         }
@@ -227,15 +225,10 @@ class Map {
         }
     }
 
-    public void generateSemiRandomizedFreeStandingBreakableBoxBlocksWithThreeRandomSpawnPatterns(String s) {
+    // generates box blocks that spawn in the middle of the level
+    public void GenerateHoveringBoxBlocks() {
         for (int i = Util.GENERATIONSTART; i < rows-Util.GENERATIONEND; i+=Util.MAXCHUNKSIZE) {
-            //HINT: getting type of wall, if doesn't match any types then don't spawn
-            // - increasing bound decreases wall spawns
             int boxType = rand.nextInt(0,20);
-            //NOTE - 3 PATTERNS ARE:
-            // - PILLAR (3x3 to 1x3 to 1x1)
-            // - FUNNEL (2 sides funnel into centre)
-            // - CLIFF (1 side forms cliff structure)
             switch (boxType) {
                 case 0 -> generateBoxes(i, rand.nextInt(3,5), 1);
                 case 1 -> generateBoxes(i,rand.nextInt(4,6), 2);
@@ -244,6 +237,7 @@ class Map {
         }
     }
 
+    // generate boxes with less rng
     public void generateBoxes(int row, int length, int height) {
         int start = rand.nextInt(1,columns-length-1-1);
         for (int i = row; i < row+height; i++) {
@@ -255,15 +249,12 @@ class Map {
         }
     }
 
+    // choosing platforms (choosing that to spawn)
     public void generatePlatBlocks() {
+        // chance to spawn every 2 chunks
         for (int i = Util.GENERATIONSTART; i < rows-Util.GENERATIONEND; i+=Util.MAXCHUNKSIZE*2) {
-            //HINT: getting type of wall, if doesn't match any types then don't spawn
-            // - increasing bound decreases wall spawns
             int platType = rand.nextInt(0,7);
-            //NOTE - 3 PATTERNS ARE:
-            // - PILLAR (3x3 to 1x3 to 1x1)
-            // - FUNNEL (2 sides funnel into centre)
-            // - CLIFF (1 side forms cliff structure)
+            // random length
             switch (platType) {
                 case 0 -> generateFlat(i,1);
                 case 1 -> generateFlat(i,2);
@@ -271,14 +262,17 @@ class Map {
         }
     }
 
+    // generating platforms
     public void generateFlat(int row, int length) {
         int start;
+        // choosing if platform should be centred or potentially to the side
         if (rand.nextInt(0, 3) == 0) {
             start = rand.nextInt(4, 6);
         } else {
             start = rand.nextInt(1, columns - length - 1);
         }
         for (int i = start; i < start+length; i++) {
+            // making sure there is room for player to pass on sides
             if (i == start) {
                 if (getBlock(row, i-1).getType() != Block.AIR) {
                     continue;
@@ -290,6 +284,7 @@ class Map {
             } else if (getBlock(row, i).getType() != Block.AIR) {
                 continue;
             }
+            // neutral side because flats don't require side checks
             placeBlock(row, i, Block.PLAT, Util.INDEX, Util.NEUTRAL);
         }
     }
@@ -297,7 +292,6 @@ class Map {
     // GENERATING BOX BLOCKS
     public void generateBoxBlocks(int r, int base, int side, int otherside) {
         int row = r;
-        //HINT: gets length of box blocks, maximum is the length of the blocks below it
         int length = rand.nextInt(1,base);
         if (side == Util.TOP) {
             if (otherside == Util.LEFT) {
@@ -312,7 +306,6 @@ class Map {
             } else if (otherside == Util.RIGHT) {
                 for (int j = 0; j < rand.nextInt(1,4); j++) {
                     for (int i = columns-length-1; i < columns-1; i++) {
-                        //FIXME: NULLPOINTEREXCEPTION FOR getBlock()
                         if (getBlock(row, i).getType() == Block.AIR) {
                             placeBlock(row, i, Block.BOX, Util.INDEX, otherside);
                         }
@@ -337,6 +330,7 @@ class Map {
             int funnelSpawnRate = pillarSpawnRate+16;
             int cliffSpawnRate = funnelSpawnRate+20;
             int largeCliffSpawnRate = cliffSpawnRate+8;
+            // adding to the spawn index to ensure player always has a way down
             if (wallType < pillarSpawnRate) {
                 i += generatePillar(i, rand.nextInt(Util.LEFT, Util.RIGHT + 1), Block.WALL);
             } else if (wallType < funnelSpawnRate) {
@@ -351,7 +345,7 @@ class Map {
 
     // FUNNEL IS JUST 2 OPPOSITE CLIFFS
     public int generateFunnel(int i) {
-        int d1 = generateCliff(i, Util.LEFT, Block.WALL, 4, false);
+        int d1 = generateCliff(i, Util.LEFT, Block.WALL, 5, false);
         int d2 = generateCliff(i, Util.RIGHT, Block.WALL, 4, false);
         return Math.max(d1, d2);
     }
@@ -364,9 +358,9 @@ class Map {
         } else {
             longest = rand.nextInt(2,maxLen);
         }
-        //HINT: CONTROLS CHANCE OF BOXES SPAWNING ON CLIFF
+        // Spawning box blocks on cliff
         if (rand.nextInt(0,1) == 0) {
-            generateBoxBlocks(r-1, longest, Util.TOP, side); // GENERATE BOXES ON FUNNEL!
+            generateBoxBlocks(r-1, longest, Util.TOP, side);
         }
         // CREATE CLIFF DIFFERENTLY BASED ON SIDE
         if (side == Util.LEFT) {
@@ -384,12 +378,12 @@ class Map {
                 row++;
             }
         }
-        return row-(r+2);
+        return row-(r+2); // return height of cliff
     }
 
     // CREATE PILLAR (RECTANGULAR SHAPED)
     public int generatePillar(int r, int side, int type) {
-        //HINT: LENGTH AND WIDTH OF PILLAR
+        // length and width
         int x = rand.nextInt(0,3), y = rand.nextInt(1,4);
         if (side == Util.LEFT) {
             for (int i = r; i < r+y; i++) {
@@ -404,7 +398,7 @@ class Map {
                 }
             }
         }
-        return y;
+        return y; // return height
     }
 
     // adding tile objects to wall blocks so allows us to not go through logic that checks that wall type a wall block is

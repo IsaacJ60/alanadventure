@@ -1,5 +1,11 @@
 import java.awt.*;
 
+/*
+UI.java
+Isaac Jiang
+draws all basic information on screen for player ot view during, before, and after a game
+ */
+
 public class UI {
 
     public static void displayAll(Graphics g, Alan alan, Powerups powerups) {

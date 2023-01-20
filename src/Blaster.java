@@ -2,8 +2,16 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 
-//TODO:
-// - explosion animation sprites
+/*
+Blaster.java
+Isaac Jiang
+Contains methods that initialize basic weapons, create bullets, draw bullets on screen,
+and check for bullet collision. Also contains support for gunpowder powerup.
+
+Bullet.java
+Isaac Jiang
+stores positional and movement information about bullets fired from weapons
+ */
 
 public class Blaster {
     String name;

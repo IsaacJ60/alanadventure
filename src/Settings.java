@@ -5,13 +5,31 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+/*
+Settings.java
+Isaac Jiang
+Contains methods that display properties, check for resets and restarts,
+checks for changing keybinds and keyboard input
+Uses same scrolling system as shop
+ */
+
 public class Settings {
+    // full array of property arrays (property array for each "page")
     private final ArrayList<ArrayList<Property>> properties;
+
+    // display variables
     private int settingType, settingItem, offsetY, wantedOffsetY, offsetVel;
+
+    // boolean to check for keybind change ready or not
     private boolean changeReady;
+
+    // reset and restart buttons
     private final Rectangle resetRect, restartRect;
+
+    // constants for page types
     public static final int HELP = 0, KEYBINDS = 1;
 
+    // selection arrows
     private final Image arrowLeft = new ImageIcon("src/tiles/arrowL.png").getImage().getScaledInstance(22,44,Image.SCALE_DEFAULT),
             arrowRight = new ImageIcon("src/tiles/arrowR.png").getImage().getScaledInstance(22,44,Image.SCALE_DEFAULT),
             arrowLeftB = new ImageIcon("src/tiles/arrowLB.png").getImage().getScaledInstance(22,44,Image.SCALE_DEFAULT),
@@ -20,6 +38,7 @@ public class Settings {
 
     public static Util.CustomTimer settingsTimer = new Util.CustomTimer();
 
+    // gets settings from file to apply
     public Settings(ArrayList<ArrayList<Property>> properties) {
         this.properties = properties;
         this.offsetY = AAdventure.getGameHeight()/2-30;
@@ -37,15 +56,18 @@ public class Settings {
             if (f.hasNext()) {
                 for (ArrayList<Property> props : this.properties) {
                     for (Property p : props) {
+                        // only apply keybind settings if property type is keybinds
                         if (p.getType().equals("KEYBINDS")) {
                             String tmp = f.nextLine();
                             char c;
+                            // space must be given manually
                             if (tmp.equals("SPACE")) {
                                 c = Util.space;
-                            } else {
+                            } else { // other binds can be taken directly
                                 c = tmp.charAt(0);
                             }
                             p.setValue(tmp);
+                            // setting move keybinds
                             switch (p.getName()) {
                                 case "MOVE LEFT" -> {
                                     AAdventure.getGame().getAlan().setKeyLeft(c);
@@ -72,6 +94,7 @@ public class Settings {
         }
     }
 
+    // saving settings to settings.txt
     public void saveSettings() {
         try {
             PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("src/assets/settings/settings.txt")));
@@ -86,10 +109,12 @@ public class Settings {
         }
     }
 
+    // changing keybind change ready state
     public void setChangeReady(boolean b) {
         changeReady = b;
     }
 
+    // checking for clicks to indicate keybind change incoming
     public void readyToChange(boolean clicked) {
         if (clicked) {
             SettingsPanel.setClicked(false);
@@ -99,6 +124,7 @@ public class Settings {
         }
     }
 
+    // changing property for keybinds
     public void changeProperty(String type, Property p, boolean[] keys, Alan a1, Alan a2) {
         if (type.equals("KEYBINDS")) {
             if (changeReady) {
@@ -107,6 +133,7 @@ public class Settings {
         }
     }
 
+    // retrieving keyboard input for new keybinds
     public void getNewKeybind(Property p, boolean[] keys, Alan a1, Alan a2) {
         for (int i = 0; i < KeyEvent.KEY_LAST; i++) {
             char c;
@@ -135,8 +162,10 @@ public class Settings {
         }
     }
 
+    // selecting different properties and scrolling through settings
     public void selectProperty(boolean[] keys, boolean clicked, Alan a1, Alan a2) {
 
+        // getting current property
         Property property = properties.get(settingType).get(settingItem);
 
         // moving the screen offset to centre focused item
@@ -155,6 +184,7 @@ public class Settings {
                     settingType--;
                     wantedOffsetY += property.getHeight()*2 * (settingItem);
                     settingItem = 0;
+                    // reset item to 0 to prevent index errors
                 }
             } else if (keys[Util.d]) {
                 settingsTimer.restart();
@@ -184,6 +214,7 @@ public class Settings {
         readyToChange(clicked);
     }
 
+    // drawing selection arrows
     public void drawArrows(Graphics g) {
         g.drawImage(arrowLeft, 0, AAdventure.getGameHeight()/2-22, null);
         g.drawImage(arrowRight, AAdventure.getGameWidth()-22, AAdventure.getGameHeight()/2-22, null);
@@ -193,6 +224,7 @@ public class Settings {
             g.drawImage(arrowRightB, AAdventure.getGameWidth()-22, AAdventure.getGameHeight()/2-22, null);        }
     }
 
+    // checking and drawing reset button to reset keybinds
     public void resetButton(Graphics g, int mx, int my, Alan a1, Alan a2, boolean clicked) {
         g.setColor(Color.WHITE);
         g.fillRect((int) resetRect.getX(), (int) resetRect.getY(),(int) resetRect.getWidth(),(int) resetRect.getHeight());
@@ -203,6 +235,7 @@ public class Settings {
         checkReset(g, mx, my, a1, a2, clicked);
     }
 
+    // checking for reset and resetting to defualt values if clicked
     public void checkReset(Graphics g, int mx, int my, Alan a1, Alan a2, boolean clicked) {
         if (resetRect.contains(mx, my)) {
             if (clicked) {
@@ -220,6 +253,7 @@ public class Settings {
         }
     }
 
+    // draw keybind description/help
     public void drawDescription(Graphics g) {
         if (properties.get(settingType).get(settingItem).getType().equals("KEYBINDS")) {
             g.setFont(Util.fontTextSmaller);
@@ -235,6 +269,7 @@ public class Settings {
         }
     }
 
+    // drawing and checking for restart button activation
     public void restartButton(Graphics g, int mx, int my, Alan a1, Alan a2, boolean clicked) {
         g.setColor(Color.WHITE);
         g.fillRect((int) restartRect.getX(), (int) restartRect.getY(),(int) restartRect.getWidth(),(int) restartRect.getHeight());
@@ -245,6 +280,7 @@ public class Settings {
         checkRestart(g, mx, my, a1, a2, clicked);
     }
 
+    // resets player back to intro with no gems gained
     public void checkRestart(Graphics g, int mx, int my, Alan a1, Alan a2, boolean clicked) {
         if (restartRect.contains(mx, my)) {
             if (clicked) {
@@ -253,6 +289,7 @@ public class Settings {
         }
     }
 
+    // displays all of the above on screen as well as individual properties
     public void draw(Graphics g, boolean[] keys, boolean clicked, Alan a1, Alan a2, int mx, int my) {
         selectProperty(keys, clicked, a1, a2);
 
@@ -278,6 +315,7 @@ public class Settings {
         }
     }
 
+    // draw container and text for a property
     public void drawSetting(Graphics g, int x, int y, Property p, Property selected) {
         g.setColor(Color.WHITE);
         g.drawRect(x,y,p.getWidth(),p.getHeight());
@@ -289,6 +327,12 @@ public class Settings {
         g.drawString(p.getValue(), 830 - (p.getValue().length()*15), y+33);
     }
 }
+
+/*
+Property.java
+Isaac Jiang
+Contains information about a specific setting item/property
+ */
 
 class Property {
     private String name;

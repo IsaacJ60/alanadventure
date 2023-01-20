@@ -3,7 +3,11 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
 
-//TODO: GIVE REWARD EVERY X LEVELS
+/*
+ShopPanel.java
+Isaac Jiang
+Draws shop
+ */
 
 public class ShopPanel extends JPanel implements KeyListener, ActionListener, MouseListener {
     Timer timer;

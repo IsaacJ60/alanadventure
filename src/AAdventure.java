@@ -1,6 +1,17 @@
 import javax.swing.*;
 import java.awt.*;
 
+/*
+AAdventure.java
+ICS4U-01 FSE
+Isaac Jiang & Jayden Zhao
+Executable java file that runs the final FSE game.
+
+In Alan's Adventure, you control a player that goes down a well. Alan has guns on his shoes, so he can shoot downwards
+at nearby enemies. This also allows him to slow his descent. Alan can also purchase items from the in game shop,
+and change keybinds and get help in the settings menu.
+ */
+
 public class AAdventure extends JFrame { // frame
     CardLayout card;
 

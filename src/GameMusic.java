@@ -4,6 +4,12 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 
+/*
+GameMusic.java
+Isaac Jiang
+Plays .midi music
+ */
+
 public class GameMusic implements ActionListener {
 
     private static Sequencer midiPlayer;

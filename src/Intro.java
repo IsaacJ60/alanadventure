@@ -2,6 +2,13 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
+/*
+Intro.java
+Isaac Jiang
+Shown when player has not yet entered the well, has access to
+in game shop.
+ */
+
 public class Intro extends JPanel implements KeyListener, ActionListener, MouseListener {
     Timer timer;
 

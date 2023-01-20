@@ -1,8 +1,11 @@
-//TODO: COLLISION DETECTION AND TILE LINKING SO THAT RENDERING A BLOCK RENDERS THE TILE IT IS PAIRED WITH
-// PRIORITY - MEDIUM
-// DONE - pair a tile object with it or figure out alternative (dumb-brained way also works, not too much of hassle)
-
 import java.awt.*;
+
+/*
+Block.java
+Isaac Jiang
+Contains the basic building blocks of maps. Contains methods that get block sprite,
+position, and collision.
+ */
 
 public class Block {
     // PROPERTIES

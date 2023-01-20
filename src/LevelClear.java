@@ -2,7 +2,12 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
-//TODO: GIVE REWARD EVERY X LEVELS
+/*
+LevelClear.java
+Isaac Jiang
+Shown upon completion of a level. Provides player with options
+for powerups. Upon selecting a powerup, the player reenters the game.
+ */
 
 public class LevelClear extends JPanel implements KeyListener, ActionListener, MouseListener {
     Timer timer;

@@ -2,6 +2,16 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 
+/*
+Gems.java
+Isaac Jiang
+Contains methods that increment gem counters, track gems, and display gems on the UI.
+
+Gem.java
+Isaac Jiang
+Contains methods that draw and check collision for individual gems
+ */
+
 public class Gems {
 
     // gem counts

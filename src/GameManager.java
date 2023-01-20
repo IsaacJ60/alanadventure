@@ -3,8 +3,12 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-//TODO: RESTART GAME FUNCTIONALITY
-
+/*
+GameManager.java
+Isaac Jiang
+Utility class that contains methods that update game states, such as restarting or entering a new level
+Also contains all maps and the gem manager, which tracks gems globally.
+ */
 public class GameManager {
 
     // width and height of panel

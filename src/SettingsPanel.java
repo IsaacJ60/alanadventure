@@ -3,7 +3,11 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
 
-//TODO: DISPLAY LEVEL STATS
+/*
+SettingsPanel.java
+Isaac Jiang
+Draws settings
+ */
 
 public class SettingsPanel extends JPanel implements KeyListener, ActionListener, MouseListener {
     Timer timer;

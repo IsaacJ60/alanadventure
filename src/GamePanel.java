@@ -2,6 +2,13 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
+/*
+GamePanel.java
+Isaac Jiang
+Panel that is shown when falling down the well of the game.
+Draws Alan, the background, UI elements, and level text.
+ */
+
 public class GamePanel extends JPanel implements KeyListener, ActionListener, MouseListener {
     Timer timer;
 

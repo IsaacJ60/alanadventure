@@ -4,6 +4,12 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+/*
+Shop.java
+Isaac Jiang
+Contains methods to draw shop items and check for shop purchases and interactions
+ */
+
 public class Shop {
     private final ArrayList<ArrayList<Cosmetics>> allItems;
     private int selectedItem;
