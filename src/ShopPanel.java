@@ -64,6 +64,11 @@ public class ShopPanel extends JPanel implements KeyListener, ActionListener, Mo
         cosmetics.get(1).add(new Cosmetics("BLASTERS", "SHOTGUN", previewshotgun, Blaster.getBlasters().get(Blaster.SHOTGUN), 110, 73, 200));
         cosmetics.get(1).add(new Cosmetics("BLASTERS", "RIFLE", previewrifle, Blaster.getBlasters().get(Blaster.RIFLEGUN), 110, 73, 200));
 
+        cosmetics.add(new ArrayList<>());
+        cosmetics.get(2).add(new Cosmetics("MUSIC", "ALAN'S ADVENTURE", previewmachine, "Alan's Adventure", 110, 73, -1));
+        cosmetics.get(2).add(new Cosmetics("MUSIC", "ALAN'S ABILITY", previewmachine, "Alan's Ability", 110, 73, 200));
+        cosmetics.get(2).add(new Cosmetics("MUSIC", "ALAN'S ACHE", previewmachine, "Alan's Ache", 110, 73, 300));
+
         shop = new Shop(cosmetics);
 
         timer = new Timer(25, this); // manages frames

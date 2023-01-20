@@ -58,6 +58,10 @@ public class Shop {
                                     AAdventure.getIntro().getAlan().setWeapon(cosmetics.getBlaster());
                                     AAdventure.getGame().getAlan().setWeapon(cosmetics.getBlaster());
                                 }
+                                case "MUSIC" -> {
+                                    equippedItems[selectedType] = selectedItem;
+                                    AAdventure.setCurrMusic(GameMusic.GAMEMUSIC[j]);
+                                }
                             }
                         } else if (status == 1) {
                             cosmetics.setOwned(true);
@@ -116,11 +120,15 @@ public class Shop {
                 shopTimer.restart();
                 if (selectedType > 0) {
                     selectedType--;
+                } else {
+                    selectedType = allItems.size()-1;
                 }
             } else if (keys[Util.d]) {
                 shopTimer.restart();
                 if (selectedType < allItems.size()-1) {
                     selectedType++;
+                } else {
+                    selectedType = 0;
                 }
             } else if (keys[Util.w]) {
                 shopTimer.restart();
@@ -156,6 +164,10 @@ public class Shop {
                             equippedItems[selectedType] = selectedItem;
                             AAdventure.getIntro().getAlan().setWeapon(item.getBlaster());
                             AAdventure.getGame().getAlan().setWeapon(item.getBlaster());
+                        }
+                        case "MUSIC" -> {
+                            equippedItems[selectedType] = selectedItem;
+                            AAdventure.setCurrMusic(GameMusic.GAMEMUSIC[selectedItem]);
                         }
                     }
                     saveItems();
@@ -217,6 +229,8 @@ class Cosmetics {
 
     private Blaster blaster;
 
+    private String filename;
+
     private int width, height;
 
     private int cost;
@@ -237,6 +251,24 @@ class Cosmetics {
         this.img = img.getImage().getScaledInstance(width, height, Image.SCALE_DEFAULT);
         this.enlargedImg = this.img;
         this.blaster = blaster;
+        this.filename = null;
+    }
+
+    Cosmetics(String type, String name, ImageIcon img, String filename, int width, int height, int cost) {
+        this.owned = false;
+        this.type = type;
+        this.name = name;
+        this.width = width;
+        this.height = height;
+        this.cost = cost;
+        if (this.cost == -1) {
+            this.owned = true;
+            this.cost = 0;
+        }
+        this.img = img.getImage().getScaledInstance(width, height, Image.SCALE_DEFAULT);
+        this.enlargedImg = this.img;
+        this.filename = filename;
+        this.blaster = null;
     }
 
     Cosmetics(String type, String name, ImageIcon img, Image enlargedImg, int width, int height, int cost) {
@@ -253,6 +285,7 @@ class Cosmetics {
         this.img = img.getImage().getScaledInstance(width, height, Image.SCALE_DEFAULT);
         this.enlargedImg = enlargedImg;
         this.blaster = null;
+        this.filename = null;
     }
 
     public String getName() {

@@ -26,6 +26,7 @@ public class AAdventure extends JFrame { // frame
     private Sound sound;
     private GameMusic introMusic;
     private GameMusic gameMusic;
+    private static String currMusic;
 
     private static final int WIDTH = 900, HEIGHT = 700;
     public static int getGameWidth() {return WIDTH;}
@@ -47,6 +48,8 @@ public class AAdventure extends JFrame { // frame
     public static SettingsPanel getSettingsPanel() {return settings;}
     public static GameOver getGameOver() {return gameOver;}
     public static ShopPanel getShop() {return shop;}
+    public static String getCurrMusic() {return currMusic;}
+    public static void setCurrMusic(String s) {currMusic = s;}
 
     public AAdventure() {
         super("Alan's Adventure");
@@ -55,6 +58,7 @@ public class AAdventure extends JFrame { // frame
         GameManager.loadGems();
         GameManager.loadBlasters();
         Util.loadFonts();
+        currMusic = "Alan's Adventure";
 
         sound = new Sound();
 
@@ -90,14 +94,14 @@ public class AAdventure extends JFrame { // frame
         //TODO: request focus only when currpanel changes to avoid constantly requesting
         if (!switchPanel.equals(currPanel)) {
             switch (currPanel) {
-                case "INTRO" -> introMusic = new GameMusic("src/assets/sounds/bg/intro.mid");
-                case "GAME" -> gameMusic = new GameMusic("src/assets/sounds/bg/game.mid");
-                case "SETTINGS" -> {
-                    if (gameMusic != null) {
-                        gameMusic.endMidi();
+                case "INTRO" -> {
+                    if (!switchPanel.equals("SETTINGS") && !switchPanel.equals("SHOP")) {
+                        introMusic = new GameMusic("src/assets/sounds/bg/intro.mid");
                     }
-                    if (introMusic != null) {
-                        introMusic.endMidi();
+                }
+                case "GAME" -> {
+                    if (switchPanel.equals("GAMEOVER") || switchPanel.equals("INTRO")) {
+                        gameMusic = new GameMusic("src/assets/sounds/bg/" + currMusic + ".mid");
                     }
                 }
             }

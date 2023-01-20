@@ -182,16 +182,23 @@ public class Settings {
                 settingsTimer.restart();
                 if (settingType > 0) {
                     settingType--;
-                    wantedOffsetY += property.getHeight()*2 * (settingItem);
-                    settingItem = 0;
-                    // reset item to 0 to prevent index errors
+                    if (settingItem > (properties.get(settingType).size()-1)) {
+                        wantedOffsetY += (property.getHeight()*2) * (settingItem-(properties.get(settingType).size()-1));
+                        settingItem = properties.get(settingType).size()-1;
+                    }
+                } else {
+                    settingType = properties.size()-1;
                 }
             } else if (keys[Util.d]) {
                 settingsTimer.restart();
                 if (settingType < properties.size() - 1) {
                     settingType++;
-                    wantedOffsetY += property.getHeight()*2 * (settingItem);
-                    settingItem = 0;
+                    if (settingItem > properties.get(settingType).size()-1) {
+                        wantedOffsetY += (property.getHeight()*2) * (settingItem-(properties.get(settingType).size()-1));
+                        settingItem = properties.get(settingType).size()-1;
+                    }
+                } else {
+                    settingType = 0;
                 }
             } else if (keys[Util.w]) {
                 settingsTimer.restart();

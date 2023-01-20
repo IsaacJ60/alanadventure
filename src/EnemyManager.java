@@ -1,15 +1,6 @@
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.Random;
-
-//TODO: ADD SUBCLASSES TO ENEMY FOR SPECIFIC ENEMIES
-// PRIORITY - LOW
-// create subclasses to inhereit from main enemy class
-// uniqueness:
-// - animations
-// - damage method and method of movement
-// - ENSURE ENEMIES BOUNCE OFF EACH OTHER
 
 public class EnemyManager{
 	private ArrayList<Snake> snakes = new ArrayList<>();

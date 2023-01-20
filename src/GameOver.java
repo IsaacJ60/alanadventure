@@ -3,9 +3,8 @@ import java.awt.*;
 import java.awt.event.*;
 
 /*
-Paddle.java
-Jayden Zhao
-
+GameOver.java
+Isaac Jiang
 
  */
 
@@ -91,9 +90,6 @@ public class GameOver extends JPanel implements KeyListener, ActionListener, Mou
 
 		// UI ELEMENTS
 		GameManager.getGemManager().displayGemUI(g,false,true, AAdventure.getGame().getAlan());
-
-		g.setColor(Color.yellow);
-		g.drawString("you died", 100, 100);
 
 		alpha = Util.increaseOpacity(alpha, false);
 		Util.overlay(g,0,0,0,alpha);

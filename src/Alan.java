@@ -304,6 +304,15 @@ public class Alan {
         velY = -6;
     }
 
+    public void knockback(Turtle turtle) {
+        velX = (velX >= 0 ? -maxVelX*1.5 : maxVelX*1.5);
+        velY = -3;
+    }
+
+    public void knockback(Bat bat) {
+        velX = (velX >= 0 ? -maxVelX*1.5 : maxVelX*1.5);
+    }
+
     public void getEnemyCollision(ArrayList<Snake> snakes, ArrayList<Crawler> crawlers, ArrayList<Turtle> turtles, ArrayList<Snail> snails, ArrayList<Jelly> jellies, ArrayList<Bat> bats) {
         ArrayList<Snake> removalSnake = new ArrayList<>();
         ArrayList<Turtle> removalTurtle = new ArrayList<>();
