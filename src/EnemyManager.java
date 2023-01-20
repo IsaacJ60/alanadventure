@@ -15,11 +15,13 @@ public class EnemyManager{
 	private ArrayList<Snake> snakes = new ArrayList<>();
 	private ArrayList<Crawler> crawlers = new ArrayList<>();
 	private ArrayList<Snail> snails = new ArrayList<>();
+	private ArrayList<Turtle> turtles = new ArrayList<>();
 	private ArrayList<Jelly> jellies = new ArrayList<>();
 	private ArrayList<Bat> bats = new ArrayList<>();
 
 	public ArrayList<Snake> getSnakes() {return snakes;}
 	public ArrayList<Crawler> getCrawlers() {return crawlers;}
+	public ArrayList<Turtle> getTurtles() {return turtles;}
 	public ArrayList<Snail> getSnails() {return snails;}
 	public ArrayList<Jelly> getJellies() {return jellies;}
 	public ArrayList<Bat> getBats() {return bats;}
@@ -27,31 +29,35 @@ public class EnemyManager{
 	public void addSnake(int x, int y) {snakes.add(new Snake(x,y));}
 	public void addSnail(int x, int y, int horiDir, int vertDir) {snails.add(new Snail(x,y,horiDir,vertDir));}
 	public void addCrawler(int x, int y) {crawlers.add(new Crawler(x,y));}
+	public void addTurtle(int x, int y) {turtles.add(new Turtle(x,y));}
 	public void addJelly(int x, int y) {jellies.add(new Jelly(x,y));}
 	public void addBat(int x, int y) {bats.add(new Bat(x,y));}
-	public void generateSnakesAndCrawlers(Block[][] blocks, Alan alan) {
-		Random rand = new Random();
+
+	public void generateFloorEnemies(Block[][] blocks, Alan alan) {
 		for(int i=Util.GENERATIONSTART; i<blocks.length-Util.GENERATIONEND; i++){
 			for(int j=1; j<blocks[i].length-1; j++) {
 				if ((blocks[i-1][j].getType() == Block.AIR && blocks[i][j].getType() != Block.AIR && blocks[i][j].getType() != Block.SPIKE) && (blocks[i-1][j-1].getType() == Block.AIR && blocks[i][j-1].getType() != Block.AIR)) {
-					if(rand.nextInt(100)<=60) {
+					int spawnChance = Util.rand.nextInt(100);
+					if(Util.rand.nextInt(100) <= 50) {
 						addSnake(blocks[i][j].getX(false), blocks[i][j].getY(false, alan));
 					}
-					else{
+					else if (Util.rand.nextInt(100)<=20){
 						addCrawler(blocks[i][j].getX(false), blocks[i][j].getY(false, alan));
 					}
+					if (Util.rand.nextInt(100) <= 20){
+						addTurtle(blocks[i][j].getX(false), blocks[i][j].getY(false, alan));
+					}
 					i += Util.MAXCHUNKSIZE;
-
                 }
 			}
 		}
 	}
-	public void generateSnails(Block[][] blocks, Alan alan){
-		Random rand = new Random();
+
+	public void generateWallEnemies(Block[][] blocks, Alan alan){
 		for(int i=Util.GENERATIONSTART; i< blocks.length-Util.GENERATIONEND; i++){
 			for(int j=1; j<blocks[i].length-1; j++) {
 				if(blocks[i][j-1].getType() == Block.AIR && blocks[i][j].getType() == Block.WALL && blocks[i+1][j-1].getType() == Block.AIR && blocks[i+1][j].getType() == Block.WALL) {
-					if(rand.nextInt(100)<=80) {
+					if(Util.rand.nextInt(100)<=80) {
 						addSnail(blocks[i][j].getX(false), blocks[i][j].getY(false, alan), Snail.RIGHT, Snail.UP);
                         i += Util.MAXCHUNKSIZE;
 					}
@@ -59,27 +65,19 @@ public class EnemyManager{
 			}
 		}
 	}
-	public void generateJellies(Block[][] blocks, Alan alan){
-		Random rand = new Random();
+
+	public void generateFlyers(Block[][] blocks, Alan alan){
 		for(int i=Util.GENERATIONSTART; i< blocks.length-Util.GENERATIONEND; i++){
 			for(int j=1; j<blocks[i].length-1; j++) {
 				if(blocks[i][j].getType() == Block.AIR) {
-					if(rand.nextInt(100)<=.5) {
+					if(Util.rand.nextInt(100)<=.5) {
 						addJelly(blocks[i][j].getX(false), blocks[i][j].getY(false, alan));
                         i += Util.MAXCHUNKSIZE;
 					}
-				}
-			}
-		}
-	}
-	public void generateBats(Block[][] blocks, Alan alan){
-		Random rand = new Random();
-		for(int i=Util.GENERATIONSTART; i< blocks.length-Util.GENERATIONEND; i++){
-			for(int j=1; j<blocks[i].length-1; j++) {
-				if(blocks[i][j-1].getType() == Block.AIR) {
-					if(rand.nextInt(100)<=2) {
-						addBat(blocks[i][j].getX(false), blocks[i][j].getY(false, alan));
-					}
+//					if(Util.rand.nextInt(100)<=.5) {
+//						addBat(blocks[i][j].getX(false), blocks[i][j].getY(false, alan));
+//						i += Util.MAXCHUNKSIZE;
+//					}
 				}
 			}
 		}
@@ -89,6 +87,7 @@ public class EnemyManager{
 		snakes.clear();
 		crawlers.clear();
 		snails.clear();
+		turtles.clear();
 		jellies.clear();
 		bats.clear();
 	}
@@ -103,6 +102,9 @@ public class EnemyManager{
 		}
 		for(Snail s : snails){
 			s.draw(g, blocks);
+		}
+		for(Turtle t : turtles){
+			t.draw(g, blocks);
 		}
 		for(Jelly j:jellies){
 			j.draw(g, alan, map);
@@ -368,6 +370,189 @@ class Crawler {
 
 //        g.setColor(Color.YELLOW);
 //        g.drawRect((int)getX(true), (int)getY(true), width, height);
+	}
+}
+
+class Turtle {
+	private final int IDLE = 0, WALK = 1;
+	private final int LEFT = 0, RIGHT = 1;
+	private int width, height;
+	private int health;
+	private double x, y;
+	private int dir, state;
+	private double speed;
+	private int moveChance, moveTime;
+
+	public double getVelX() {return velX;}
+
+	Util.CustomTimer movementTimer = new Util.CustomTimer();
+
+	private double velX;
+	private double velY;
+	private double maxVelY;
+	private double accelY; // the speed and acceleration the enemy has
+	private double animFrame;
+
+	private final ArrayList<Image> idleL = new ArrayList<>();
+	private final ArrayList<Image> idleR = new ArrayList<>();
+	private final ArrayList<Image> walkL = new ArrayList<>();
+	private final ArrayList<Image> walkR = new ArrayList<>();
+
+	public Turtle(int x, int y) {
+		this.width = 46;
+		this.height = 24;
+		this.x = x;
+		this.y = y-height;
+		dir = RIGHT;
+		this.health = 10;
+		this.velX = Util.rand.nextInt(1,2);
+		this.accelY = 1;
+		state = WALK;
+		animFrame = 0;
+		moveChance = Util.rand.nextInt(100);
+		moveTime = Util.rand.nextInt(1,3);
+
+		for (int i = 0; i < 4; i++) {
+			idleL.add(new ImageIcon("src/assets/enemies/turtle/idle/turtleIdleL" + i + ".png").getImage());
+		}
+		for (int i = 0; i < 4; i++) {
+			idleR.add(new ImageIcon("src/assets/enemies/turtle/idle/turtleIdleR" + i + ".png").getImage());
+		}
+		for (int i = 0; i < 6; i++) {
+			walkL.add(new ImageIcon("src/assets/enemies/turtle/walk/turtleWalkL" + i + ".png").getImage());
+		}
+		for (int i = 0; i < 6; i++) {
+			walkR.add(new ImageIcon("src/assets/enemies/turtle/walk/turtleWalkR" + i + ".png").getImage());
+		}
+	}
+
+	public void setX(int x) {
+		this.x = x;
+	}
+	public void setY(int y) {
+		this.y = y;
+	}
+	public int getHealth() {
+		return health;
+	}
+	public void setHealth(int health) {
+		this.health = health;
+	}
+	public double getX(boolean adjusted) { // gets x
+		if (adjusted) { // whether you want x relative to the gameplay window
+			return x + Background.getWallLeftPos();
+		} else {
+			return x;
+		}
+	}
+	public double getY(boolean adjusted) { // gets y
+		if (adjusted) { // whether you want y relative to the gameplay window
+			return y-AAdventure.getGame().getAlan().getOffset()+AAdventure.getGame().getAlan().getScreenOffset();
+		} else {
+			return y;
+		}
+	}
+	public Rectangle getRect(){return new Rectangle((int)x,(int)y,width,height);}
+
+	public void move(Block[][] blocks) {
+		int currRow = (int) y / Util.BLOCKLENGTH;
+		int grndRow = currRow + 1; // add one to get the row of blocks the snake is standing on
+		int currColL = (int) x / Util.BLOCKLENGTH;
+		int currColC = (int) (x + width / 2) / Util.BLOCKLENGTH;
+		int currColR = (int) (x + width) / Util.BLOCKLENGTH;
+
+//		System.out.println(movementTimer.getElapsedTime());
+		if (movementTimer.getElapsedTime() >= moveTime) {
+			state = IDLE;
+			moveChance = Util.rand.nextInt(100);
+			moveTime = Util.rand.nextInt(1,3);
+			movementTimer.restart();
+		}
+		else if(moveChance >= 50){
+			state = WALK;
+		}
+		else{
+			state = IDLE;
+		}
+//			animFrame = 0;
+		if (blocks[grndRow][currColC].getType() != Block.AIR) {
+			y = grndRow * Util.BLOCKLENGTH - height;
+			velY = 0;
+			if(state == WALK) {
+				if (dir == LEFT) {
+					if (x <= 0) {
+						dir = RIGHT;
+						x += velX;
+					} else {
+						if (blocks[grndRow][currColL].getType() != Block.AIR && blocks[grndRow - 1][currColL].getType() == Block.AIR) {
+							x -= velX;
+						} else {
+							dir = Util.RIGHT;
+							x += velX;
+						}
+					}
+				} else {
+					if (x + width >= (blocks[0].length - 1) * Util.BLOCKLENGTH) {
+						dir = LEFT;
+						x -= velX;
+					} else {
+						if (blocks[grndRow][currColR].getType() != Block.AIR && blocks[grndRow - 1][currColR].getType() == Block.AIR) {
+							x += velX;
+						} else {
+							dir = LEFT;
+							x -= velX;
+						}
+					}
+				}
+			}
+		} else {
+			y += velY;
+			if (velY < maxVelY) {
+				velY += accelY;
+			}
+		}
+	}
+
+	public void draw(Graphics g, Block[][] blocks) {
+		move(blocks);
+
+		if(state==IDLE) {
+			if (dir == LEFT) {
+				if ((int) animFrame >= idleL.size() - 1) {
+					animFrame = 0;
+				} else {
+					animFrame += 0.1;
+				}
+				g.drawImage(idleL.get((int) animFrame), (int) getX(true), (int) getY(true), null);
+			} else {
+				if ((int) animFrame >= idleR.size() - 1) {
+					animFrame = 0;
+				} else {
+					animFrame += 0.1;
+				}
+				g.drawImage(idleR.get((int) animFrame), (int) getX(true), (int) getY(true), null);
+			}
+		}
+		else if(state==WALK){
+			if (dir == LEFT) {
+				if ((int) animFrame >= walkL.size() - 1) {
+					animFrame = 0;
+				} else {
+					animFrame += 0.1;
+				}
+				g.drawImage(walkL.get((int) animFrame), (int) getX(true), (int) getY(true), null);
+			} else {
+				if ((int) animFrame >= walkR.size() - 1) {
+					animFrame = 0;
+				} else {
+					animFrame += 0.1;
+				}
+				g.drawImage(walkR.get((int) animFrame), (int) getX(true), (int) getY(true), null);
+			}
+		}
+
+        g.setColor(Color.YELLOW);
+        g.drawRect((int)getX(true), (int)getY(true), width, height);
 	}
 }
 

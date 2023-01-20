@@ -20,7 +20,7 @@ public class GameManager {
 
     public static Block[][] introblocks;
     public static Map intromap;
-    private final static int rows = 100, levelCount = 100;
+    private final static int rows = 500, levelCount = 100;
 
     public static void loadGems() {
         int prevGems = 0;
@@ -132,10 +132,9 @@ public class GameManager {
             gemManager.setActiveGems(new ArrayList<>());
             gemManager.setTotalGems(gemManager.getTotalGems()+gemManager.getGems());
             AAdventure.getGame().getEnemyManager().clearEnemies();
-            AAdventure.getGame().getEnemyManager().generateSnakesAndCrawlers(MapList.getBlocksWithoutWallImages(), AAdventure.getGame().getAlan());
-            AAdventure.getGame().getEnemyManager().generateSnails(MapList.getBlocksWithoutWallImages(), AAdventure.getGame().getAlan());
-            AAdventure.getGame().getEnemyManager().generateJellies(MapList.getBlocksWithoutWallImages(), AAdventure.getGame().getAlan());
-//                        GamePanel.getEnemyManager().generateBats(MapList.getBlocksWithoutWallImages(), GamePanel.getAlan());
+            AAdventure.getGame().getEnemyManager().generateFloorEnemies(MapList.getBlocksWithoutWallImages(), AAdventure.getGame().getAlan());
+            AAdventure.getGame().getEnemyManager().generateWallEnemies(MapList.getBlocksWithoutWallImages(), AAdventure.getGame().getAlan());
+            AAdventure.getGame().getEnemyManager().generateFlyers(MapList.getBlocksWithoutWallImages(), AAdventure.getGame().getAlan());
             //TODO: perhaps make a reset() function in alan to avoid bugs from recreating an instance each level
             AAdventure.getGame().setAlan(new Alan(180, HEIGHT/2-50, AAdventure.getGame().getAlan().getWeapon(), AAdventure.getGame().getAlan().getHealth(), AAdventure.getGame().getAlan().getMaxHealth(), AAdventure.getGame().getAlan().getHealthProgress(), AAdventure.getGame().getAlan().getKeyLeft(), AAdventure.getGame().getAlan().getKeyRight(), AAdventure.getGame().getAlan().getKeyJump()));
         }
