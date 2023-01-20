@@ -140,7 +140,7 @@ public class Blaster {
         ArrayList<Bullet> rm = new ArrayList<>(); // removal list for bullets
         for (Bullet b : bullets) { // go through all bullets
             // enemy collisions
-            if (getEnemyCollision(b, enemies.getSnakes(), enemies.getCrawlers(), enemies.getSnails(), enemies.getJellies())) {
+            if (getEnemyCollision(b, enemies.getSnakes(), enemies.getCrawlers(), enemies.getTurtles(), enemies.getSnails(), enemies.getJellies())) {
                 rm.add(b);
             }
             // block collisions
@@ -159,9 +159,10 @@ public class Blaster {
         }
     }
 
-    public boolean getEnemyCollision(Bullet b, ArrayList<Snake> snakes, ArrayList<Crawler> crawlers, ArrayList<Snail> snails, ArrayList<Jelly> jellies) {
+    public boolean getEnemyCollision(Bullet b, ArrayList<Snake> snakes, ArrayList<Crawler> crawlers, ArrayList<Turtle> turtles, ArrayList<Snail> snails, ArrayList<Jelly> jellies) {
         ArrayList<Snake> removalSnake = new ArrayList<>();
         ArrayList<Crawler> removalCrawler = new ArrayList<>();
+        ArrayList<Turtle> removalTurtle = new ArrayList<>();
         ArrayList<Snail> removalSnail= new ArrayList<>();
         ArrayList<Jelly> removalJelly = new ArrayList<>();
 
@@ -191,6 +192,13 @@ public class Blaster {
                 for(Crawler r:removalCrawler){
                     crawlers.remove(r);
                 }
+                return true;
+            }
+        }
+
+        for (Turtle t:turtles) {
+            if (t.getRect().intersects(b.getRect())) {
+                System.out.println("asdf");
                 return true;
             }
         }

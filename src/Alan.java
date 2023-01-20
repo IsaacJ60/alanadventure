@@ -154,7 +154,7 @@ public class Alan {
 
     // return int represents walls that player colliding with
     public int move(boolean[] keys, Graphics g, Map map, Powerups powerups, EnemyManager enemies) {
-        getEnemyCollision(enemies.getSnakes(), enemies.getCrawlers(), enemies.getSnails(), enemies.getJellies()); // collision between alan and snakes
+        getEnemyCollision(enemies.getSnakes(), enemies.getCrawlers(), enemies.getTurtles(), enemies.getSnails(), enemies.getJellies()); // collision between alan and snakes
         getCollision(g,this, map); // getting collision between player and blocks
         alanRect.setLocation(x+5,y); // setting rect location
         boolean wallCollideLeft = false, wallCollideRight = false;
@@ -304,8 +304,9 @@ public class Alan {
         velY = -6;
     }
 
-    public void getEnemyCollision(ArrayList<Snake> snakes, ArrayList<Crawler> crawlers, ArrayList<Snail> snails, ArrayList<Jelly> jellies) {
+    public void getEnemyCollision(ArrayList<Snake> snakes, ArrayList<Crawler> crawlers, ArrayList<Turtle> turtles, ArrayList<Snail> snails, ArrayList<Jelly> jellies) {
         ArrayList<Snake> removalSnake = new ArrayList<>();
+        ArrayList<Turtle> removalTurtle = new ArrayList<>();
         ArrayList<Jelly> removalJelly = new ArrayList<>();
 
         for (Snake s : snakes) {
@@ -333,6 +334,25 @@ public class Alan {
                     health--;
                     knockback(c);
                     invulTimer.restart();
+                }
+            }
+        }
+
+        for (Turtle t : turtles) {
+            if (getRect().intersects(t.getRect())) {
+                if(getBoots().intersects(t.getRect()) && velY > 0 && y+height > t.getY(false)){
+                    combo++;
+                    weapon.setAmmo(weapon.getCapacity());
+                    removalTurtle.add(t);
+                    velY = -8;
+                    GameManager.getGemManager().spawnGems((int)t.getX(false),(int)t.getY(false), 3);
+                }
+                else {
+                    if (invulTimer.getElapsedTime() >= 1.5) {
+                        health--;
+//                        knockback(t);
+                        invulTimer.restart();
+                    }
                 }
             }
         }
@@ -373,6 +393,11 @@ public class Alan {
         for(Snake s : removalSnake){
             snakes.remove(s);
         }
+
+        for (Turtle t : removalTurtle){
+            turtles.remove(t);
+        }
+
         for(Jelly j:removalJelly){
             jellies.remove(j);
         }
