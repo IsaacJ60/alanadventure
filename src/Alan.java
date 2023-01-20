@@ -154,7 +154,7 @@ public class Alan {
 
     // return int represents walls that player colliding with
     public int move(boolean[] keys, Graphics g, Map map, Powerups powerups, EnemyManager enemies) {
-        getEnemyCollision(enemies.getSnakes(), enemies.getCrawlers(), enemies.getTurtles(), enemies.getSnails(), enemies.getJellies()); // collision between alan and snakes
+        getEnemyCollision(enemies.getSnakes(), enemies.getCrawlers(), enemies.getTurtles(), enemies.getSnails(), enemies.getJellies(), enemies.getBats()); // collision between alan and snakes
         getCollision(g,this, map); // getting collision between player and blocks
         alanRect.setLocation(x+5,y); // setting rect location
         boolean wallCollideLeft = false, wallCollideRight = false;
@@ -304,10 +304,11 @@ public class Alan {
         velY = -6;
     }
 
-    public void getEnemyCollision(ArrayList<Snake> snakes, ArrayList<Crawler> crawlers, ArrayList<Turtle> turtles, ArrayList<Snail> snails, ArrayList<Jelly> jellies) {
+    public void getEnemyCollision(ArrayList<Snake> snakes, ArrayList<Crawler> crawlers, ArrayList<Turtle> turtles, ArrayList<Snail> snails, ArrayList<Jelly> jellies, ArrayList<Bat> bats) {
         ArrayList<Snake> removalSnake = new ArrayList<>();
         ArrayList<Turtle> removalTurtle = new ArrayList<>();
         ArrayList<Jelly> removalJelly = new ArrayList<>();
+        ArrayList<Bat> removalBat = new ArrayList<>();
 
         for (Snake s : snakes) {
             if (getRect().intersects(s.getRect())) {
@@ -367,7 +368,7 @@ public class Alan {
             }
         }
 
-        for (Jelly j:jellies) {
+        for (Jelly j : jellies) {
             if (getRect().intersects(j.getRect())) {
                 if(getBoots().intersects(j.getRect()) && velY > 0 && y+height > j.getY(false)){
                     combo++;
@@ -386,6 +387,25 @@ public class Alan {
             }
         }
 
+        for (Bat b : bats) {
+            if (getRect().intersects(b.getRect())) {
+                if(getBoots().intersects(b.getRect()) && velY > 0 && y+height > b.getY(false)){
+                    combo++;
+                    weapon.setAmmo(weapon.getCapacity());
+                    removalBat.add(b);
+                    velY = -8;
+                    GameManager.getGemManager().spawnGems((int)b.getX(false),(int)b.getY(false), 3);
+                }
+                else{
+                    if (invulTimer.getElapsedTime() >= 2) {
+                        health--;
+//                        knockback(b);
+                        invulTimer.restart();
+                    }
+                }
+            }
+        }
+
         if(health == 0){
             GameManager.gameOver();
         }
@@ -398,8 +418,12 @@ public class Alan {
             turtles.remove(t);
         }
 
-        for(Jelly j:removalJelly){
+        for (Jelly j : removalJelly){
             jellies.remove(j);
+        }
+
+        for (Bat b : removalBat){
+            bats.remove(b);
         }
     }
 

@@ -38,13 +38,13 @@ public class EnemyManager{
 			for(int j=1; j<blocks[i].length-1; j++) {
 				if ((blocks[i-1][j].getType() == Block.AIR && blocks[i][j].getType() != Block.AIR && blocks[i][j].getType() != Block.SPIKE) && (blocks[i-1][j-1].getType() == Block.AIR && blocks[i][j-1].getType() != Block.AIR)) {
 					int spawnChance = Util.rand.nextInt(100);
-					if(Util.rand.nextInt(100) <= 50) {
+					if(Util.rand.nextInt(100) <= 45) {
 						addSnake(blocks[i][j].getX(false), blocks[i][j].getY(false, alan));
 					}
 					else if (Util.rand.nextInt(100)<=20){
 						addCrawler(blocks[i][j].getX(false), blocks[i][j].getY(false, alan));
 					}
-					if (Util.rand.nextInt(100) <= 30){
+					if (Util.rand.nextInt(100) <= 15){
 						addTurtle(blocks[i][j].getX(false), blocks[i][j].getY(false, alan));
 					}
 					i += Util.MAXCHUNKSIZE;
@@ -59,9 +59,15 @@ public class EnemyManager{
 				if(blocks[i][j-1].getType() == Block.AIR && blocks[i][j].getType() == Block.WALL && blocks[i+1][j-1].getType() == Block.AIR && blocks[i+1][j].getType() == Block.WALL) {
 					if(Util.rand.nextInt(100)<=45) {
 						addSnail(blocks[i][j].getX(false), blocks[i][j].getY(false, alan), Snail.RIGHT, Snail.UP);
-                        i += Util.MAXCHUNKSIZE;
+                        i += 2*Util.MAXCHUNKSIZE;
 					}
 				}
+//				else if(blocks[i][j+1].getType() == Block.AIR && blocks[i][j].getType() == Block.WALL && blocks[i+1][j+1].getType() == Block.AIR && blocks[i+1][j].getType() == Block.WALL) {
+//					if(Util.rand.nextInt(100)<=45) {
+//						addSnail(blocks[i][j].getX(false), blocks[i][j].getY(false, alan), Snail.LEFT, Snail.UP);
+//						i += Util.MAXCHUNKSIZE;
+//					}
+//				}
 			}
 		}
 	}
@@ -70,14 +76,17 @@ public class EnemyManager{
 		for(int i=Util.GENERATIONSTART; i< blocks.length-Util.GENERATIONEND; i++){
 			for(int j=1; j<blocks[i].length-1; j++) {
 				if(blocks[i][j].getType() == Block.AIR) {
-					if(Util.rand.nextInt(100)<=.5) {
+					if(Util.rand.nextInt(100)<=.25) {
 						addJelly(blocks[i][j].getX(false), blocks[i][j].getY(false, alan));
                         i += Util.MAXCHUNKSIZE;
 					}
-//					if(Util.rand.nextInt(100)<=.5) {
-//						addBat(blocks[i][j].getX(false), blocks[i][j].getY(false, alan));
-//						i += Util.MAXCHUNKSIZE;
-//					}
+				}
+				// top of block
+				if(blocks[i][j].getType() == Block.AIR && blocks[i-1][j].getType() == Block.WALL) {
+					if(Util.rand.nextInt(100)<=10) {
+						addBat(blocks[i][j].getX(false), blocks[i][j].getY(false, alan));
+						i += Util.MAXCHUNKSIZE;
+					}
 				}
 			}
 		}
@@ -110,7 +119,7 @@ public class EnemyManager{
 			j.draw(g, alan, map);
 		}
 		for(Bat b : bats){
-			b.draw(g);
+			b.draw(g, alan, map);
 		}
 	}
 }
@@ -141,7 +150,7 @@ class Snake {
 		this.y = y-height;
 		dir = RIGHT;
 		this.health = 10;
-		this.velX = Util.rand.nextInt(1,4);
+		this.velX = Util.rand.nextInt(1,3);
 		this.accelY = 1;
 		this.maxVelY = Util.rand.nextInt(5,13);
 		animFrame = 0;
@@ -623,7 +632,7 @@ class Snail {
 	public void move(Block[][] blocks){
 		int currRow = (int)y/Util.BLOCKLENGTH;
 		int topRow = (int)y/Util.BLOCKLENGTH;
-		int bottomRow = (int)(y+height)/Util.BLOCKLENGTH;
+		int bottomRow = (int) (y + height) / Util.BLOCKLENGTH;
 		int currCol = (int) x / Util.BLOCKLENGTH;
 		int wallCol;
 		if(dir == LEFT) {
@@ -753,7 +762,7 @@ class Jelly {
 		double distY = y + height/2 - AAdventure.getGame().getAlan().getY(false) - alan.getHeight()/2;
 		double distance = Math.hypot(distX, distY); // pythag theorem
 
-		if(distance<350) {
+		if(distance<400) {
 			// adding up how many frames movement has been in x direction, capping out at +-20 to limit terminal velocity
 			if (distX < 0 && velX < maxVelX) {
 				accelX += accelFactor;
@@ -860,34 +869,55 @@ class Jelly {
 	}
 }
 
-class Bat{
-	public static final int IDLE = 0, FLY = 1;
-	private final int state;
-	private final int width, height;
+class Bat {
+	private final int HANG = 0, FLY = 1;
+	private int width, height;
 	private int health;
 	private double x, y;
-	private double speed, velX, velY, maxVelX, maxVelY, accelX, accelY, accelFactor; // the speed and acceleration the enemy has
+	private double speed;
+	private int state, dir;
+
+	public double getVelX() {return velX;}
+
+	public double getVelY() {return velY;}
+
+	private double velX;
+	private double velY;
+	private double maxVelX;
+	private double maxVelY;
+	private double accelX;
+	private double accelY;
+	private double accelFactor; // the speed and acceleration the enemy has
 	private double animFrame;
+	private boolean moveLeft, moveRight, moveUp, moveDown;
+	private boolean hit;
 
-	ArrayList<Image> idle = new ArrayList<>();
-	ArrayList<Image> fly = new ArrayList<>();
-
-	public Bat(int x, int y) {
-		this.x = x;
+	ArrayList<Image> hang = new ArrayList<>();
+	ArrayList<Image> flyL = new ArrayList<>();
+	ArrayList<Image> flyR = new ArrayList<>();
+	public Bat (int x, int y) {
+		this.width = 20;
+		this.height = 28;
+		this.x = x + (Util.BLOCKLENGTH-this.width)/2;
 		this.y = y;
-		this.width = 36;
-		this.height = 26;
-		this.health = 30;
-		this.speed = 2;
-		this.maxVelX = 4.5;
-		this.maxVelY = 4.5;
+		this.health = 10;
+		this.maxVelX = 2.5;
+		this.maxVelY = 2.5;
 		this.accelX = 0;
 		this.accelY = 0;
-		this.accelFactor = .2;
-		state = FLY;
+		this.accelFactor = .5;
 		animFrame = 0;
-		for (int i = 0; i < 6; i++) {
-			idle.add(new ImageIcon("src/assets/enemies/fly/fly" + i + ".png").getImage().getScaledInstance(width, height, Image.SCALE_DEFAULT));
+		this.dir = Util.RIGHT;
+		state = HANG;
+
+		for (int i = 0; i < 4; i++) {
+			hang.add(new ImageIcon("src/assets/enemies/bat/hang/batHang" + i + ".png").getImage());
+		}
+		for (int i = 0; i < 4; i++) {
+			flyL.add(new ImageIcon("src/assets/enemies/bat/fly/batFlyL" + i + ".png").getImage());
+		}
+		for (int i = 0; i < 4; i++) {
+			flyR.add(new ImageIcon("src/assets/enemies/bat/fly/batFlyR" + i + ".png").getImage());
 		}
 	}
 	public double getX(boolean adjusted) { // gets x
@@ -904,6 +934,8 @@ class Bat{
 			return y;
 		}
 	}
+
+	int getWidth() {return width;}
 	public void setX(int x) {
 		this.x = x;
 	}
@@ -916,43 +948,140 @@ class Bat{
 	public void setHealth(int health) {
 		this.health = health;
 	}
-	public void move() {
+	public Rectangle getRect(){return new Rectangle((int) x,(int) y,width,height);}
+	public void isHit() {hit = true;}
+	public void move(Graphics g, Alan alan, Map map) {
 		// distance calculations
-		double distX = x - AAdventure.getGame().getAlan().getX(false);
+		double distX = x + width/2 - alan.getX(false) - alan.getWidth()/2;
 		// how far away the enemy is compared to alan
-		double distY = y - AAdventure.getGame().getAlan().getY(false);
-		double distance = Math.sqrt(Math.pow(distX, 2) + Math.pow(distY, 2)); // pythag theorem
-		// adding up how many frames movement has been in x direction, capping out at +-20 to limit terminal velocity
-		if (distX < 0 && velX < maxVelX) {
-			accelX += accelFactor;
-		} else if (distX > 0 && velX > -maxVelX) {
-			accelX -= accelFactor;
+		double distY = y + height/2 - alan.getY(false) - alan.getHeight()/2;
+		double distance = Math.hypot(distX, distY); // pythag theorem
+
+		if(alan.getX(false) < x){
+			dir = Util.LEFT;
 		}
-		if (distY < 0 && velY < maxVelY) {
-			accelY += accelFactor;
-		} else if (distY > 0 && velY > -maxVelY) {
-			accelY -= accelFactor;
+		else{
+			dir = Util.RIGHT;
 		}
-		// moving the enemy
-		velX = ((-1 / distance) * distX) * speed + accelX; // -1 so the enemy moves TOWARDS alan, just 1 would make the enemy run away from alan
-		velY = ((-1 / distance) * distY) * speed + accelY; // frames*accel so the enemy speeds up/down for a more "natural" look, instead of perfectly tracking alan
-		x += velX;
-		y += velY;
+		if(distance < 200){
+			width = 28;
+			height = 20;
+			state = FLY;
+		}
+		if(distance < 400 && state == FLY) {
+			// adding up how many frames movement has been in x direction, capping out at +-20 to limit terminal velocity
+			if (distX < 0 && velX < maxVelX) {
+				accelX += accelFactor;
+			} else if (distX > 0 && velX > -maxVelX) {
+				accelX -= accelFactor;
+			}
+			if (distY < 0 && velY < maxVelY) {
+				accelY += accelFactor;
+			} else if (distY > 0 && velY > -maxVelY) {
+				accelY -= accelFactor;
+			}
+			// moving the enemy
+			velX = ((-1 / distance) * distX) * speed + accelX; // -1 so the enemy moves TOWARDS alan, just 1 would make the enemy run away from alan
+			velY = ((-1 / distance) * distY) * speed + accelY; // frames*accel so the enemy speeds up/down for a more "natural" look, instead of perfectly tracking alan
+
+			Block[][] blocks = map.getMap();
+			// getting rows with same y values as jelly
+			int prevRow = (int) getY(false) / Util.BLOCKLENGTH;
+			int nextRow = prevRow + 1;
+			int prevCol = (int) getX(false) / Util.BLOCKLENGTH;
+			int nextCol = prevCol + 1;
+
+			// right left collision
+			for(int r=prevRow; r<=nextRow; r++) {
+				for (int i = 0; i < map.getColumns(); i++) {
+					Block block = blocks[r][i];
+					if (block.getType() == Block.WALL || block.getType() == Block.BOX) {
+						Rectangle leftSide = new Rectangle(block.getX(false), block.getY(false, alan)+1, 1, Util.BLOCKLENGTH-2);
+//                        g.setColor(Color.CYAN);
+//                        g.drawRect(block.getX(true), block.getY(true, alan)+1, 1, Util.BLOCKLENGTH-2);
+						if (getRect().intersects(leftSide)) {
+							velX = -.25;
+							accelX = 0;
+						}
+					}
+				}
+			}
+			// left right collision
+			for(int r=prevRow; r<=nextRow; r++) {
+				for (int i = 0; i < map.getColumns(); i++) {
+					Block block = blocks[r][i];
+					if (block.getType() == Block.WALL || block.getType() == Block.BOX) {
+						Rectangle rightSide = new Rectangle(block.getX(false) + Util.BLOCKLENGTH, block.getY(false, alan)+1, 1, Util.BLOCKLENGTH-2);
+//                        g.setColor(Color.MAGENTA);
+//                        g.drawRect(block.getX(true) + Util.BLOCKLENGTH, block.getY(true, alan)+1, 1, Util.BLOCKLENGTH-2);
+						if (getRect().intersects(rightSide)) {
+							velX = .25;
+							accelX = 0;
+						}
+					}
+				}
+			}
+			// top down collision
+			for (int i = 0; i < map.getColumns(); i++) {
+				Block block = blocks[nextRow][i];
+				if (block.getType() == Block.WALL || block.getType() == Block.BOX) {
+					Rectangle topSide = new Rectangle(block.getX(false)+1, block.getY(false, alan), Util.BLOCKLENGTH-2, 1);
+					if (getRect().intersects(topSide)) {
+						velY = -.25;
+						accelY = 0;
+					}
+				}
+			}
+
+			// bottom up collision checking
+			for (int i = 0; i < map.getColumns(); i++) {
+				Block block = blocks[prevRow][i];
+				// only check bottom collision in solid blocks and when going upwards in y-dir
+				if (block.getType() == Block.WALL || block.getType() == Block.BOX) {
+					Rectangle bottomSide = new Rectangle(block.getX(false)+1, block.getY(false, alan) + Util.BLOCKLENGTH, Util.BLOCKLENGTH-2, 1);
+					if (getRect().intersects(bottomSide)) {
+						velY = .25;
+						accelY = 0;
+					}
+				}
+			}
+
+			x += velX;
+			y += velY;
+		}
 	}
-	public void getCollision(){
 
-	}
+	public void draw(Graphics g, Alan alan, Map map) {
+		move(g, alan, map);
 
-	public void draw(Graphics g) {
-		move();
-
-		if (state == FLY) {
-			if ((int) animFrame == idle.size() - 1) {
+		if (state == HANG){
+			if ((int) animFrame == hang.size() - 1) {
 				animFrame = 0;
 			} else {
-				animFrame += 0.33;
+				animFrame += 0.1;
 			}
-			g.drawImage(idle.get((int) animFrame), (int) getX(true), (int)getY(true), null);
+			g.drawImage(hang.get((int) animFrame), (int) getX(true) - 3, (int) getY(true), null);
 		}
+		else if (state == FLY) {
+			if (dir == Util.LEFT) {
+				if ((int) animFrame == flyL.size() - 1) {
+					animFrame = 0;
+				} else {
+					animFrame += 0.25;
+				}
+				g.drawImage(flyL.get((int) animFrame), (int) getX(true) - 3, (int) getY(true), null);
+			}
+			else{
+				if ((int) animFrame == flyL.size() - 1) {
+					animFrame = 0;
+				} else {
+					animFrame += 0.25;
+				}
+				g.drawImage(flyR.get((int) animFrame), (int) getX(true) - 3, (int) getY(true), null);
+			}
+		}
+
+//        g.setColor(Color.YELLOW);
+//        g.drawRect((int)getX(true), (int)getY(true), width, height);
 	}
 }
