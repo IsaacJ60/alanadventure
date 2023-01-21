@@ -633,8 +633,10 @@ public class Alan {
         int collisionWall = move(keys, g, map, powerups, enemies);
 
         // displaying combo
-        g.setFont(Util.fontTextSmaller);
-        g.drawString(Integer.toString(combo), getX(true)+8, getY(true));
+        if(combo != 0) {
+            g.setFont(Util.fontTextSmaller);
+            g.drawString(Integer.toString(combo), getX(true) + 8, getY(true));
+        }
 
         if (weapon.isAlanShoot()) {
             if ((int) animFrame == allAnims.get(animShoot*2).size()-1) {

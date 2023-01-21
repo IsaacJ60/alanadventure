@@ -132,8 +132,6 @@ class Snake {
 	private int dir;
 	private double speed;
 
-	public double getVelX() {return velX;}
-
 	private double velX;
 	private double velY;
 	private double maxVelY;
