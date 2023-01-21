@@ -19,13 +19,13 @@ public class EnemyManager{
 	private ArrayList<Skull> skulls = new ArrayList<>();
 
 	// methods to get arraylists of enemies for collisions
-	public ArrayList<Snake> getSnakes() {return snakes;}
-	public ArrayList<Crawler> getCrawlers() {return crawlers;}
-	public ArrayList<Turtle> getTurtles() {return turtles;}
-	public ArrayList<Snail> getSnails() {return snails;}
-	public ArrayList<Jelly> getJellies() {return jellies;}
-	public ArrayList<Bat> getBats() {return bats;}
-	public ArrayList<Skull> getSkulls() {return skulls;}
+	private ArrayList<Snake> getSnakes() {return snakes;}
+	private ArrayList<Crawler> getCrawlers() {return crawlers;}
+	private ArrayList<Turtle> getTurtles() {return turtles;}
+	private ArrayList<Snail> getSnails() {return snails;}
+	private ArrayList<Jelly> getJellies() {return jellies;}
+	private ArrayList<Bat> getBats() {return bats;}
+	private ArrayList<Skull> getSkulls() {return skulls;}
 
 	// methods to add enemies to their arraylists
 	public void addSnake(int x, int y) {snakes.add(new Snake(x,y));}
@@ -166,12 +166,12 @@ class Snake {
 		this.height = 18;
 		this.x = x;
 		this.y = y-height;
-		dir = Util.RIGHT;
+		this.dir = Util.RIGHT;
 		this.health = 10;
 		this.velX = Util.rand.nextInt(1,3); // each snake moves at a random speed so they don't look uniform
 		this.accelY = 1;
 		this.maxVelY = Util.rand.nextInt(5,13);
-		animFrame = 0;
+		this.animFrame = 0;
 
 		// adding all frames of each animation to their arraylists
 		for (int i = 0; i < 4; i++) {
@@ -295,12 +295,12 @@ class Crawler {
 		this.height = 22;
 		this.x = x;
 		this.y = y-height;
-		dir = Util.RIGHT;
+		this.dir = Util.RIGHT;
 		this.health = 10;
 		this.velX = Util.rand.nextInt(1,3); // each crawler moves at a random speed so they don't look uniform
 		this.accelY = 1;
 		this.maxVelY = Util.rand.nextInt(5,13);
-		animFrame = 0;
+		this.animFrame = 0;
 
 		// adding all frames of each animation to their arraylists
 		for (int i = 0; i < 2; i++) {
@@ -399,7 +399,7 @@ class Turtle {
 	private int dir; // direction the turtle is facing
 	private int state; // turtle's state (idle, walk)
 	private int moveChance, moveTime; // whether or not the turtle moves, and how long the enemy moves/doesn't move
-	Util.CustomTimer movementTimer = new Util.CustomTimer(); // timer to keep track of moveTime
+	private Util.CustomTimer movementTimer = new Util.CustomTimer(); // timer to keep track of moveTime
 
 	private double velX, velY; // turtle's velocities
 	private double accelY, maxVelY; // turtle's accelerations/velocities for gravity
@@ -416,15 +416,15 @@ class Turtle {
 		this.height = 24;
 		this.x = x;
 		this.y = y-height;
-		dir = Util.RIGHT;
+		this.dir = Util.RIGHT;
 		this.health = 10;
 		this.velX = Util.rand.nextInt(1,2); // each turtle moves at a random speed so they don't look uniform
 		this.accelY = 1;
 		this.maxVelY = Util.rand.nextInt(5,13);
-		state = WALK;
-		animFrame = 0;
-		moveChance = Util.rand.nextInt(100);
-		moveTime = Util.rand.nextInt(1,3);
+		this.state = WALK;
+		this.animFrame = 0;
+		this.moveChance = Util.rand.nextInt(100);
+		this.moveTime = Util.rand.nextInt(1,3);
 
 		// adding all frames of each animation to their arraylists
 		for (int i = 0; i < 4; i++) {
@@ -581,7 +581,7 @@ class Snail {
 		this.vertDir = vertDir;
 		this.health = 30;
 		this.velY = 1.5;
-		animFrame = 0;
+		this.animFrame = 0;
 
 		// adding all frames of each animation to their arraylists
 		if(horiDir == Util.LEFT){
@@ -1086,9 +1086,9 @@ class Skull {
 		this.accelX = 0;
 		this.accelY = 0;
 		this.accelFactor = .1;
-		animFrame = 0;
+		this.animFrame = 0;
 		this.dir = Util.RIGHT;
-		state = CALM;
+		this.state = CALM;
 
 		// adding all frames of each animation to their arraylists
 		for (int i = 0; i < 4; i++) {
