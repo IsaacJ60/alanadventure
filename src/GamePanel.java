@@ -109,14 +109,10 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener, Mo
         // BLOCKS
         bg.draw(g, Util.getLevel(), alan, true, true, true);
 
-        // GAMEPLAY ELEMENTS
+
         enemyManager.drawEnemies(g, alan, MapList.getAllMaps().get(Util.getLevel()));
         GameManager.getGemManager().drawGems(g, alan, MapList.getAllMaps().get(Util.getLevel()));
         powers.usePowers(alan, g);
-
-        g.setColor(Color.WHITE);
-        g.setFont(Util.fontTextSmall);
-        g.drawString("LEVEL " + Util.getLevel(), AAdventure.getGameWidth()/2-(("LEVEL " + Util.getLevel()).length()*8), 370 - alan.getOffset() + alan.getScreenOffset());
 
         alan.draw(g, keys, MapList.getAllMaps().get(Util.getLevel()), powers, enemyManager);
 

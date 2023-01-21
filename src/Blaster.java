@@ -174,6 +174,7 @@ public class Blaster {
             if (s.getRect().intersects(bu.getRect())) {
                 s.setHealth(s.getHealth()-damage);
                 if (s.getHealth() <= 0) {
+                    AAdventure.getGame().getAlan().addCombo();
                     removalSnake.add(s);
                     GameManager.getGemManager().spawnGems((int) s.getX(false), (int) s.getY(false), 3);
                 }
@@ -189,6 +190,7 @@ public class Blaster {
             if (c.getRect().intersects(bu.getRect())) {
                 c.setHealth(c.getHealth()-damage);
                 if (c.getHealth() <= 0) {
+                    AAdventure.getGame().getAlan().addCombo();
                     removalCrawler.add(c);
                     GameManager.getGemManager().spawnGems((int) c.getX(false), (int) c.getY(false), 3);
                 }
@@ -210,6 +212,7 @@ public class Blaster {
             if (s.getRect().intersects(bu.getRect())) {
                 s.setHealth(s.getHealth()-damage);
                 if (s.getHealth() <= 0) {
+                    AAdventure.getGame().getAlan().addCombo();
                     removalSnail.add(s);
                     GameManager.getGemManager().spawnGems((int)s.getX(false),(int)s.getY(false), 3);
                 }
@@ -226,6 +229,7 @@ public class Blaster {
                 j.isHit();
                 j.setHealth(j.getHealth()-damage);
                 if (j.getHealth() <= 0) {
+                    AAdventure.getGame().getAlan().addCombo();
                     removalJelly.add(j);
                     GameManager.getGemManager().spawnGems((int)j.getX(false),(int)j.getY(false), 3);
                 }
@@ -241,6 +245,7 @@ public class Blaster {
             if (b.getRect().intersects(bu.getRect())) {
                 b.setHealth(b.getHealth()-damage);
                 if (b.getHealth() <= 0) {
+                    AAdventure.getGame().getAlan().addCombo();
                     removalBat.add(b);
                     GameManager.getGemManager().spawnGems((int)b.getX(false),(int)b.getY(false), 3);
                 }
@@ -257,6 +262,7 @@ public class Blaster {
                 s.setHealth(s.getHealth()-damage);
                 s.hit();
                 if (s.getHealth() <= 0) {
+                    AAdventure.getGame().getAlan().addCombo();
                     removalSkull.add(s);
                     GameManager.getGemManager().spawnGems((int)s.getX(false),(int)s.getY(false), 3);
                 }
