@@ -2,7 +2,14 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 
+/*
+EnemyManager.java
+Isaac Jiang & Jayden Zhao
+Generates, draws, and holds all the arraylists of enemy objects.
+ */
+
 public class EnemyManager{
+	// arraylist of all enemy types
 	private ArrayList<Snake> snakes = new ArrayList<>();
 	private ArrayList<Crawler> crawlers = new ArrayList<>();
 	private ArrayList<Snail> snails = new ArrayList<>();
@@ -11,14 +18,16 @@ public class EnemyManager{
 	private ArrayList<Bat> bats = new ArrayList<>();
 	private ArrayList<Skull> skulls = new ArrayList<>();
 
-	public ArrayList<Snake> getSnakes() {return snakes;}
-	public ArrayList<Crawler> getCrawlers() {return crawlers;}
-	public ArrayList<Turtle> getTurtles() {return turtles;}
-	public ArrayList<Snail> getSnails() {return snails;}
-	public ArrayList<Jelly> getJellies() {return jellies;}
-	public ArrayList<Bat> getBats() {return bats;}
-	public ArrayList<Skull> getSkulls() {return skulls;}
+	// methods to get arraylists of enemies for collisions
+	private ArrayList<Snake> getSnakes() {return snakes;}
+	private ArrayList<Crawler> getCrawlers() {return crawlers;}
+	private ArrayList<Turtle> getTurtles() {return turtles;}
+	private ArrayList<Snail> getSnails() {return snails;}
+	private ArrayList<Jelly> getJellies() {return jellies;}
+	private ArrayList<Bat> getBats() {return bats;}
+	private ArrayList<Skull> getSkulls() {return skulls;}
 
+	// methods to add enemies to their arraylists
 	public void addSnake(int x, int y) {snakes.add(new Snake(x,y));}
 	public void addSnail(int x, int y, int horiDir, int vertDir) {snails.add(new Snail(x,y,horiDir,vertDir));}
 	public void addCrawler(int x, int y) {crawlers.add(new Crawler(x,y));}
@@ -27,17 +36,19 @@ public class EnemyManager{
 	public void addBat(int x, int y) {bats.add(new Bat(x,y));}
 	public void addSkull(int x, int y) {skulls.add(new Skull(x,y));}
 
+	// generates all enemies that crawl on the floor
 	public void generateFloorEnemies(Block[][] blocks, Alan alan) {
 		for(int i=Util.GENERATIONSTART; i<blocks.length-Util.GENERATIONEND; i++){
 			for(int j=1; j<blocks[i].length-1; j++) {
+				// if there is an open 2 wide platform
 				if ((blocks[i-1][j].getType() == Block.AIR && blocks[i][j].getType() != Block.AIR) && (blocks[i-1][j-1].getType() == Block.AIR && blocks[i][j-1].getType() != Block.AIR)) {
-					if(Util.rand.nextInt(100) <= 45) {
+					if(Util.rand.nextInt(100) <= 45) { // 45% chance to spawn a snake
 						addSnake(blocks[i][j].getX(false), blocks[i][j].getY(false, alan));
 					}
-					else if (Util.rand.nextInt(100) <= 20){
+					else if (Util.rand.nextInt(100) <= 20){ // 20% chance to spawn a crawler
 						addCrawler(blocks[i][j].getX(false), blocks[i][j].getY(false, alan));
 					}
-					else if (Util.rand.nextInt(100) <= 20){
+					else if (Util.rand.nextInt(100) <= 20){ // 20% chance to spawn a turtle
 						addTurtle(blocks[i][j].getX(false), blocks[i][j].getY(false, alan));
 					}
 					i += Util.MAXCHUNKSIZE;
@@ -46,15 +57,18 @@ public class EnemyManager{
 		}
 	}
 
+	// generates all enemies that crawl on walls
 	public void generateWallEnemies(Block[][] blocks, Alan alan){
 		for(int i=Util.GENERATIONSTART; i< blocks.length-Util.GENERATIONEND; i++){
 			for(int j=1; j<blocks[i].length-1; j++) {
+				// snails that spawn on the left of a wall
 				if(blocks[i][j-1].getType() == Block.AIR && blocks[i][j].getType() == Block.WALL && blocks[i+1][j-1].getType() == Block.AIR && blocks[i+1][j].getType() == Block.WALL) {
 					if(Util.rand.nextInt(100)<=50) {
 						addSnail(blocks[i][j].getX(false), blocks[i][j].getY(false, alan), Util.RIGHT, Util.TOP);
                         i += 2*Util.MAXCHUNKSIZE;
 					}
 				}
+				// snails that spawn on the right of a wall
 				if(blocks[i][j+1].getType() == Block.AIR && blocks[i][j].getType() == Block.WALL && blocks[i+1][j+1].getType() == Block.AIR && blocks[i+1][j].getType() == Block.WALL) {
 					if(Util.rand.nextInt(100)<=50) {
 						addSnail(blocks[i][j].getX(false), blocks[i][j].getY(false, alan), Util.LEFT, Util.TOP);
@@ -65,6 +79,7 @@ public class EnemyManager{
 		}
 	}
 
+	// generates all enemies that fly
 	public void generateFlyers(Block[][] blocks, Alan alan){
 		for(int i=Util.GENERATIONSTART; i< blocks.length-Util.GENERATIONEND; i++){
 			for(int j=1; j<blocks[i].length-1; j++) {
@@ -78,7 +93,7 @@ public class EnemyManager{
 					}
 					i += Util.MAXCHUNKSIZE;
 				}
-				// top of block
+				// bats that hang from the bottom of a block
 				if(blocks[i][j].getType() == Block.AIR && blocks[i-1][j].getType() == Block.WALL) {
 					if(Util.rand.nextInt(100)<=10) {
 						addBat(blocks[i][j].getX(false), blocks[i][j].getY(false, alan));
@@ -89,6 +104,7 @@ public class EnemyManager{
 		}
 	}
 
+	// resets all enemies for the next level
 	public void clearEnemies(){
 		snakes.clear();
 		crawlers.clear();
@@ -99,6 +115,7 @@ public class EnemyManager{
 		skulls.clear();
 	}
 
+	// draws all enemies
 	public void drawEnemies(Graphics g, Alan alan, Map map){
 		Block[][] blocks = map.getMap();
 		for(Snake s : snakes){
@@ -125,19 +142,22 @@ public class EnemyManager{
 	}
 }
 
+/*
+Snake.java
+Isaac Jiang & Jayden Zhao
+Contains methods that move, draw and check collisions for snakes
+*/
 class Snake {
-	private int width, height;
-	private int health;
-	private double x, y;
-	private int dir;
-	private double speed;
+	private double x, y; // position
+	private int width, height; // dimensions
+	private int health; // hp
+	private int dir; // direction the snake is facing
 
-	private double velX;
-	private double velY;
-	private double maxVelY;
-	private double accelY; // the speed and acceleration the enemy has
-	private double animFrame;
+	private double velX, velY; // snake's velocities
+	private double accelY, maxVelY; // snake's accelerations/velocities for gravity
+	private double animFrame; // current frame of the animation
 
+	// arraylists that hold all frames of animation
 	private final ArrayList<Image> idleL = new ArrayList<>();
 	private final ArrayList<Image> idleR = new ArrayList<>();
 
@@ -146,13 +166,14 @@ class Snake {
 		this.height = 18;
 		this.x = x;
 		this.y = y-height;
-		dir = Util.RIGHT;
+		this.dir = Util.RIGHT;
 		this.health = 10;
-		this.velX = Util.rand.nextInt(1,3);
+		this.velX = Util.rand.nextInt(1,3); // each snake moves at a random speed so they don't look uniform
 		this.accelY = 1;
 		this.maxVelY = Util.rand.nextInt(5,13);
-		animFrame = 0;
+		this.animFrame = 0;
 
+		// adding all frames of each animation to their arraylists
 		for (int i = 0; i < 4; i++) {
 			idleL.add(new ImageIcon("src/assets/enemies/snake/idle/snakeIdleL" + i + ".png").getImage());
 		}
@@ -161,18 +182,13 @@ class Snake {
 		}
 	}
 
-	public void setX(int x) {
-		this.x = x;
-	}
-	public void setY(int y) {
-		this.y = y;
-	}
-	public int getHealth() {
+	public int getHealth() { // gets the health of the snake
 		return health;
 	}
-	public void setHealth(int health) {
+	public void setHealth(int health) { // sets the health of the snake
 		this.health = health;
 	}
+
 	public double getX(boolean adjusted) { // gets x
 		if (adjusted) { // whether you want x relative to the gameplay window
 			return x + Background.getWallLeftPos();
@@ -182,19 +198,19 @@ class Snake {
 	}
 	public double getY(boolean adjusted) { // gets y
 		if (adjusted) { // whether you want y relative to the gameplay window
-			return y-AAdventure.getGame().getAlan().getOffset()+AAdventure.getGame().getAlan().getScreenOffset();
+			return y - AAdventure.getGame().getAlan().getOffset()+AAdventure.getGame().getAlan().getScreenOffset();
 		} else {
 			return y;
 		}
 	}
-	public Rectangle getRect(){return new Rectangle((int)x,(int)y,width,height);}
+	public Rectangle getRect(){return new Rectangle((int)x,(int)y,width,height);} // gets rect for collisions
 
-	public void move(Block[][] blocks){
-		int currRow = (int)y/Util.BLOCKLENGTH;
+	public void move(Block[][] blocks){ // moves the snake back and forth and checks if there is solid ground under it
+		int currRow = (int)y/Util.BLOCKLENGTH; // row the snake's hitbox is occupying
 		int grndRow = currRow+1; // add one to get the row of blocks the snake is standing on
-		int currColL = (int)x/Util.BLOCKLENGTH;
-		int currColC = (int)(x+width/2)/Util.BLOCKLENGTH;
-		int currColR = (int)(x+width)/Util.BLOCKLENGTH;
+		int currColL = (int)x/Util.BLOCKLENGTH; // the column the left side of the snake is on
+		int currColC = (int)(x+width/2)/Util.BLOCKLENGTH; // the column the centre of the snake is on
+		int currColR = (int)(x+width)/Util.BLOCKLENGTH; // the column the right side of the snake is on
 
 		if(blocks[grndRow][currColC].getType() != Block.AIR) {
 			y = grndRow * Util.BLOCKLENGTH - height;
@@ -225,7 +241,7 @@ class Snake {
 				}
 			}
 		}
-		else{
+		else{ // falls if there is no block below
 			y+=velY;
 			if(velY < maxVelY){
 				velY += accelY;
@@ -233,7 +249,7 @@ class Snake {
 		}
 	}
 
-	public void draw(Graphics g, Block[][] blocks) {
+	public void draw(Graphics g, Block[][] blocks) { // draws and updates animation frame for the snake
 		move(blocks);
 
 		if(dir == Util.LEFT) {
@@ -253,26 +269,25 @@ class Snake {
 			g.drawImage(idleR.get((int) animFrame), (int) getX(true), (int)getY(true), null);
 		}
 
-//        g.setColor(Color.YELLOW);
-//        g.drawRect((int)getX(true), (int)getY(true), width, height);
 	}
 }
 
+/*
+Crawler.java
+Isaac Jiang & Jayden Zhao
+Contains methods that move, draw and check collisions for crawler
+*/
 class Crawler {
-	private int width, height;
-	private int health;
-	private double x, y;
-	private int dir;
-	private double speed;
+	private double x, y; // position
+	private int width, height; // dimensions
+	private int health; // hp
+	private int dir; // direction the crawler is facing
 
-	public double getVelX() {return velX;}
+	private double velX, velY; // crawler's velocities
+	private double accelY, maxVelY; // crawler's accerations/velocities for gravity
+	private double animFrame; // current frame of the animation
 
-	private double velX;
-	private double velY;
-	private double maxVelY;
-	private double accelY; // the speed and acceleration the enemy has
-	private double animFrame;
-
+	// arraylist that holds all frames of animation
 	private final ArrayList<Image> idle = new ArrayList<>();
 
 	public Crawler(int x, int y) {
@@ -280,28 +295,23 @@ class Crawler {
 		this.height = 22;
 		this.x = x;
 		this.y = y-height;
-		dir = Util.RIGHT;
+		this.dir = Util.RIGHT;
 		this.health = 10;
-		this.velX = Util.rand.nextInt(1,3);
+		this.velX = Util.rand.nextInt(1,3); // each crawler moves at a random speed so they don't look uniform
 		this.accelY = 1;
 		this.maxVelY = Util.rand.nextInt(5,13);
-		animFrame = 0;
+		this.animFrame = 0;
 
+		// adding all frames of each animation to their arraylists
 		for (int i = 0; i < 2; i++) {
 			idle.add(new ImageIcon("src/assets/enemies/crawler/idle/crawlerIdle" + i + ".png").getImage());
 		}
 	}
 
-	public void setX(int x) {
-		this.x = x;
-	}
-	public void setY(int y) {
-		this.y = y;
-	}
-	public int getHealth() {
+	public int getHealth() { // gets the health of the crawler
 		return health;
 	}
-	public void setHealth(int health) {
+	public void setHealth(int health) { // sets the health of the crawler
 		this.health = health;
 	}
 	public double getX(boolean adjusted) { // gets x
@@ -318,14 +328,14 @@ class Crawler {
 			return y;
 		}
 	}
-	public Rectangle getRect(){return new Rectangle((int)x,(int)y,width,height);}
+	public Rectangle getRect(){return new Rectangle((int)x,(int)y,width,height);} // gets rect for collisions
 
-	public void move(Block[][] blocks){
-		int currRow = (int)y/Util.BLOCKLENGTH;
-		int grndRow = currRow+1; // add one to get the row of blocks the snake is standing on
-		int currColL = (int)x/Util.BLOCKLENGTH;
-		int currColC = (int)(x+width/2)/Util.BLOCKLENGTH;
-		int currColR = (int)(x+width)/Util.BLOCKLENGTH;
+	public void move(Block[][] blocks){ // moves the crawler back and forth and checks if there is solid ground under it
+		int currRow = (int)y/Util.BLOCKLENGTH; // row the crawler's hitbox is occupying
+		int grndRow = currRow+1; // add one to get the row of blocks the crawler is standing on
+		int currColL = (int)x/Util.BLOCKLENGTH; // the column the left side of the crawler is on
+		int currColC = (int)(x+width/2)/Util.BLOCKLENGTH; // the column the centre of the crawler is on
+		int currColR = (int)(x+width)/Util.BLOCKLENGTH; // the column the right side of the crawler is on
 
 		if(blocks[grndRow][currColC].getType() != Block.AIR) {
 			y = grndRow * Util.BLOCKLENGTH - height;
@@ -356,7 +366,7 @@ class Crawler {
 				}
 			}
 		}
-		else{
+		else{ // falls if there is no block below
 			y+=velY;
 			if(velY < maxVelY){
 				velY += accelY;
@@ -364,7 +374,7 @@ class Crawler {
 		}
 	}
 
-	public void draw(Graphics g, Block[][] blocks) {
+	public void draw(Graphics g, Block[][] blocks) { // draws and updates animation frame for the crawler
 		move(blocks);
 
 		if ((int) animFrame == idle.size() - 1) {
@@ -373,31 +383,29 @@ class Crawler {
 			animFrame += 0.05;
 		}
 		g.drawImage(idle.get((int) animFrame), (int) getX(true), (int)getY(true), null);
-
-//        g.setColor(Color.YELLOW);
-//        g.drawRect((int)getX(true), (int)getY(true), width, height);
 	}
 }
 
+/*
+Turtle.java
+Isaac Jiang & Jayden Zhao
+Contains methods that move, draw and check collisions for turtles
+*/
 class Turtle {
-	private final int IDLE = 0, WALK = 1;
-	private int width, height;
-	private int health;
-	private double x, y;
-	private int dir, state;
-	private double speed;
-	private int moveChance, moveTime;
+	private final int IDLE = 0, WALK = 1; // states
+	private double x, y; // position
+	private int width, height; // dimensions
+	private int health; // hp
+	private int dir; // direction the turtle is facing
+	private int state; // turtle's state (idle, walk)
+	private int moveChance, moveTime; // whether or not the turtle moves, and how long the enemy moves/doesn't move
+	private Util.CustomTimer movementTimer = new Util.CustomTimer(); // timer to keep track of moveTime
 
-	public double getVelX() {return velX;}
+	private double velX, velY; // turtle's velocities
+	private double accelY, maxVelY; // turtle's accelerations/velocities for gravity
+	private double animFrame; // current frame of the animation
 
-	Util.CustomTimer movementTimer = new Util.CustomTimer();
-
-	private double velX;
-	private double velY;
-	private double maxVelY;
-	private double accelY; // the speed and acceleration the enemy has
-	private double animFrame;
-
+	// arraylists that hold all frames of animation
 	private final ArrayList<Image> idleL = new ArrayList<>();
 	private final ArrayList<Image> idleR = new ArrayList<>();
 	private final ArrayList<Image> walkL = new ArrayList<>();
@@ -408,16 +416,17 @@ class Turtle {
 		this.height = 24;
 		this.x = x;
 		this.y = y-height;
-		dir = Util.RIGHT;
+		this.dir = Util.RIGHT;
 		this.health = 10;
-		this.velX = Util.rand.nextInt(1,2);
+		this.velX = Util.rand.nextInt(1,2); // each turtle moves at a random speed so they don't look uniform
 		this.accelY = 1;
 		this.maxVelY = Util.rand.nextInt(5,13);
-		state = WALK;
-		animFrame = 0;
-		moveChance = Util.rand.nextInt(100);
-		moveTime = Util.rand.nextInt(1,3);
+		this.state = WALK;
+		this.animFrame = 0;
+		this.moveChance = Util.rand.nextInt(100);
+		this.moveTime = Util.rand.nextInt(1,3);
 
+		// adding all frames of each animation to their arraylists
 		for (int i = 0; i < 4; i++) {
 			idleL.add(new ImageIcon("src/assets/enemies/turtle/idle/turtleIdleL" + i + ".png").getImage());
 		}
@@ -432,18 +441,6 @@ class Turtle {
 		}
 	}
 
-	public void setX(int x) {
-		this.x = x;
-	}
-	public void setY(int y) {
-		this.y = y;
-	}
-	public int getHealth() {
-		return health;
-	}
-	public void setHealth(int health) {
-		this.health = health;
-	}
 	public double getX(boolean adjusted) { // gets x
 		if (adjusted) { // whether you want x relative to the gameplay window
 			return x + Background.getWallLeftPos();
@@ -458,28 +455,28 @@ class Turtle {
 			return y;
 		}
 	}
-	public Rectangle getRect(){return new Rectangle((int)x,(int)y,width,height);}
+	public Rectangle getRect(){return new Rectangle((int)x,(int)y,width,height);} // gets rect for collisions
 
-	public void move(Block[][] blocks) {
-		int currRow = (int) y / Util.BLOCKLENGTH;
-		int grndRow = currRow + 1; // add one to get the row of blocks the snake is standing on
-		int currColL = (int) x / Util.BLOCKLENGTH;
-		int currColC = (int) (x + width / 2) / Util.BLOCKLENGTH;
-		int currColR = (int) (x + width) / Util.BLOCKLENGTH;
+	public void move(Block[][] blocks) { // moves the turtle back and forth and checks if there is solid ground under it
+		int currRow = (int)y/Util.BLOCKLENGTH; // row the turtle's hitbox is occupying
+		int grndRow = currRow+1; // add one to get the row of blocks the turtle is standing on
+		int currColL = (int)x/Util.BLOCKLENGTH; // the column the left side of the turtle is on
+		int currColC = (int)(x+width/2)/Util.BLOCKLENGTH; // the column the centre of the turtle is on
+		int currColR = (int)(x+width)/Util.BLOCKLENGTH; // the column the right side of the turtle is on
 
+		// when the timer runs out, recalculate the change and time
 		if (movementTimer.getElapsedTime() >= moveTime) {
-			state = IDLE;
 			moveChance = Util.rand.nextInt(100);
 			moveTime = Util.rand.nextInt(1,3);
 			movementTimer.restart();
 		}
-		else if(moveChance >= 50){
+		else if(moveChance >= 50){ // 50% chance to walk
 			state = WALK;
 		}
-		else{
+		else{ // 50% chance to idle
 			state = IDLE;
 		}
-//			animFrame = 0;
+
 		if (blocks[grndRow][currColC].getType() != Block.AIR) {
 			y = grndRow * Util.BLOCKLENGTH - height;
 			velY = 0;
@@ -510,7 +507,7 @@ class Turtle {
 					}
 				}
 			}
-		} else {
+		} else { // falls if there is no block below
 			y+=velY;
 			if(velY < maxVelY){
 				velY += accelY;
@@ -518,7 +515,7 @@ class Turtle {
 		}
 	}
 
-	public void draw(Graphics g, Block[][] blocks) {
+	public void draw(Graphics g, Block[][] blocks) { // displays and updates animation frame for the turtle
 		move(blocks);
 
 		if(state==IDLE) {
@@ -555,22 +552,23 @@ class Turtle {
 				g.drawImage(walkR.get((int) animFrame), (int) getX(true), (int) getY(true), null);
 			}
 		}
-
-//        g.setColor(Color.YELLOW);
-//        g.drawRect((int)getX(true), (int)getY(true), width, height);
 	}
 }
 
+/*
+Snail.java
+Isaac Jiang & Jayden Zhao
+Contains methods that move, draw and check collisions for snails
+*/
 class Snail {
-	private int width, height, horiDir, vertDir;
-	private int health;
-	private double x, y;
-
-	public double getVelY() {return velY;}
-
+	private double x, y; // position
+	private int width, height; // dimensions
+	private int health; // hp
+	private int horiDir, vertDir; // direction the snail is facing
 	private double velY; // the speed and acceleration the enemy has
-	private double animFrame;
+	private double animFrame; // current frame of the animation
 
+	// arraylists that hold all frames of animation
 	private final ArrayList<Image> idleU = new ArrayList<>();
 	private final ArrayList<Image> idleD = new ArrayList<>();
 
@@ -583,8 +581,9 @@ class Snail {
 		this.vertDir = vertDir;
 		this.health = 30;
 		this.velY = 1.5;
-		animFrame = 0;
+		this.animFrame = 0;
 
+		// adding all frames of each animation to their arraylists
 		if(horiDir == Util.LEFT){
 			this.x += Util.BLOCKLENGTH;
 			for (int i = 0; i < 4; i++) {
@@ -605,10 +604,12 @@ class Snail {
 		}
 	}
 
-	public void setX(int x) {this.x = x;}
-	public void setY(int y) {this.y = y;}
-	public int getHealth() {return health;}
-	public void setHealth(int health) {this.health = health;}
+	public int getHealth() { // gets the health of the snail
+		return health;
+	}
+	public void setHealth(int health) { // sets the health of the snail
+		this.health = health;
+	}
 	public double getX(boolean adjusted) { // gets x
 		if (adjusted) { // whether you want x relative to the gameplay window
 			return x + Background.getWallLeftPos();
@@ -623,14 +624,13 @@ class Snail {
 			return y;
 		}
 	}
-	public Rectangle getRect(){return new Rectangle((int)x,(int)y,width,height);}
+	public Rectangle getRect(){return new Rectangle((int)x,(int)y,width,height);} // gets rect for collisions
 
-	public void move(Block[][] blocks){
-		int currRow = (int)y/Util.BLOCKLENGTH;
-		int topRow = (int)y/Util.BLOCKLENGTH;
-		int bottomRow = (int) (y + height) / Util.BLOCKLENGTH;
-		int currCol = (int) x / Util.BLOCKLENGTH;
-		int wallCol;
+	public void move(Block[][] blocks){ // moves the snail up and down the wall
+		int topRow = (int)y/Util.BLOCKLENGTH; // row the top the snail is on
+		int bottomRow = (int) (y + height) / Util.BLOCKLENGTH; // row the bottom of the snail is on
+		int currCol = (int) x / Util.BLOCKLENGTH; // the column the snail's hitbox is on
+		int wallCol; // the column the snail is "sticking" to
 		if(horiDir == Util.LEFT) {
 			wallCol = currCol-1;
 		}
@@ -655,7 +655,7 @@ class Snail {
 		}
 	}
 
-	public void draw(Graphics g, Block[][] blocks) {
+	public void draw(Graphics g, Block[][] blocks) { // draws and updates animation frame for the snail
 		move(blocks);
 
 		if(vertDir == Util.TOP) {
@@ -674,33 +674,28 @@ class Snail {
 			}
 			g.drawImage(idleD.get((int) animFrame), (int) getX(true), (int)getY(true), null);
 		}
-
-//        g.setColor(Color.YELLOW);
-//        g.drawRect((int)getX(true), (int)getY(true), width, height);
 	}
 }
 
+/*
+Jelly.java
+Isaac Jiang & Jayden Zhao
+Contains methods that move, draw and check collisions for jellies
+*/
 class Jelly {
-	private final int width, height, imageWidth;
-	private int health;
-	private double x, y;
-	private double speed;
+	private double x, y; // position
+	private int width, height; // dimensions
+	private int imageWidth; // width of the image
+	private int health; // hp
 
-	public double getVelX() {return velX;}
+	private double velX, velY; // jelly's velocities
+	private double maxVelX, maxVelY; // jelly's maximum velocities
+	private double accelX, accelY; // jelly's accelerations
+	private double accelFactor; // how fast the jelly can accelerate
+	private double animFrame; // current frame of the animation
+	private double collisionVel; // velocity of jelly once it collides with a block
 
-	public double getVelY() {return velY;}
-
-	private double velX;
-	private double velY;
-	private double maxVelX;
-	private double maxVelY;
-	private double accelX;
-	private double accelY;
-	private double accelFactor; // the speed and acceleration the enemy has
-	private double animFrame;
-	private boolean moveLeft, moveRight, moveUp, moveDown;
-	private boolean hit;
-
+	// arraylist that holds all the frames of animation
 	ArrayList<Image> idle = new ArrayList<>();
 	public Jelly (int x, int y) {
 		this.x = x;
@@ -709,17 +704,17 @@ class Jelly {
 		this.imageWidth = 40;
 		this.height = 30;
 		this.health = 30;
-		this.speed = 1;
 		this.maxVelX = 2;
 		this.maxVelY = 2;
 		this.accelX = 0;
 		this.accelY = 0;
 		this.accelFactor = .06;
-		animFrame = 0;
-		hit = false;
+		this.animFrame = 0;
+		this.collisionVel = 0.25;
+
+		// adding all frames of each animation to their arraylists
 		for (int i = 0; i < 4; i++) {
 			idle.add(new ImageIcon("src/assets/enemies/jelly/idle/jellyIdle" + i + ".png").getImage().getScaledInstance(imageWidth, height, Image.SCALE_DEFAULT));
-//			idle.set(i, idle.get(i).getScaledInstance((idle.get(i).getWidth(null)*2), (idle.get(i).getHeight(null)*2), Image.SCALE_DEFAULT));
 		}
 	}
 	public double getX(boolean adjusted) { // gets x
@@ -736,29 +731,23 @@ class Jelly {
 			return y;
 		}
 	}
-	public void setX(int x) {
-		this.x = x;
-	}
-	public void setY(int y) {
-		this.y = y;
-	}
 	public int getHealth() {
 		return health;
-	}
+	} // gets the health of the jelly
 	public void setHealth(int health) {
 		this.health = health;
-	}
-	public Rectangle getRect(){return new Rectangle((int) x,(int) y,width,height);}
-	public void isHit() {hit = true;}
-	public void move(Graphics g, Alan alan, Map map) {
+	} // sets the health of the jelly
+	public Rectangle getRect(){return new Rectangle((int) x,(int) y,width,height);} // gets rect for collisions
+	public void isHit() {accelY = 4;} // moves the jelly back if hit by the bullet
+	public void move(Graphics g, Alan alan, Map map) { // calculates the distance between alan and the jelly, moves and updates the animation frame
 		// distance calculations
 		double distX = x + width/2 - AAdventure.getGame().getAlan().getX(false) - alan.getWidth()/2;
-		// how far away the enemy is compared to alan
 		double distY = y + height/2 - AAdventure.getGame().getAlan().getY(false) - alan.getHeight()/2;
-		double distance = Math.hypot(distX, distY); // pythag theorem
+		double distance = Math.hypot(distX, distY);
 
+		// jelly only chases if alan is 400 away
 		if(distance<400) {
-			// adding up how many frames movement has been in x direction, capping out at +-20 to limit terminal velocity
+			// accelerating the jelly towards alan
 			if (distX < 0 && velX < maxVelX) {
 				accelX += accelFactor;
 			} else if (distX > 0 && velX > -maxVelX) {
@@ -769,83 +758,78 @@ class Jelly {
 			} else if (distY > 0 && velY > -maxVelY) {
 				accelY -= accelFactor;
 			}
-			// moving the enemy
-			velX = ((-1 / distance) * distX) * speed + accelX; // -1 so the enemy moves TOWARDS alan, just 1 would make the enemy run away from alan
-			velY = ((-1 / distance) * distY) * speed + accelY; // frames*accel so the enemy speeds up/down for a more "natural" look, instead of perfectly tracking alan
+
+			// calculating the velocities
+			velX = ((-1 / distance) * distX) + accelX; // -1 so the enemy moves TOWARDS alan, just 1 would make the enemy run away from alan
+			velY = ((-1 / distance) * distY) + accelY; // frames*accel so the enemy speeds up/down for a more "natural" look, instead of perfectly tracking alan
 
 			Block[][] blocks = map.getMap();
-			// getting rows with same y values as jelly
-			int prevRow = (int) getY(false) / Util.BLOCKLENGTH;
-			int nextRow = prevRow + 1;
-			int prevCol = (int) getX(false) / Util.BLOCKLENGTH;
-			int nextCol = prevCol + 1;
 
-			// right left collision
+			int prevRow = (int) getY(false) / Util.BLOCKLENGTH; // getting the row the top of the jelly is on
+			int nextRow = prevRow + 1; // getting the row the bottom of the jelly is on
+			int prevCol = (int) getX(false) / Util.BLOCKLENGTH; // getting the column the left of the jelly is on
+			int nextCol = prevCol + 1; // getting the column the right of the jelly is on
+
+			// right to left collision checking
 			for(int r=prevRow; r<=nextRow; r++) {
 				for (int i = 0; i < map.getColumns(); i++) {
 					Block block = blocks[r][i];
 					if (block.getType() == Block.WALL || block.getType() == Block.BOX) {
+						// left side of the block
 						Rectangle leftSide = new Rectangle(block.getX(false), block.getY(false, alan)+1, 1, Util.BLOCKLENGTH-2);
-//                        g.setColor(Color.CYAN);
-//                        g.drawRect(block.getX(true), block.getY(true, alan)+1, 1, Util.BLOCKLENGTH-2);
 						if (getRect().intersects(leftSide)) {
-							velX = -.25;
+							velX = -collisionVel;
 							accelX = 0;
 						}
 					}
 				}
 			}
-			// left right collision
+			// left to right collision checking
 			for(int r=prevRow; r<=nextRow; r++) {
 				for (int i = 0; i < map.getColumns(); i++) {
 					Block block = blocks[r][i];
 					if (block.getType() == Block.WALL || block.getType() == Block.BOX) {
+						// right side of the block
 						Rectangle rightSide = new Rectangle(block.getX(false) + Util.BLOCKLENGTH, block.getY(false, alan)+1, 1, Util.BLOCKLENGTH-2);
-//                        g.setColor(Color.MAGENTA);
-//                        g.drawRect(block.getX(true) + Util.BLOCKLENGTH, block.getY(true, alan)+1, 1, Util.BLOCKLENGTH-2);
 						if (getRect().intersects(rightSide)) {
-							velX = .25;
+							velX = collisionVel;
 							accelX = 0;
 						}
 					}
 				}
 			}
-			// top down collision
+			// top to bottom collision checking
 			for (int i = 0; i < map.getColumns(); i++) {
 				Block block = blocks[nextRow][i];
 				if (block.getType() == Block.WALL || block.getType() == Block.BOX) {
+					// top side of the block
 					Rectangle topSide = new Rectangle(block.getX(false)+1, block.getY(false, alan), Util.BLOCKLENGTH-2, 1);
 					if (getRect().intersects(topSide)) {
-						velY = -.25;
+						velY = -collisionVel;
 						accelY = 0;
 					}
 				}
 			}
 
-			// bottom up collision checking
+			// bottom to top collision checking
 			for (int i = 0; i < map.getColumns(); i++) {
 				Block block = blocks[prevRow][i];
-				// only check bottom collision in solid blocks and when going upwards in y-dir
 				if (block.getType() == Block.WALL || block.getType() == Block.BOX) {
+					// bottom side of the block
 					Rectangle bottomSide = new Rectangle(block.getX(false)+1, block.getY(false, alan) + Util.BLOCKLENGTH, Util.BLOCKLENGTH-2, 1);
 					if (getRect().intersects(bottomSide)) {
-						velY = .25;
+						velY = collisionVel;
 						accelY = 0;
 					}
 				}
 			}
 
-
-			if(hit){
-				accelY = 4;
-				hit = false;
-			}
 			x += velX;
 			y += velY;
 		}
 	}
 
-	public void draw(Graphics g, Alan alan, Map map) {
+	public void draw(Graphics g, Alan alan, Map map) { // draws and updates animation frame for the jelly
 		move(g, alan, map);
 
 		if ((int) animFrame == idle.size() - 1) {
@@ -854,46 +838,37 @@ class Jelly {
 			animFrame += 0.15;
 		}
 		g.drawImage(idle.get((int) animFrame), (int) getX(true)-3, (int)getY(true), null);
-
-//        g.setColor(Color.YELLOW);
-//        g.drawRect((int)getX(true), (int)getY(true), width, height);
-//        g.drawLine((int)getX(true),0,(int)getX(true),1000);
-//        g.drawLine((int)getX(true)+width,0,(int)getX(true)+width,1000);
-//        g.drawLine(0,(int)getY(true),1000,(int)getY(true));
-//        g.drawLine(0,(int)getY(true)+height,1000,(int)getY(true)+height);
 	}
 }
 
+/*
+Bat.java
+Isaac Jiang & Jayden Zhao
+Contains methods that move, draw and check collisions for bats
+*/
 class Bat {
-	private final int HANG = 0, FLY = 1;
-	private int width, height;
-	private int health;
-	private double x, y;
-	private double speed;
-	private int state, dir;
+	private final int HANG = 0, FLY = 1; // states
+	private double x, y; // position
+	private int width, height; // dimensions
+	private int health; // hp
+	private int dir; // direction the bat is facing
+	private int state; // bat's state (hang, fly)
 
-	public double getVelX() {return velX;}
+	private double velX, velY; // bat's velocities
+	private double maxVelX, maxVelY; // bat's maximum velocities
+	private double accelX, accelY; // bat's accelerations
+	private double accelFactor; // how fast the bat can accelerate
+	private double animFrame; // current frame of the animation
+	private double collisionVel; // velocity of bat once it collides with a block
 
-	public double getVelY() {return velY;}
-
-	private double velX;
-	private double velY;
-	private double maxVelX;
-	private double maxVelY;
-	private double accelX;
-	private double accelY;
-	private double accelFactor; // the speed and acceleration the enemy has
-	private double animFrame;
-	private boolean moveLeft, moveRight, moveUp, moveDown;
-	private boolean hit;
-
+	// arraylists that holds all the frames of animation
 	ArrayList<Image> hang = new ArrayList<>();
 	ArrayList<Image> flyL = new ArrayList<>();
 	ArrayList<Image> flyR = new ArrayList<>();
 	public Bat (int x, int y) {
 		this.width = 20;
 		this.height = 28;
-		this.x = x + (Util.BLOCKLENGTH-this.width)/2;
+		this.x = x + (Util.BLOCKLENGTH-this.width)/2; // centres the bat while it hangs
 		this.y = y;
 		this.health = 10;
 		this.maxVelX = 2.5;
@@ -901,10 +876,11 @@ class Bat {
 		this.accelX = 0;
 		this.accelY = 0;
 		this.accelFactor = .5;
-		animFrame = 0;
+		this.animFrame = 0;
 		this.dir = Util.RIGHT;
-		state = HANG;
+		this.state = HANG;
 
+		// adding all frames of each animation to their arraylists
 		for (int i = 0; i < 4; i++) {
 			hang.add(new ImageIcon("src/assets/enemies/bat/hang/batHang" + i + ".png").getImage());
 		}
@@ -930,41 +906,37 @@ class Bat {
 		}
 	}
 
-	int getWidth() {return width;}
-	public void setX(int x) {
-		this.x = x;
-	}
-	public void setY(int y) {
-		this.y = y;
-	}
 	public int getHealth() {
 		return health;
-	}
+	} // gets the health of the bat
 	public void setHealth(int health) {
 		this.health = health;
-	}
-	public Rectangle getRect(){return new Rectangle((int) x,(int) y,width,height);}
-	public void isHit() {hit = true;}
-	public void move(Graphics g, Alan alan, Map map) {
+	} // sets the health of the bat
+	public Rectangle getRect(){return new Rectangle((int) x,(int) y,width,height);} // gets rect for collisions
+	public void move(Graphics g, Alan alan, Map map) { // calculates the distance between alan and the bat, moves and updates the animation frame
 		// distance calculations
 		double distX = x + width/2 - alan.getX(false) - alan.getWidth()/2;
-		// how far away the enemy is compared to alan
 		double distY = y + height/2 - alan.getY(false) - alan.getHeight()/2;
-		double distance = Math.hypot(distX, distY); // pythag theorem
+		double distance = Math.hypot(distX, distY);
 
+		// changing directions
 		if(alan.getX(false) < x){
 			dir = Util.LEFT;
 		}
 		else{
 			dir = Util.RIGHT;
 		}
-		if(distance < 200){
+
+		// if alan is 200 away then activate
+		if(distance < 200 && state == HANG){
 			width = 28;
 			height = 20;
 			state = FLY;
 		}
+
+		// bat chases if alan is 400 away
 		if(distance < 400 && state == FLY) {
-			// adding up how many frames movement has been in x direction, capping out at +-20 to limit terminal velocity
+			// accelerating the bat towards alan
 			if (distX < 0 && velX < maxVelX) {
 				accelX += accelFactor;
 			} else if (distX > 0 && velX > -maxVelX) {
@@ -975,67 +947,67 @@ class Bat {
 			} else if (distY > 0 && velY > -maxVelY) {
 				accelY -= accelFactor;
 			}
-			// moving the enemy
-			velX = ((-1 / distance) * distX) * speed + accelX; // -1 so the enemy moves TOWARDS alan, just 1 would make the enemy run away from alan
-			velY = ((-1 / distance) * distY) * speed + accelY; // frames*accel so the enemy speeds up/down for a more "natural" look, instead of perfectly tracking alan
+
+			// calculating the velocities
+			velX = ((-1 / distance) * distX) + accelX; // -1 so the enemy moves TOWARDS alan, just 1 would make the enemy run away from alan
+			velY = ((-1 / distance) * distY) + accelY; // frames*accel so the enemy speeds up/down for a more "natural" look, instead of perfectly tracking alan
 
 			Block[][] blocks = map.getMap();
-			// getting rows with same y values as jelly
-			int prevRow = (int) getY(false) / Util.BLOCKLENGTH;
-			int nextRow = prevRow + 1;
-			int prevCol = (int) getX(false) / Util.BLOCKLENGTH;
-			int nextCol = prevCol + 1;
 
-			// right left collision
+			int prevRow = (int) getY(false) / Util.BLOCKLENGTH; // getting the row the top of the bat is on
+			int nextRow = prevRow + 1; // getting the row the bottom of the bat is on
+			int prevCol = (int) getX(false) / Util.BLOCKLENGTH; // getting the column the left of the bat is on
+			int nextCol = prevCol + 1; // getting the column the right of the bat is on
+
+			// right to left collision checking
 			for(int r=prevRow; r<=nextRow; r++) {
 				for (int i = 0; i < map.getColumns(); i++) {
 					Block block = blocks[r][i];
 					if (block.getType() == Block.WALL || block.getType() == Block.BOX) {
+						// left side of the block
 						Rectangle leftSide = new Rectangle(block.getX(false), block.getY(false, alan)+1, 1, Util.BLOCKLENGTH-2);
-//                        g.setColor(Color.CYAN);
-//                        g.drawRect(block.getX(true), block.getY(true, alan)+1, 1, Util.BLOCKLENGTH-2);
 						if (getRect().intersects(leftSide)) {
-							velX = -.25;
+							velX = -collisionVel;
 							accelX = 0;
 						}
 					}
 				}
 			}
-			// left right collision
+			// left to right collision checking
 			for(int r=prevRow; r<=nextRow; r++) {
 				for (int i = 0; i < map.getColumns(); i++) {
 					Block block = blocks[r][i];
 					if (block.getType() == Block.WALL || block.getType() == Block.BOX) {
+						// right side of the block
 						Rectangle rightSide = new Rectangle(block.getX(false) + Util.BLOCKLENGTH, block.getY(false, alan)+1, 1, Util.BLOCKLENGTH-2);
-//                        g.setColor(Color.MAGENTA);
-//                        g.drawRect(block.getX(true) + Util.BLOCKLENGTH, block.getY(true, alan)+1, 1, Util.BLOCKLENGTH-2);
 						if (getRect().intersects(rightSide)) {
-							velX = .25;
+							velX = collisionVel;
 							accelX = 0;
 						}
 					}
 				}
 			}
-			// top down collision
+			// top to bottom collision checking
 			for (int i = 0; i < map.getColumns(); i++) {
 				Block block = blocks[nextRow][i];
 				if (block.getType() == Block.WALL || block.getType() == Block.BOX) {
+					// top side of the block
 					Rectangle topSide = new Rectangle(block.getX(false)+1, block.getY(false, alan), Util.BLOCKLENGTH-2, 1);
 					if (getRect().intersects(topSide)) {
-						velY = -.25;
+						velY = -collisionVel;
 						accelY = 0;
 					}
 				}
 			}
 
-			// bottom up collision checking
+			// bottom to top collision checking
 			for (int i = 0; i < map.getColumns(); i++) {
 				Block block = blocks[prevRow][i];
-				// only check bottom collision in solid blocks and when going upwards in y-dir
 				if (block.getType() == Block.WALL || block.getType() == Block.BOX) {
+					// bottom side of the block
 					Rectangle bottomSide = new Rectangle(block.getX(false)+1, block.getY(false, alan) + Util.BLOCKLENGTH, Util.BLOCKLENGTH-2, 1);
 					if (getRect().intersects(bottomSide)) {
-						velY = .25;
+						velY = collisionVel;
 						accelY = 0;
 					}
 				}
@@ -1046,7 +1018,7 @@ class Bat {
 		}
 	}
 
-	public void draw(Graphics g, Alan alan, Map map) {
+	public void draw(Graphics g, Alan alan, Map map) { // draws and updates animation frame for the bat
 		move(g, alan, map);
 
 		if (state == HANG){
@@ -1075,34 +1047,30 @@ class Bat {
 				g.drawImage(flyR.get((int) animFrame), (int) getX(true) - 3, (int) getY(true), null);
 			}
 		}
-
-//        g.setColor(Color.YELLOW);
-//        g.drawRect((int)getX(true), (int)getY(true), width, height);
 	}
 }
 
+/*
+Skull.java
+Isaac Jiang & Jayden Zhao
+Contains methods that move, draw and check collisions for skulls
+*/
 class Skull {
-	public static final int CALM = 0, ANGRY = 1;
-	private int width, height;
-	private int health;
-	private double x, y;
-	private double speed;
-	private int state, dir;
+	public static final int CALM = 0, ANGRY = 1; // states
+	private double x, y; // position
+	private int width, height; // dimensions
+	private int health; // hp
+	private int dir; // direction the skull is facing
+	private int state; // skull's state (calm, angry)
 
-	public double getVelX() {return velX;}
+	private double velX, velY; // skull's velocities
+	private double maxVelX, maxVelY; // skull's maximum velocities
+	private double accelX, accelY; // skull's accelerations
+	private double accelFactor; // how fast the skull can accelerate
+	private double animFrame; // current frame of the animation
+	private double collisionVel; // velocity of skull once it collides with a block
 
-	public double getVelY() {return velY;}
-
-	private double velX;
-	private double velY;
-	private double maxVelX;
-	private double maxVelY;
-	private double accelX;
-	private double accelY;
-	private double accelFactor; // the speed and acceleration the enemy has
-	private double animFrame;
-	private boolean moveLeft, moveRight, moveUp, moveDown;
-
+	// arraylists that holds all the frames of animation
 	ArrayList<Image> calmL = new ArrayList<>();
 	ArrayList<Image> calmR = new ArrayList<>();
 	ArrayList<Image> angryL = new ArrayList<>();
@@ -1118,10 +1086,11 @@ class Skull {
 		this.accelX = 0;
 		this.accelY = 0;
 		this.accelFactor = .1;
-		animFrame = 0;
+		this.animFrame = 0;
 		this.dir = Util.RIGHT;
-		state = CALM;
+		this.state = CALM;
 
+		// adding all frames of each animation to their arraylists
 		for (int i = 0; i < 4; i++) {
 			calmL.add(new ImageIcon("src/assets/enemies/skull/calm/skullCalmL" + i + ".png").getImage());
 		}
@@ -1150,28 +1119,21 @@ class Skull {
 		}
 	}
 
-	int getWidth() {return width;}
-	public void setX(int x) {
-		this.x = x;
-	}
-	public void setY(int y) {
-		this.y = y;
-	}
 	public int getHealth() {
 		return health;
-	}
+	} // gets the health of the skull
 	public void setHealth(int health) {
 		this.health = health;
-	}
-	public Rectangle getRect(){return new Rectangle((int) x,(int) y,width,height);}
-	public void hit() {
+	} // sets the health of the skull
+	public Rectangle getRect(){return new Rectangle((int) x,(int) y,width,height);} // gets rect for collisions
+	public void hit() { // sets the skull to be angry when hit by a bullet
 		state = ANGRY;
 		maxVelX = 2.4;
 		maxVelY = 2.4;
 		accelFactor = 0.6;
 		animFrame = 0;
 	}
-	public int getState(){ return state;}
+	public int getState(){ return state;} // gets if the skull is calm or angry to see if alan can stomp on it or not
 	public void move(Graphics g, Alan alan, Map map) {
 		// distance calculations
 		double distX = x + width/2 - alan.getX(false) - alan.getWidth()/2;
@@ -1179,6 +1141,7 @@ class Skull {
 		double distY = y + height/2 - alan.getY(false) - alan.getHeight()/2;
 		double distance = Math.hypot(distX, distY); // pythag theorem
 
+		// changing directions
 		if (alan.getX(false) < x){
 			dir = Util.LEFT;
 		}
@@ -1199,66 +1162,65 @@ class Skull {
 				accelY -= accelFactor;
 			}
 			// moving the enemy
-			velX = ((-1 / distance) * distX) * speed + accelX; // -1 so the enemy moves TOWARDS alan, just 1 would make the enemy run away from alan
-			velY = ((-1 / distance) * distY) * speed + accelY; // frames*accel so the enemy speeds up/down for a more "natural" look, instead of perfectly tracking alan
+			velX = ((-1 / distance) * distX) + accelX; // -1 so the enemy moves TOWARDS alan, just 1 would make the enemy run away from alan
+			velY = ((-1 / distance) * distY) + accelY; // frames*accel so the enemy speeds up/down for a more "natural" look, instead of perfectly tracking alan
 
 			Block[][] blocks = map.getMap();
-			// getting rows with same y values as jelly
-			int prevRow = (int) getY(false) / Util.BLOCKLENGTH;
-			int nextRow = prevRow + 1;
-			int prevCol = (int) getX(false) / Util.BLOCKLENGTH;
-			int nextCol = prevCol + 1;
 
-			// right left collision
+			int prevRow = (int) getY(false) / Util.BLOCKLENGTH; // getting the row the top of the skull is on
+			int nextRow = prevRow + 1; // getting the row the bottom of the skull is on
+			int prevCol = (int) getX(false) / Util.BLOCKLENGTH; // getting the column the left of the skull is on
+			int nextCol = prevCol + 1; // getting the column the right of the skull is on
+
+			// right to left collision checking
 			for(int r=prevRow; r<=nextRow; r++) {
 				for (int i = 0; i < map.getColumns(); i++) {
 					Block block = blocks[r][i];
 					if (block.getType() == Block.WALL || block.getType() == Block.BOX) {
+						// left side of the block
 						Rectangle leftSide = new Rectangle(block.getX(false), block.getY(false, alan)+1, 1, Util.BLOCKLENGTH-2);
-//                        g.setColor(Color.CYAN);
-//                        g.drawRect(block.getX(true), block.getY(true, alan)+1, 1, Util.BLOCKLENGTH-2);
 						if (getRect().intersects(leftSide)) {
-							velX = -.25;
+							velX = -collisionVel;
 							accelX = 0;
 						}
 					}
 				}
 			}
-			// left right collision
+			// left to right collision checking
 			for(int r=prevRow; r<=nextRow; r++) {
 				for (int i = 0; i < map.getColumns(); i++) {
 					Block block = blocks[r][i];
 					if (block.getType() == Block.WALL || block.getType() == Block.BOX) {
+						// right side of the block
 						Rectangle rightSide = new Rectangle(block.getX(false) + Util.BLOCKLENGTH, block.getY(false, alan)+1, 1, Util.BLOCKLENGTH-2);
-//                        g.setColor(Color.MAGENTA);
-//                        g.drawRect(block.getX(true) + Util.BLOCKLENGTH, block.getY(true, alan)+1, 1, Util.BLOCKLENGTH-2);
 						if (getRect().intersects(rightSide)) {
-							velX = .25;
+							velX = collisionVel;
 							accelX = 0;
 						}
 					}
 				}
 			}
-			// top down collision
+			// top to bottom collision checking
 			for (int i = 0; i < map.getColumns(); i++) {
 				Block block = blocks[nextRow][i];
 				if (block.getType() == Block.WALL || block.getType() == Block.BOX) {
+					// top side of the block
 					Rectangle topSide = new Rectangle(block.getX(false)+1, block.getY(false, alan), Util.BLOCKLENGTH-2, 1);
 					if (getRect().intersects(topSide)) {
-						velY = -.25;
+						velY = -collisionVel;
 						accelY = 0;
 					}
 				}
 			}
 
-			// bottom up collision checking
+			// bottom to top collision checking
 			for (int i = 0; i < map.getColumns(); i++) {
 				Block block = blocks[prevRow][i];
-				// only check bottom collision in solid blocks and when going upwards in y-dir
 				if (block.getType() == Block.WALL || block.getType() == Block.BOX) {
+					// bottom side of the block
 					Rectangle bottomSide = new Rectangle(block.getX(false)+1, block.getY(false, alan) + Util.BLOCKLENGTH, Util.BLOCKLENGTH-2, 1);
 					if (getRect().intersects(bottomSide)) {
-						velY = .25;
+						velY = collisionVel;
 						accelY = 0;
 					}
 				}
@@ -1269,7 +1231,7 @@ class Skull {
 		}
 	}
 
-	public void draw(Graphics g, Alan alan, Map map) {
+	public void draw(Graphics g, Alan alan, Map map) { // draws and updates animation frame for the skull
 		move(g, alan, map);
 
 		if (state == CALM){
