@@ -36,6 +36,7 @@ public class Shop {
         this.equippedItems = new int[allItems.size()];
 
         try {
+            saveItems();
             Scanner f = new Scanner(new BufferedReader(new FileReader("src/assets/shop/items.txt")));
             if (f.hasNext()) {
                 ArrayList<ArrayList<Cosmetics>> items = this.allItems;
