@@ -50,6 +50,7 @@ public class GameOver extends JPanel implements KeyListener, ActionListener, Mou
 	@Override
 	public void mouseClicked(MouseEvent e) {
 		requestFocus();
+		AAdventure.getGame().getAlan().setMaxCombo(0);
 		GameManager.toLevel(0,true);
 	}
 	@Override

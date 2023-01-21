@@ -236,7 +236,9 @@ public class Shop {
 
             int x = (AAdventure.getGameWidth()/2)-(item.getWidth()/2), y = (i*200)+(int)offsetY;
 
-            g.fillRect(x,y,item.getWidth()+4,item.getHeight()+4);
+            if (selectedType != 2) {
+                g.fillRect(x,y,item.getWidth()+4,item.getHeight()+4);
+            }
 
             if (item.getOwned()) {
                 g.drawString("OWNED", x+(item.getWidth()/2)-("OWNED".length()*7), y+item.getHeight()+40);

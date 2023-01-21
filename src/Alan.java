@@ -145,6 +145,7 @@ public class Alan {
     public int getHeight() {return height;}
     public int getMaxCombo() {return maxCombo;}
     public void addCombo() {combo++;}
+    public void setMaxCombo(int c) {maxCombo = c;}
 
     // changes state
     public void changeState(int MODE, int d, boolean forceChange) {

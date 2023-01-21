@@ -35,7 +35,7 @@ public class GameManager {
 
 	// rows per level and total num of levels
 	private static int rows = 250;
-	private final static int levelCount = 3;
+	private final static int levelCount = 4;
 
 	// loading total gems from previous runs
 	public static void loadGems() {
