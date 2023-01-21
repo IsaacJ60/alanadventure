@@ -19,13 +19,13 @@ public class EnemyManager{
 	private ArrayList<Skull> skulls = new ArrayList<>();
 
 	// methods to get arraylists of enemies for collisions
-	private ArrayList<Snake> getSnakes() {return snakes;}
-	private ArrayList<Crawler> getCrawlers() {return crawlers;}
-	private ArrayList<Turtle> getTurtles() {return turtles;}
-	private ArrayList<Snail> getSnails() {return snails;}
-	private ArrayList<Jelly> getJellies() {return jellies;}
-	private ArrayList<Bat> getBats() {return bats;}
-	private ArrayList<Skull> getSkulls() {return skulls;}
+	public ArrayList<Snake> getSnakes() {return snakes;}
+	public ArrayList<Crawler> getCrawlers() {return crawlers;}
+	public ArrayList<Turtle> getTurtles() {return turtles;}
+	public ArrayList<Snail> getSnails() {return snails;}
+	public ArrayList<Jelly> getJellies() {return jellies;}
+	public ArrayList<Bat> getBats() {return bats;}
+	public ArrayList<Skull> getSkulls() {return skulls;}
 
 	// methods to add enemies to their arraylists
 	public void addSnake(int x, int y) {snakes.add(new Snake(x,y));}
