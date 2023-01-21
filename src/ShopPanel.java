@@ -135,7 +135,7 @@ public class ShopPanel extends JPanel implements KeyListener, ActionListener, Mo
         shop.draw(g, keys, GameManager.getGemManager());
 
         // UI ELEMENTS
-        GameManager.getGemManager().displayGemUI(g,true,false, AAdventure.getGame().getAlan());
+        GameManager.getGemManager().displayGemUI(g,true,false, AAdventure.getGame().getAlan(), 65, 26);
         UI.displayAll(g, AAdventure.getGame().getAlan(), AAdventure.getGame().getPowerups());
 
         alpha = Util.increaseOpacity(alpha, false);

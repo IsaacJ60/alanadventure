@@ -89,7 +89,18 @@ public class GameOver extends JPanel implements KeyListener, ActionListener, Mou
 		bg.draw(g, new Map(new Block[100][9]), true, false, false);
 
 		// UI ELEMENTS
-		GameManager.getGemManager().displayGemUI(g,false,true, AAdventure.getGame().getAlan());
+		g.setColor(Color.WHITE);
+		g.setFont(Util.fontText);
+		g.drawString("GAME OVER", 355, 100);
+
+		g.setFont(Util.fontTextSmall);
+		g.drawString("Max Combo: " + AAdventure.getGame().getAlan().getMaxCombo(), 255, 200);
+//		g.drawString("Time: " + AAdventure.getGame().getAlan().getRunTime()/60 + ":" + AAdventure.getGame().getAlan().getRunTime()%60, 255, 230);
+
+		g.drawString("Gems Gained:", 355, 250);
+		GameManager.getGemManager().displayGemUI(g,false,true, AAdventure.getGame().getAlan(), 390, 260);
+		g.drawString("Total Gems:", 355, 340);
+		GameManager.getGemManager().displayGemUI(g,true,false, AAdventure.getGame().getAlan(), 390, 365);
 
 		alpha = Util.increaseOpacity(alpha, false);
 		Util.overlay(g,0,0,0,alpha);

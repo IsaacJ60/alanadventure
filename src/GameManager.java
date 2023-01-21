@@ -25,7 +25,7 @@ public class GameManager {
     public static Block[][] introblocks;
     public static Map intromap;
 
-    private static int rows = 100;
+    private static int rows = 500;
     private final static int levelCount = 100;
 
     public static void loadGems() {

@@ -139,7 +139,7 @@ public class Blaster {
         ArrayList<Bullet> rm = new ArrayList<>(); // removal list for bullets
         for (Bullet b : bullets) { // go through all bullets
             // enemy collisions
-            if (getEnemyCollision(b, enemies.getSnakes(), enemies.getCrawlers(), enemies.getTurtles(), enemies.getSnails(), enemies.getJellies(), enemies.getBats())) {
+            if (getEnemyCollision(b, enemies.getSnakes(), enemies.getCrawlers(), enemies.getTurtles(), enemies.getSnails(), enemies.getJellies(), enemies.getBats(), enemies.getSkulls())) {
                 rm.add(b);
             }
             // block collisions
@@ -158,13 +158,14 @@ public class Blaster {
         }
     }
 
-    public boolean getEnemyCollision(Bullet bu, ArrayList<Snake> snakes, ArrayList<Crawler> crawlers, ArrayList<Turtle> turtles, ArrayList<Snail> snails, ArrayList<Jelly> jellies, ArrayList<Bat> bats) {
+    public boolean getEnemyCollision(Bullet bu, ArrayList<Snake> snakes, ArrayList<Crawler> crawlers, ArrayList<Turtle> turtles, ArrayList<Snail> snails, ArrayList<Jelly> jellies, ArrayList<Bat> bats, ArrayList<Skull> skulls) {
         ArrayList<Snake> removalSnake = new ArrayList<>();
         ArrayList<Crawler> removalCrawler = new ArrayList<>();
         ArrayList<Turtle> removalTurtle = new ArrayList<>();
         ArrayList<Snail> removalSnail= new ArrayList<>();
         ArrayList<Jelly> removalJelly = new ArrayList<>();
         ArrayList<Bat> removalBat = new ArrayList<>();
+        ArrayList<Skull> removalSkull = new ArrayList<>();
 
         for (Snake s:snakes) {
             if (s.getRect().intersects(bu.getRect())) {
@@ -198,7 +199,6 @@ public class Blaster {
 
         for (Turtle t:turtles) {
             if (t.getRect().intersects(bu.getRect())) {
-                System.out.println("asdf");
                 return true;
             }
         }
@@ -244,6 +244,22 @@ public class Blaster {
 
                 for(Bat r:removalBat){
                     bats.remove(r);
+                }
+                return true;
+            }
+        }
+
+        for (Skull s: skulls) {
+            if (s.getRect().intersects(bu.getRect())) {
+                s.setHealth(s.getHealth()-damage);
+                s.hit();
+                if (s.getHealth() <= 0) {
+                    removalSkull.add(s);
+                    GameManager.getGemManager().spawnGems((int)s.getX(false),(int)s.getY(false), 3);
+                }
+
+                for(Skull r:removalSkull){
+                    skulls.remove(r);
                 }
                 return true;
             }
