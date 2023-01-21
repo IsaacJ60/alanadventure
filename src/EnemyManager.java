@@ -34,7 +34,7 @@ public class EnemyManager{
 					if(Util.rand.nextInt(100) <= 45) {
 						addSnake(blocks[i][j].getX(false), blocks[i][j].getY(false, alan));
 					}
-					else if (Util.rand.nextInt(100)<=20){
+					else if (Util.rand.nextInt(100) <= 20){
 						addCrawler(blocks[i][j].getX(false), blocks[i][j].getY(false, alan));
 					}
 					else if (Util.rand.nextInt(100) <= 20){
@@ -50,17 +50,17 @@ public class EnemyManager{
 		for(int i=Util.GENERATIONSTART; i< blocks.length-Util.GENERATIONEND; i++){
 			for(int j=1; j<blocks[i].length-1; j++) {
 				if(blocks[i][j-1].getType() == Block.AIR && blocks[i][j].getType() == Block.WALL && blocks[i+1][j-1].getType() == Block.AIR && blocks[i+1][j].getType() == Block.WALL) {
-					if(Util.rand.nextInt(100)<=45) {
-						addSnail(blocks[i][j].getX(false), blocks[i][j].getY(false, alan), Snail.RIGHT, Snail.UP);
+					if(Util.rand.nextInt(100)<=50) {
+						addSnail(blocks[i][j].getX(false), blocks[i][j].getY(false, alan), Util.RIGHT, Util.TOP);
                         i += 2*Util.MAXCHUNKSIZE;
 					}
 				}
-//				else if(blocks[i][j+1].getType() == Block.AIR && blocks[i][j].getType() == Block.WALL && blocks[i+1][j+1].getType() == Block.AIR && blocks[i+1][j].getType() == Block.WALL) {
-//					if(Util.rand.nextInt(100)<=45) {
-//						addSnail(blocks[i][j].getX(false), blocks[i][j].getY(false, alan), Snail.LEFT, Snail.UP);
-//						i += Util.MAXCHUNKSIZE;
-//					}
-//				}
+				if(blocks[i][j+1].getType() == Block.AIR && blocks[i][j].getType() == Block.WALL && blocks[i+1][j+1].getType() == Block.AIR && blocks[i+1][j].getType() == Block.WALL) {
+					if(Util.rand.nextInt(100)<=50) {
+						addSnail(blocks[i][j].getX(false), blocks[i][j].getY(false, alan), Util.LEFT, Util.TOP);
+						i += 2*Util.MAXCHUNKSIZE;
+					}
+				}
 			}
 		}
 	}
@@ -126,7 +126,6 @@ public class EnemyManager{
 }
 
 class Snake {
-	private final int LEFT = 0, RIGHT = 1;
 	private int width, height;
 	private int health;
 	private double x, y;
@@ -149,7 +148,7 @@ class Snake {
 		this.height = 18;
 		this.x = x;
 		this.y = y-height;
-		dir = RIGHT;
+		dir = Util.RIGHT;
 		this.health = 10;
 		this.velX = Util.rand.nextInt(1,3);
 		this.accelY = 1;
@@ -202,9 +201,9 @@ class Snake {
 		if(blocks[grndRow][currColC].getType() != Block.AIR) {
 			y = grndRow * Util.BLOCKLENGTH - height;
 			velY = 0;
-			if (dir == LEFT) {
+			if (dir == Util.LEFT) {
 				if (x <= 0) {
-					dir = RIGHT;
+					dir = Util.RIGHT;
 					x += velX;
 				} else {
 					if (blocks[grndRow][currColL].getType() != Block.AIR && blocks[grndRow - 1][currColL].getType() == Block.AIR) {
@@ -216,13 +215,13 @@ class Snake {
 				}
 			} else {
 				if (x + width >= (blocks[0].length-1) * Util.BLOCKLENGTH) {
-					dir = LEFT;
+					dir = Util.LEFT;
 					x -= velX;
 				} else {
 					if (blocks[grndRow][currColR].getType() != Block.AIR && blocks[grndRow - 1][currColR].getType() == Block.AIR) {
 						x += velX;
 					} else {
-						dir = LEFT;
+						dir = Util.LEFT;
 						x -= velX;
 					}
 				}
@@ -239,7 +238,7 @@ class Snake {
 	public void draw(Graphics g, Block[][] blocks) {
 		move(blocks);
 
-		if(dir == LEFT) {
+		if(dir == Util.LEFT) {
 			if ((int) animFrame == idleL.size() - 1) {
 				animFrame = 0;
 			} else {
@@ -262,7 +261,6 @@ class Snake {
 }
 
 class Crawler {
-	private final int LEFT = 0, RIGHT = 1;
 	private int width, height;
 	private int health;
 	private double x, y;
@@ -284,7 +282,7 @@ class Crawler {
 		this.height = 22;
 		this.x = x;
 		this.y = y-height;
-		dir = RIGHT;
+		dir = Util.RIGHT;
 		this.health = 10;
 		this.velX = Util.rand.nextInt(1,3);
 		this.accelY = 1;
@@ -334,9 +332,9 @@ class Crawler {
 		if(blocks[grndRow][currColC].getType() != Block.AIR) {
 			y = grndRow * Util.BLOCKLENGTH - height;
 			velY = 0;
-			if (dir == LEFT) {
+			if (dir == Util.LEFT) {
 				if (x <= 0) {
-					dir = RIGHT;
+					dir = Util.RIGHT;
 					x += velX;
 				} else {
 					if (blocks[grndRow][currColL].getType() != Block.AIR && blocks[grndRow - 1][currColL].getType() == Block.AIR) {
@@ -348,13 +346,13 @@ class Crawler {
 				}
 			} else {
 				if (x + width >= (blocks[0].length-1) * Util.BLOCKLENGTH) {
-					dir = LEFT;
+					dir = Util.LEFT;
 					x -= velX;
 				} else {
 					if (blocks[grndRow][currColR].getType() != Block.AIR && blocks[grndRow - 1][currColR].getType() == Block.AIR) {
 						x += velX;
 					} else {
-						dir = LEFT;
+						dir = Util.LEFT;
 						x -= velX;
 					}
 				}
@@ -385,7 +383,6 @@ class Crawler {
 
 class Turtle {
 	private final int IDLE = 0, WALK = 1;
-	private final int LEFT = 0, RIGHT = 1;
 	private int width, height;
 	private int health;
 	private double x, y;
@@ -413,7 +410,7 @@ class Turtle {
 		this.height = 24;
 		this.x = x;
 		this.y = y-height;
-		dir = RIGHT;
+		dir = Util.RIGHT;
 		this.health = 10;
 		this.velX = Util.rand.nextInt(1,2);
 		this.accelY = 1;
@@ -472,7 +469,6 @@ class Turtle {
 		int currColC = (int) (x + width / 2) / Util.BLOCKLENGTH;
 		int currColR = (int) (x + width) / Util.BLOCKLENGTH;
 
-//		System.out.println(movementTimer.getElapsedTime());
 		if (movementTimer.getElapsedTime() >= moveTime) {
 			state = IDLE;
 			moveChance = Util.rand.nextInt(100);
@@ -490,9 +486,9 @@ class Turtle {
 			y = grndRow * Util.BLOCKLENGTH - height;
 			velY = 0;
 			if(state == WALK) {
-				if (dir == LEFT) {
+				if (dir == Util.LEFT) {
 					if (x <= 0) {
-						dir = RIGHT;
+						dir = Util.RIGHT;
 						x += velX;
 					} else {
 						if (blocks[grndRow][currColL].getType() != Block.AIR && blocks[grndRow - 1][currColL].getType() == Block.AIR) {
@@ -504,13 +500,13 @@ class Turtle {
 					}
 				} else {
 					if (x + width >= (blocks[0].length - 1) * Util.BLOCKLENGTH) {
-						dir = LEFT;
+						dir = Util.LEFT;
 						x -= velX;
 					} else {
 						if (blocks[grndRow][currColR].getType() != Block.AIR && blocks[grndRow - 1][currColR].getType() == Block.AIR) {
 							x += velX;
 						} else {
-							dir = LEFT;
+							dir = Util.LEFT;
 							x -= velX;
 						}
 					}
@@ -528,7 +524,7 @@ class Turtle {
 		move(blocks);
 
 		if(state==IDLE) {
-			if (dir == LEFT) {
+			if (dir == Util.LEFT) {
 				if ((int) animFrame >= idleL.size() - 1) {
 					animFrame = 0;
 				} else {
@@ -545,7 +541,7 @@ class Turtle {
 			}
 		}
 		else if(state==WALK){
-			if (dir == LEFT) {
+			if (dir == Util.LEFT) {
 				if ((int) animFrame >= walkL.size() - 1) {
 					animFrame = 0;
 				} else {
@@ -568,8 +564,7 @@ class Turtle {
 }
 
 class Snail {
-	public static final int LEFT = 0, RIGHT = 1, UP = 2, DOWN = 3;
-	private int width, height, dir;
+	private int width, height, horiDir, vertDir;
 	private int health;
 	private double x, y;
 
@@ -586,12 +581,13 @@ class Snail {
 		this.height = 42;
 		this.x = x;
 		this.y = y;
-		this.dir = vertDir;
+		this.horiDir = horiDir;
+		this.vertDir = vertDir;
 		this.health = 30;
 		this.velY = 1.5;
 		animFrame = 0;
 
-		if(horiDir == LEFT){
+		if(horiDir == Util.LEFT){
 			this.x += Util.BLOCKLENGTH;
 			for (int i = 0; i < 4; i++) {
 				idleU.add(new ImageIcon("src/assets/enemies/snail/idle/snailIdleLU" + i + ".png").getImage());
@@ -637,26 +633,25 @@ class Snail {
 		int bottomRow = (int) (y + height) / Util.BLOCKLENGTH;
 		int currCol = (int) x / Util.BLOCKLENGTH;
 		int wallCol;
-		if(dir == LEFT) {
+		if(horiDir == Util.LEFT) {
 			wallCol = currCol-1;
 		}
 		else{
 			wallCol = currCol+1;
 		}
 
-		if(dir == UP) {
+		if (vertDir == Util.TOP) {
 			if (blocks[topRow][wallCol].getType() == Block.WALL && blocks[topRow][currCol].getType() == Block.AIR) {
 				y -= velY;
 			} else {
-				dir = DOWN;
+				vertDir = Util.BOTTOM;
 				y += velY;
 			}
-		}
-		else{
+		} else {
 			if (blocks[bottomRow][wallCol].getType() == Block.WALL && blocks[bottomRow][currCol].getType() == Block.AIR) {
 				y += velY;
 			} else {
-				dir = UP;
+				vertDir = Util.TOP;
 				y -= velY;
 			}
 		}
@@ -665,7 +660,7 @@ class Snail {
 	public void draw(Graphics g, Block[][] blocks) {
 		move(blocks);
 
-		if(dir == UP) {
+		if(vertDir == Util.TOP) {
 			if ((int) animFrame == idleU.size() - 1) {
 				animFrame = 0;
 			} else {

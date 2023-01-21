@@ -50,7 +50,6 @@ public class Alan {
     ArrayList<ArrayList<Image>> allAnims;
 
     // TIMERS
-    Util.CustomTimer runTimer = new Util.CustomTimer();
     Util.CustomTimer jumpTimer = new Util.CustomTimer();
     Util.CustomTimer invulTimer = new Util.CustomTimer();
 
@@ -145,8 +144,7 @@ public class Alan {
     public int getWidth() {return width;}
     public int getHeight() {return height;}
     public int getMaxCombo() {return maxCombo;}
-    public double getRunTime() {return runTimer.getElapsedTime();}
-    public Util.CustomTimer getRunTimer() {return runTimer;}
+    public void addCombo() {combo++;}
 
     public void changeState(int MODE, int d, boolean forceChange) { // changes state
         if (state != MODE || d != dir) {
@@ -513,7 +511,6 @@ public class Alan {
                 // display combo
                 if(combo > maxCombo){
                     maxCombo = combo;
-                    System.out.println(maxCombo);
                 }
                 combo = 0;
                 velY = 0;
@@ -628,6 +625,10 @@ public class Alan {
     public int draw(Graphics g, boolean[] keys, Map map, Powerups powerups, EnemyManager enemies) { //
 
         int collisionWall = move(keys, g, map, powerups, enemies);
+
+        // displaying combo
+        g.setFont(Util.fontTextSmaller);
+        g.drawString(Integer.toString(combo), getX(true)+8, getY(true));
 
         if (weapon.isAlanShoot()) {
             if ((int) animFrame == allAnims.get(animShoot*2).size()-1) {

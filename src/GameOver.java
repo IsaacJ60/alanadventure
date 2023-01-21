@@ -36,6 +36,7 @@ public class GameOver extends JPanel implements KeyListener, ActionListener, Mou
 
 		bg = new Background();
 
+
 		timer = new Timer(25, this); // manages frames
 		timer.start();
 	}
@@ -95,7 +96,6 @@ public class GameOver extends JPanel implements KeyListener, ActionListener, Mou
 
 		g.setFont(Util.fontTextSmall);
 		g.drawString("Max Combo: " + AAdventure.getGame().getAlan().getMaxCombo(), 255, 200);
-//		g.drawString("Time: " + AAdventure.getGame().getAlan().getRunTime()/60 + ":" + AAdventure.getGame().getAlan().getRunTime()%60, 255, 230);
 
 		g.drawString("Gems Gained:", 355, 250);
 		GameManager.getGemManager().displayGemUI(g,false,true, AAdventure.getGame().getAlan(), 390, 260);
