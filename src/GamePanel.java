@@ -123,7 +123,7 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener, Mo
         alan.draw(g, keys, MapList.getAllMaps().get(Util.getLevel()), powers, enemyManager);
 
         // UI ELEMENTS
-        GameManager.getGemManager().displayGemUI(g,false,true, alan);
+        GameManager.getGemManager().displayGemUI(g,false,true, alan, 65, 26);
         UI.displayAll(g, alan, powers);
 
         if (alan.getY(false)/Util.BLOCKLENGTH < 30) {

@@ -18,6 +18,7 @@ public class EnemyManager{
 	private ArrayList<Turtle> turtles = new ArrayList<>();
 	private ArrayList<Jelly> jellies = new ArrayList<>();
 	private ArrayList<Bat> bats = new ArrayList<>();
+	private ArrayList<Skull> skulls = new ArrayList<>();
 
 	public ArrayList<Snake> getSnakes() {return snakes;}
 	public ArrayList<Crawler> getCrawlers() {return crawlers;}
@@ -25,6 +26,7 @@ public class EnemyManager{
 	public ArrayList<Snail> getSnails() {return snails;}
 	public ArrayList<Jelly> getJellies() {return jellies;}
 	public ArrayList<Bat> getBats() {return bats;}
+	public ArrayList<Skull> getSkulls() {return skulls;}
 
 	public void addSnake(int x, int y) {snakes.add(new Snake(x,y));}
 	public void addSnail(int x, int y, int horiDir, int vertDir) {snails.add(new Snail(x,y,horiDir,vertDir));}
@@ -32,19 +34,19 @@ public class EnemyManager{
 	public void addTurtle(int x, int y) {turtles.add(new Turtle(x,y));}
 	public void addJelly(int x, int y) {jellies.add(new Jelly(x,y));}
 	public void addBat(int x, int y) {bats.add(new Bat(x,y));}
+	public void addSkull(int x, int y) {skulls.add(new Skull(x,y));}
 
 	public void generateFloorEnemies(Block[][] blocks, Alan alan) {
 		for(int i=Util.GENERATIONSTART; i<blocks.length-Util.GENERATIONEND; i++){
 			for(int j=1; j<blocks[i].length-1; j++) {
-				if ((blocks[i-1][j].getType() == Block.AIR && blocks[i][j].getType() != Block.AIR && blocks[i][j].getType() != Block.SPIKE) && (blocks[i-1][j-1].getType() == Block.AIR && blocks[i][j-1].getType() != Block.AIR)) {
-					int spawnChance = Util.rand.nextInt(100);
+				if ((blocks[i-1][j].getType() == Block.AIR && blocks[i][j].getType() != Block.AIR) && (blocks[i-1][j-1].getType() == Block.AIR && blocks[i][j-1].getType() != Block.AIR)) {
 					if(Util.rand.nextInt(100) <= 45) {
 						addSnake(blocks[i][j].getX(false), blocks[i][j].getY(false, alan));
 					}
 					else if (Util.rand.nextInt(100)<=20){
 						addCrawler(blocks[i][j].getX(false), blocks[i][j].getY(false, alan));
 					}
-					if (Util.rand.nextInt(100) <= 15){
+					else if (Util.rand.nextInt(100) <= 20){
 						addTurtle(blocks[i][j].getX(false), blocks[i][j].getY(false, alan));
 					}
 					i += Util.MAXCHUNKSIZE;
@@ -76,17 +78,21 @@ public class EnemyManager{
 		for(int i=Util.GENERATIONSTART; i< blocks.length-Util.GENERATIONEND; i++){
 			for(int j=1; j<blocks[i].length-1; j++) {
 				if(blocks[i][j].getType() == Block.AIR) {
-					if(Util.rand.nextInt(100)<=.25) {
+					if(Util.rand.nextInt(100)<=2) {
 						addJelly(blocks[i][j].getX(false), blocks[i][j].getY(false, alan));
-                        i += Util.MAXCHUNKSIZE;
 					}
+
+					if(Util.rand.nextInt(100)<=.5){
+						addSkull(blocks[i][j].getX(false), blocks[i][j].getY(false, alan));
+					}
+					i += Util.MAXCHUNKSIZE;
 				}
 				// top of block
 				if(blocks[i][j].getType() == Block.AIR && blocks[i-1][j].getType() == Block.WALL) {
 					if(Util.rand.nextInt(100)<=10) {
 						addBat(blocks[i][j].getX(false), blocks[i][j].getY(false, alan));
-						i += Util.MAXCHUNKSIZE;
 					}
+					i += Util.MAXCHUNKSIZE;
 				}
 			}
 		}
@@ -99,6 +105,7 @@ public class EnemyManager{
 		turtles.clear();
 		jellies.clear();
 		bats.clear();
+		skulls.clear();
 	}
 
 	public void drawEnemies(Graphics g, Alan alan, Map map){
@@ -120,6 +127,9 @@ public class EnemyManager{
 		}
 		for(Bat b : bats){
 			b.draw(g, alan, map);
+		}
+		for(Skull s : skulls){
+			s.draw(g, alan, map);
 		}
 	}
 }
@@ -416,6 +426,7 @@ class Turtle {
 		this.health = 10;
 		this.velX = Util.rand.nextInt(1,2);
 		this.accelY = 1;
+		this.maxVelY = Util.rand.nextInt(5,13);
 		state = WALK;
 		animFrame = 0;
 		moveChance = Util.rand.nextInt(100);
@@ -515,8 +526,8 @@ class Turtle {
 				}
 			}
 		} else {
-			y += velY;
-			if (velY < maxVelY) {
+			y+=velY;
+			if(velY < maxVelY){
 				velY += accelY;
 			}
 		}
@@ -1078,6 +1089,239 @@ class Bat {
 					animFrame += 0.25;
 				}
 				g.drawImage(flyR.get((int) animFrame), (int) getX(true) - 3, (int) getY(true), null);
+			}
+		}
+
+//        g.setColor(Color.YELLOW);
+//        g.drawRect((int)getX(true), (int)getY(true), width, height);
+	}
+}
+
+class Skull {
+	public static final int CALM = 0, ANGRY = 1;
+	private int width, height;
+	private int health;
+	private double x, y;
+	private double speed;
+	private int state, dir;
+
+	public double getVelX() {return velX;}
+
+	public double getVelY() {return velY;}
+
+	private double velX;
+	private double velY;
+	private double maxVelX;
+	private double maxVelY;
+	private double accelX;
+	private double accelY;
+	private double accelFactor; // the speed and acceleration the enemy has
+	private double animFrame;
+	private boolean moveLeft, moveRight, moveUp, moveDown;
+
+	ArrayList<Image> calmL = new ArrayList<>();
+	ArrayList<Image> calmR = new ArrayList<>();
+	ArrayList<Image> angryL = new ArrayList<>();
+	ArrayList<Image> angryR = new ArrayList<>();
+	public Skull (int x, int y) {
+		this.width = 34;
+		this.height = 34;
+		this.x = x;
+		this.y = y;
+		this.health = 35;
+		this.maxVelX = 2;
+		this.maxVelY = 2;
+		this.accelX = 0;
+		this.accelY = 0;
+		this.accelFactor = .1;
+		animFrame = 0;
+		this.dir = Util.RIGHT;
+		state = CALM;
+
+		for (int i = 0; i < 4; i++) {
+			calmL.add(new ImageIcon("src/assets/enemies/skull/calm/skullCalmL" + i + ".png").getImage());
+		}
+		for (int i = 0; i < 4; i++) {
+			calmR.add(new ImageIcon("src/assets/enemies/skull/calm/skullCalmR" + i + ".png").getImage());
+		}
+		for (int i = 0; i < 4; i++) {
+			angryL.add(new ImageIcon("src/assets/enemies/skull/angry/skullAngryL" + i + ".png").getImage());
+		}
+		for (int i = 0; i < 4; i++) {
+			angryR.add(new ImageIcon("src/assets/enemies/skull/angry/skullAngryR" + i + ".png").getImage());
+		}
+	}
+	public double getX(boolean adjusted) { // gets x
+		if (adjusted) { // whether you want x relative to the gameplay window
+			return x + Background.getWallLeftPos();
+		} else {
+			return x;
+		}
+	}
+	public double getY(boolean adjusted) { // gets y
+		if (adjusted) { // whether you want y relative to the gameplay window
+			return y-AAdventure.getGame().getAlan().getOffset()+AAdventure.getGame().getAlan().getScreenOffset();
+		} else {
+			return y;
+		}
+	}
+
+	int getWidth() {return width;}
+	public void setX(int x) {
+		this.x = x;
+	}
+	public void setY(int y) {
+		this.y = y;
+	}
+	public int getHealth() {
+		return health;
+	}
+	public void setHealth(int health) {
+		this.health = health;
+	}
+	public Rectangle getRect(){return new Rectangle((int) x,(int) y,width,height);}
+	public void hit() {
+		state = ANGRY;
+		maxVelX = 2.4;
+		maxVelY = 2.4;
+		accelFactor = 0.6;
+		animFrame = 0;
+	}
+	public int getState(){ return state;}
+	public void move(Graphics g, Alan alan, Map map) {
+		// distance calculations
+		double distX = x + width/2 - alan.getX(false) - alan.getWidth()/2;
+		// how far away the enemy is compared to alan
+		double distY = y + height/2 - alan.getY(false) - alan.getHeight()/2;
+		double distance = Math.hypot(distX, distY); // pythag theorem
+
+		if (alan.getX(false) < x){
+			dir = Util.LEFT;
+		}
+		else{
+			dir = Util.RIGHT;
+		}
+
+		if(distance < 400) {
+			// adding up how many frames movement has been in x direction, capping out at +-20 to limit terminal velocity
+			if (distX < 0 && velX < maxVelX) {
+				accelX += accelFactor;
+			} else if (distX > 0 && velX > -maxVelX) {
+				accelX -= accelFactor;
+			}
+			if (distY < 0 && velY < maxVelY) {
+				accelY += accelFactor;
+			} else if (distY > 0 && velY > -maxVelY) {
+				accelY -= accelFactor;
+			}
+			// moving the enemy
+			velX = ((-1 / distance) * distX) * speed + accelX; // -1 so the enemy moves TOWARDS alan, just 1 would make the enemy run away from alan
+			velY = ((-1 / distance) * distY) * speed + accelY; // frames*accel so the enemy speeds up/down for a more "natural" look, instead of perfectly tracking alan
+
+			Block[][] blocks = map.getMap();
+			// getting rows with same y values as jelly
+			int prevRow = (int) getY(false) / Util.BLOCKLENGTH;
+			int nextRow = prevRow + 1;
+			int prevCol = (int) getX(false) / Util.BLOCKLENGTH;
+			int nextCol = prevCol + 1;
+
+			// right left collision
+			for(int r=prevRow; r<=nextRow; r++) {
+				for (int i = 0; i < map.getColumns(); i++) {
+					Block block = blocks[r][i];
+					if (block.getType() == Block.WALL || block.getType() == Block.BOX) {
+						Rectangle leftSide = new Rectangle(block.getX(false), block.getY(false, alan)+1, 1, Util.BLOCKLENGTH-2);
+//                        g.setColor(Color.CYAN);
+//                        g.drawRect(block.getX(true), block.getY(true, alan)+1, 1, Util.BLOCKLENGTH-2);
+						if (getRect().intersects(leftSide)) {
+							velX = -.25;
+							accelX = 0;
+						}
+					}
+				}
+			}
+			// left right collision
+			for(int r=prevRow; r<=nextRow; r++) {
+				for (int i = 0; i < map.getColumns(); i++) {
+					Block block = blocks[r][i];
+					if (block.getType() == Block.WALL || block.getType() == Block.BOX) {
+						Rectangle rightSide = new Rectangle(block.getX(false) + Util.BLOCKLENGTH, block.getY(false, alan)+1, 1, Util.BLOCKLENGTH-2);
+//                        g.setColor(Color.MAGENTA);
+//                        g.drawRect(block.getX(true) + Util.BLOCKLENGTH, block.getY(true, alan)+1, 1, Util.BLOCKLENGTH-2);
+						if (getRect().intersects(rightSide)) {
+							velX = .25;
+							accelX = 0;
+						}
+					}
+				}
+			}
+			// top down collision
+			for (int i = 0; i < map.getColumns(); i++) {
+				Block block = blocks[nextRow][i];
+				if (block.getType() == Block.WALL || block.getType() == Block.BOX) {
+					Rectangle topSide = new Rectangle(block.getX(false)+1, block.getY(false, alan), Util.BLOCKLENGTH-2, 1);
+					if (getRect().intersects(topSide)) {
+						velY = -.25;
+						accelY = 0;
+					}
+				}
+			}
+
+			// bottom up collision checking
+			for (int i = 0; i < map.getColumns(); i++) {
+				Block block = blocks[prevRow][i];
+				// only check bottom collision in solid blocks and when going upwards in y-dir
+				if (block.getType() == Block.WALL || block.getType() == Block.BOX) {
+					Rectangle bottomSide = new Rectangle(block.getX(false)+1, block.getY(false, alan) + Util.BLOCKLENGTH, Util.BLOCKLENGTH-2, 1);
+					if (getRect().intersects(bottomSide)) {
+						velY = .25;
+						accelY = 0;
+					}
+				}
+			}
+
+			x += velX;
+			y += velY;
+		}
+	}
+
+	public void draw(Graphics g, Alan alan, Map map) {
+		move(g, alan, map);
+
+		if (state == CALM){
+			if (dir == Util.LEFT) {
+				if ((int) animFrame == calmL.size() - 1) {
+					animFrame = 0;
+				} else {
+					animFrame += 0.15;
+				}
+				g.drawImage(calmL.get((int) animFrame), (int) getX(true) - 3, (int) getY(true), null);
+			}
+			else{
+				if ((int) animFrame == calmL.size() - 1) {
+					animFrame = 0;
+				} else {
+					animFrame += 0.15;
+				}
+				g.drawImage(calmR.get((int) animFrame), (int) getX(true) - 3, (int) getY(true), null);
+			}
+		}
+		else if (state == ANGRY) {
+			if (dir == Util.LEFT) {
+				if ((int) animFrame == angryL.size() - 1) {
+					animFrame = 0;
+				} else {
+					animFrame += 0.15;
+				}
+				g.drawImage(angryL.get((int) animFrame), (int) getX(true) - 3, (int) getY(true), null);
+			}
+			else{
+				if ((int) animFrame == angryL.size() - 1) {
+					animFrame = 0;
+				} else {
+					animFrame += 0.15;
+				}
+				g.drawImage(angryR.get((int) animFrame), (int) getX(true) - 3, (int) getY(true), null);
 			}
 		}
 

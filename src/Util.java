@@ -43,13 +43,17 @@ public class Util {
 
     static class CustomTimer {
         private long startTime;
+        private long pauseTime;
         CustomTimer() {
             // TIMER METHODS AND VARIABLES
             startTime = 0;
+            pauseTime = 0;
         }
         public void start() {startTime = System.currentTimeMillis();}
+        public void pause() {pauseTime = System.currentTimeMillis();}
+        public void resume() {pauseTime = System.currentTimeMillis() - pauseTime;}
         public void restart() {startTime = System.currentTimeMillis();}
-        public double getElapsedTime() {return ((System.currentTimeMillis() - startTime) / 1000.0);}
+        public double getElapsedTime() {return ((System.currentTimeMillis() - startTime - pauseTime) / 1000.0);}
     }
 
     public static int increaseOpacity(int alpha, boolean reverse) {

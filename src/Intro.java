@@ -125,7 +125,7 @@ public class Intro extends JPanel implements KeyListener, ActionListener, MouseL
         }
 
         // UI ELEMENTS
-        GameManager.getGemManager().displayGemUI(g,true,false, alan);
+        GameManager.getGemManager().displayGemUI(g,true,false, alan, 65, 26);
         UI.displayAll(g, alan, powers);
 
         // opacity decrease
