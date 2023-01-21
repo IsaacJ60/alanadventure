@@ -59,20 +59,18 @@ public class Gems {
     public void setActiveGems(ArrayList<Gem> activeGems) {this.activeGems = activeGems;}
 
     // drawing gem UI
-    public void displayGemUI(Graphics g, boolean total, boolean current, Alan alan) {
-        int xPos = 65;
-        int gemsOffset = 0;
+    public void displayGemUI(Graphics g, boolean total, boolean current, Alan alan, int xPos, int yPos) {
         g.setFont(Util.fontTextSmall);
         g.setColor(new Color(0, 58, 109));
-        g.drawImage(gemL0, 22,gemsOffset+26,null);
-        g.fillRect(45,gemsOffset+50,140,2);
-        g.drawLine(185, gemsOffset+50, 192, gemsOffset+45);
-        g.drawLine(185, gemsOffset+51, 193, gemsOffset+45);
+        g.drawImage(gemL0, xPos-43,yPos,null);
+        g.fillRect(xPos-20,yPos+24,140,2);
+        g.drawLine(xPos+120, yPos+24, xPos+127, yPos+19);
+        g.drawLine(xPos+120, yPos+25, xPos+128, yPos+19);
         g.setColor(Color.WHITE);
         if (total && !current) { // display total gems
-            g.drawString(totalGems + " (T)", xPos, gemsOffset+50);
+            g.drawString(totalGems + " (T)", xPos, yPos+24);
         } else if (current && !total) { // display current run gems
-            g.drawString(gems + " (C)", xPos, gemsOffset+50);
+            g.drawString(gems + " (C)", xPos, yPos+24);
         }
     }
 

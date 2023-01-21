@@ -25,7 +25,7 @@ public class Alan {
     private final Rectangle alanRect; // hitbox
     private int x, y;
     private int health, maxHealth, healthProgress; // current health, health capacity, and progress to +1 maximum health
-    private int combo;
+    private int combo, maxCombo;
 
     // MOVEMENT UTIL
     private int keyLeft, keyRight, keyJump;
@@ -50,6 +50,7 @@ public class Alan {
     ArrayList<ArrayList<Image>> allAnims;
 
     // TIMERS
+    Util.CustomTimer runTimer = new Util.CustomTimer();
     Util.CustomTimer jumpTimer = new Util.CustomTimer();
     Util.CustomTimer invulTimer = new Util.CustomTimer();
 
@@ -83,6 +84,8 @@ public class Alan {
         this.healthProgress = healthProgress;
         this.invul = false;
         this.weapon = weapon;
+        this.combo = 0;
+        this.maxCombo = 0;
 
         // offset; screenlocation
         this.offset = 0;
@@ -141,6 +144,9 @@ public class Alan {
     public Rectangle getBoots(){return new Rectangle(x,y+height,width,1);}
     public int getWidth() {return width;}
     public int getHeight() {return height;}
+    public int getMaxCombo() {return maxCombo;}
+    public double getRunTime() {return runTimer.getElapsedTime();}
+    public Util.CustomTimer getRunTimer() {return runTimer;}
 
     public void changeState(int MODE, int d, boolean forceChange) { // changes state
         if (state != MODE || d != dir) {
@@ -154,7 +160,7 @@ public class Alan {
 
     // return int represents walls that player colliding with
     public int move(boolean[] keys, Graphics g, Map map, Powerups powerups, EnemyManager enemies) {
-        getEnemyCollision(enemies.getSnakes(), enemies.getCrawlers(), enemies.getTurtles(), enemies.getSnails(), enemies.getJellies(), enemies.getBats()); // collision between alan and snakes
+        getEnemyCollision(enemies.getSnakes(), enemies.getCrawlers(), enemies.getTurtles(), enemies.getSnails(), enemies.getJellies(), enemies.getBats(), enemies.getSkulls()); // collision between alan and snakes
         getCollision(g,this, map); // getting collision between player and blocks
         alanRect.setLocation(x+5,y); // setting rect location
         boolean wallCollideLeft = false, wallCollideRight = false;
@@ -303,7 +309,7 @@ public class Alan {
         velX = (velX >= 0 ? -maxVelX : maxVelX);
         velY = -6;
     }
-
+    
     public void knockback(Turtle turtle) {
         velX = (velX >= 0 ? -maxVelX*1.5 : maxVelX*1.5);
         velY = -3;
@@ -313,11 +319,12 @@ public class Alan {
         velX = (velX >= 0 ? -maxVelX*1.5 : maxVelX*1.5);
     }
 
-    public void getEnemyCollision(ArrayList<Snake> snakes, ArrayList<Crawler> crawlers, ArrayList<Turtle> turtles, ArrayList<Snail> snails, ArrayList<Jelly> jellies, ArrayList<Bat> bats) {
+    public void getEnemyCollision(ArrayList<Snake> snakes, ArrayList<Crawler> crawlers, ArrayList<Turtle> turtles, ArrayList<Snail> snails, ArrayList<Jelly> jellies, ArrayList<Bat> bats, ArrayList<Skull> skulls) {
         ArrayList<Snake> removalSnake = new ArrayList<>();
         ArrayList<Turtle> removalTurtle = new ArrayList<>();
         ArrayList<Jelly> removalJelly = new ArrayList<>();
         ArrayList<Bat> removalBat = new ArrayList<>();
+        ArrayList<Skull> removalSkull = new ArrayList<>();
 
         for (Snake s : snakes) {
             if (getRect().intersects(s.getRect())) {
@@ -415,6 +422,25 @@ public class Alan {
             }
         }
 
+        for (Skull s : skulls) {
+            if (getRect().intersects(s.getRect())) {
+                if(getBoots().intersects(s.getRect()) && velY > 0 && y+height > s.getY(false) && s.getState() == Skull.CALM){
+                    combo++;
+                    weapon.setAmmo(weapon.getCapacity());
+                    removalSkull.add(s);
+                    velY = -8;
+                    GameManager.getGemManager().spawnGems((int)s.getX(false),(int)s.getY(false), 3);
+                }
+                else{
+                    if (invulTimer.getElapsedTime() >= 2) {
+                        health--;
+//                        knockback(b);
+                        invulTimer.restart();
+                    }
+                }
+            }
+        }
+
         if(health == 0){
             GameManager.gameOver();
         }
@@ -433,6 +459,10 @@ public class Alan {
 
         for (Bat b : removalBat){
             bats.remove(b);
+        }
+
+        for (Skull s : removalSkull){
+            skulls.remove(s);
         }
     }
 
@@ -481,6 +511,10 @@ public class Alan {
 
                 // set velocity in y-dir to be 0
                 // display combo
+                if(combo > maxCombo){
+                    maxCombo = combo;
+                    System.out.println(maxCombo);
+                }
                 combo = 0;
                 velY = 0;
 
