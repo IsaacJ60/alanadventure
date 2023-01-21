@@ -7,12 +7,6 @@ MapList.java
 Isaac Jiang
 Contains full list of maps and tiles that make up the maps.
 Contains methods that draw a map.
-
-Map.java
-Isaac Jiang
-Stores a 2d Array of Blocks, represeting a map.
-Contains methods to placeblocks, getblock, and to randomly generate a full level.
-Contains methods that randomly generate cliffs, breakable box blocks, platforms, and pillars
  */
 
 public class MapList {
@@ -139,16 +133,20 @@ public class MapList {
         }
     }
 
-    public void drawWalls(Graphics g, Block[][] blocks, int i, Alan alan) {
-        g.drawImage(wallImgLeft.getImg(), Background.getWallLeftPos()-15, blocks[i][0].getY(true, alan),null);
-        g.drawImage(wallImgRight.getImg(), Background.getWallRightPos(), blocks[i][0].getY(true, alan),null);
-    }
-
+    // draw walls on side of levels
     public void drawWalls(Graphics g, Block[][] blocks, int i) {
         g.drawImage(wallImgLeft.getImg(), Background.getWallLeftPos(), blocks[i][0].getY(),null);
         g.drawImage(wallImgRight.getImg(), Background.getWallRightPos(), blocks[i][0].getY(),null);
     }
 }
+
+/*
+Map.java
+Isaac Jiang
+Stores a 2d Array of Blocks, represeting a map.
+Contains methods to placeblocks, getblock, and to randomly generate a full level.
+Contains methods that randomly generate cliffs, breakable box blocks, platforms, and pillars
+ */
 
 class Map {
     Block[][] map; // 1 map
@@ -210,7 +208,7 @@ class Map {
     // GENERATE ALL BLOCKS FOR LEVEL
     public void generateBlocks() {
         generateWallBlocks(); // BOX BLOCKS GENERATED WITHIN WALL BLOCKS
-        GenerateHoveringBoxBlocks();
+        generateHoveringBoxBlocks();
         generateSideWalls();
         generatePlatBlocks();
     }
@@ -226,10 +224,11 @@ class Map {
     }
 
     // generates box blocks that spawn in the middle of the level
-    public void GenerateHoveringBoxBlocks() {
+    public void generateHoveringBoxBlocks() {
         for (int i = Util.GENERATIONSTART; i < rows-Util.GENERATIONEND; i+=Util.MAXCHUNKSIZE) {
             int boxType = rand.nextInt(0,20);
             switch (boxType) {
+                // generate boxes with different dimensions
                 case 0 -> generateBoxes(i, rand.nextInt(3,5), 1);
                 case 1 -> generateBoxes(i,rand.nextInt(4,6), 2);
                 case 2 -> generateBoxes(i,rand.nextInt(2,4),2);
@@ -240,6 +239,7 @@ class Map {
     // generate boxes with less rng
     public void generateBoxes(int row, int length, int height) {
         int start = rand.nextInt(1,columns-length-1-1);
+        // random values for length and width
         for (int i = row; i < row+height; i++) {
             for (int j = start; j < start+length; j++) {
                 if (rand.nextInt(0,3) != 0 && getBlock(i,j).getType() == Block.AIR) {
@@ -295,6 +295,7 @@ class Map {
         int length = rand.nextInt(1,base);
         if (side == Util.TOP) {
             if (otherside == Util.LEFT) {
+                // random values for length and width
                 for (int j = 0; j < rand.nextInt(1,4); j++) {
                     for (int i = 1; i < length+1; i++) {
                         if (getBlock(row, i).getType() == Block.AIR) {
@@ -304,6 +305,7 @@ class Map {
                     row--;
                 }
             } else if (otherside == Util.RIGHT) {
+                // random values for length and width
                 for (int j = 0; j < rand.nextInt(1,4); j++) {
                     for (int i = columns-length-1; i < columns-1; i++) {
                         if (getBlock(row, i).getType() == Block.AIR) {
@@ -319,8 +321,6 @@ class Map {
     // GENERATING WALL BLOCKS
     public void generateWallBlocks() {
         for (int i = Util.GENERATIONSTART; i < rows-Util.GENERATIONEND; i+=Util.MAXCHUNKSIZE) {
-            //HINT: getting type of wall, if doesn't match any types then don't spawn
-            // - increasing bound decreases wall spawns
             int wallType = rand.nextInt(0,100);
             //NOTE - 3 PATTERNS ARE:
             // - PILLAR (3x3 to 1x3 to 1x1)
@@ -364,6 +364,7 @@ class Map {
         }
         // CREATE CLIFF DIFFERENTLY BASED ON SIDE
         if (side == Util.LEFT) {
+            // decreasing length randomly
             for (int j = longest; j >= 0; j-=rand.nextInt(0,2)) {
                 for (int i = 1; i < j+1; i++) {
                     placeBlock(row,i,type,Util.INDEX,side);
@@ -385,6 +386,7 @@ class Map {
     public int generatePillar(int r, int side, int type) {
         // length and width
         int x = rand.nextInt(0,3), y = rand.nextInt(1,4);
+        // no other randomness
         if (side == Util.LEFT) {
             for (int i = r; i < r+y; i++) {
                 for (int j = 1; j < x+1; j++) {
@@ -412,7 +414,7 @@ class Map {
                             map[i][j].setTile(MapList.wallFull);
                         } else if (j == columns - 1) {
                             map[i][j].setTile(MapList.wallFull);
-                        } else { //HINT: CHECKING IF BLOCK IS ALONE (NO VERTICAL CONNECTIONS)
+                        } else { //CHECKING IF BLOCK IS ALONE (NO VERTICAL CONNECTIONS)
                             if (map[i-1][j].getType() != Block.WALL && map[i+1][j].getType() != Block.WALL) {
                                 // CHECKING SIDE
                                 if (map[i][j].getSide() == Util.LEFT) {
@@ -429,7 +431,7 @@ class Map {
                                         map[i][j].setTile(MapList.wallTopBottom);
                                     }
                                 }
-                                //HINT: CHECKING IF PART OF STRAIGHT WALL SEQUENCE
+                                //CHECKING IF PART OF STRAIGHT WALL SEQUENCE
                             } else if (map[i-1][j].getType() == Block.WALL && map[i+1][j].getType() == Block.WALL) {
                                 if (map[i][j].getSide() == Util.LEFT) {
                                     if (map[i][j+1].getType() != Block.WALL) {
@@ -440,7 +442,7 @@ class Map {
                                         map[i][j].setTile(MapList.wallSideLeft);
                                     }
                                 }
-                                //HINT: CHECKING IF CORNER OR IF TOP/BOTTOM BLOCK
+                                //CHECKING IF CORNER OR IF TOP/BOTTOM BLOCK
                                 // - SAME LOGIC EXCEPT CORNER HAS 2 SIDES OCCUPIED
                                 // - TOP/BOTTOM HAS 3 SIDES OCCUPIED AND ONE HORIZONTAL EDGE IS REMAINING
                             } else if (map[i][j].getSide() == Util.LEFT) {

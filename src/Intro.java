@@ -16,15 +16,15 @@ public class Intro extends JPanel implements KeyListener, ActionListener, MouseL
 
     private static boolean[] keys;
 
-    private static int WIDTH = AAdventure.getGameWidth(), HEIGHT = AAdventure.getGameHeight();
+    private static final int WIDTH = AAdventure.getGameWidth(), HEIGHT = AAdventure.getGameHeight();
     private int tarX, tarY, alpha = 0;
 
     private Alan alan;
-    private Background bg;
-    private Powerups powers;
-    private EnemyManager enemyManager;
+    private final Background bg;
+    private final Powerups powers;
+    private final EnemyManager enemyManager;
 
-    private Image shopLogo;
+    private final Image shopLogo;
 
     public Intro(AAdventure a) {
         mainFrame = a;
@@ -36,6 +36,7 @@ public class Intro extends JPanel implements KeyListener, ActionListener, MouseL
         addMouseListener(this);
         addKeyListener(this);
 
+        // shop indicator
         shopLogo = new ImageIcon("src/assets/shop/logo.png").getImage().getScaledInstance(48,36,Image.SCALE_DEFAULT);
 
         bg = new Background();
@@ -97,11 +98,6 @@ public class Intro extends JPanel implements KeyListener, ActionListener, MouseL
     // ActionListener
     @Override
     public void actionPerformed(ActionEvent e) {
-//        Point mouse = MouseInfo.getPointerInfo().getLocation(); // loc of mouse on screen
-//        Point offset = getLocationOnScreen(); // loc of panel
-//        // getting mouse pos
-//        tarX = mouse.x - offset.x;
-//        tarY = mouse.y - offset.y;
         requestFocus();
         mainFrame.start();
         repaint();
@@ -117,8 +113,12 @@ public class Intro extends JPanel implements KeyListener, ActionListener, MouseL
         g.drawString("ALAN'S", 372,420-alan.getOffset()+alan.getScreenOffset());
         g.drawString("ADVENTURE", 322,475-alan.getOffset()+alan.getScreenOffset());
 
+        // shop indicators
+        g.setFont(Util.fontTextSmaller);
+        g.drawString("SHOP", Background.getWallRightPos()-46, 625-alan.getOffset()+alan.getScreenOffset());
         g.drawImage(shopLogo, Background.getWallRightPos()-50, 635-alan.getOffset()+alan.getScreenOffset(), null);
 
+        // changing to shop menu if entering through right wall
         if (alan.draw(g, keys, GameManager.intromap, powers, enemyManager) == Util.RIGHT) {
             AAdventure.setLastPanel(AAdventure.getCurrPanel());
             AAdventure.setCurrPanel("SHOP");

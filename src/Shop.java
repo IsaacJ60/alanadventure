@@ -8,9 +8,12 @@ import java.util.Scanner;
 Shop.java
 Isaac Jiang
 Contains methods to draw shop items and check for shop purchases and interactions
+Displays pages of cosmetics and other game items that alter gameplay
+Features keyboard scrolling and selection tools
  */
 
 public class Shop {
+    // all items and selection indexes
     private final ArrayList<ArrayList<Cosmetics>> allItems;
     private int selectedItem;
     private final int[] equippedItems;
@@ -19,6 +22,10 @@ public class Shop {
     private int wantedOffsetY;
     private double offsetVel;
 
+    // constants
+    public static final int EQUIPPED = 2, OWNED = 1, UNOWNED = 0;
+
+    // arrows
     private final Image arrowLeft = new ImageIcon("src/tiles/arrowL.png").getImage().getScaledInstance(22,44,Image.SCALE_DEFAULT),
             arrowRight = new ImageIcon("src/tiles/arrowR.png").getImage().getScaledInstance(22,44,Image.SCALE_DEFAULT),
             arrowLeftB = new ImageIcon("src/tiles/arrowLB.png").getImage().getScaledInstance(22,44,Image.SCALE_DEFAULT),
@@ -26,6 +33,7 @@ public class Shop {
 
     public static Util.CustomTimer shopTimer = new Util.CustomTimer();
 
+    // initialize and take in preexisting owned items and such
     public Shop(ArrayList<ArrayList<Cosmetics>> allItems) {
         this.allItems = allItems;
         this.selectedItem = 0;
@@ -35,6 +43,7 @@ public class Shop {
         this.offsetVel = 20;
         this.equippedItems = new int[allItems.size()];
 
+        // going through items txt
         try {
             Scanner f = new Scanner(new BufferedReader(new FileReader("src/assets/shop/items.txt")));
             if (f.hasNext()) {
@@ -44,26 +53,31 @@ public class Shop {
                     for (int j = 0; j < allItem.size(); j++) {
                         Cosmetics cosmetics = allItem.get(j);
                         int status = f.nextInt();
-                        if (status == 2) {
+                        if (status == EQUIPPED) {
                             cosmetics.setOwned(true);
                             selectedType = i;
                             selectedItem = j;
                             switch (cosmetics.getType()) {
+                                // change game properties pertaining to type of owned item
                                 case "BACKGROUNDS" -> {
                                     equippedItems[selectedType] = selectedItem;
+                                    // set game bg
                                     Background.setBg(allItems.get(selectedType).get(selectedItem).getEnlargedImg());
                                 }
                                 case "BLASTERS" -> {
                                     equippedItems[selectedType] = selectedItem;
+                                    // set equipped blaster
                                     AAdventure.getIntro().getAlan().setWeapon(cosmetics.getBlaster());
                                     AAdventure.getGame().getAlan().setWeapon(cosmetics.getBlaster());
                                 }
                                 case "MUSIC" -> {
+                                    // set game music
                                     equippedItems[selectedType] = selectedItem;
                                     AAdventure.setCurrMusic(GameMusic.GAMEMUSIC[j]);
                                 }
                             }
-                        } else if (status == 1) {
+                        } else if (status == OWNED) {
+                            // setting previously bought items to owned
                             cosmetics.setOwned(true);
                         }
                     }
@@ -77,8 +91,7 @@ public class Shop {
         }
     }
 
-    public void addCosmetic(int type, Cosmetics c) {allItems.get(type).add(c);}
-
+    // save current selections and ownerships in items.txt
     public void saveItems() {
         try {
             PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("src/assets/shop/items.txt")));
@@ -87,12 +100,13 @@ public class Shop {
                 ArrayList<Cosmetics> allItem = items.get(j);
                 for (int i = 0; i < allItem.size(); i++) {
                     Cosmetics cosmetics = allItem.get(i);
+                    // go through all item states and print out
                     if (equippedItems[j] == i && cosmetics.getOwned()) {
-                        out.println(2);
+                        out.println(EQUIPPED);
                     } else if (cosmetics.getOwned()) {
-                        out.println(1);
+                        out.println(OWNED);
                     } else {
-                        out.println(0);
+                        out.println(UNOWNED);
                     }
                 }
             }
@@ -102,6 +116,7 @@ public class Shop {
         }
     }
 
+    // going through all items with cycling through WASD keys
     public void selectItem(boolean[] keys, Gems gems) {
 
         Cosmetics item = allItems.get(selectedType).get(selectedItem);
@@ -116,6 +131,7 @@ public class Shop {
 
         // changing selected item
         if (shopTimer.getElapsedTime() > 0.4) {
+            // going left right up down through the shop menus
             if (keys[Util.a]) {
                 shopTimer.restart();
                 if (selectedType > 0) {
@@ -146,40 +162,48 @@ public class Shop {
                 }
             } else if (keys[Util.space]) {
                 shopTimer.restart();
-                //HINT: BUY STUFF
+                // checking for already owned
                 if (!item.getOwned()) {
                     if (item.purchase(gems)) {
+                        // purchasing if not already owned
                         Sound.purchaseItem();
                         gems.setTotalGems(gems.getTotalGems() - item.getCost());
                         GameManager.saveGems();
                         item.setOwned(true);
                         saveItems();
+                        // saving new owned items
                     }
                 } else {
+                    // if already owned, apply game effect
                     switch (item.getType()) {
                         case "BACKGROUNDS" -> {
                             equippedItems[selectedType] = selectedItem;
+                            // set bg
                             Background.setBg(allItems.get(selectedType).get(selectedItem).getEnlargedImg());
                             Sound.equipGeneral();
                         }
                         case "BLASTERS" -> {
                             equippedItems[selectedType] = selectedItem;
+                            // set blaster
                             AAdventure.getIntro().getAlan().setWeapon(item.getBlaster());
                             AAdventure.getGame().getAlan().setWeapon(item.getBlaster());
                             Sound.equipBlaster();
                         }
                         case "MUSIC" -> {
                             equippedItems[selectedType] = selectedItem;
+                            // set music
                             AAdventure.setCurrMusic(GameMusic.GAMEMUSIC[selectedItem]);
                             Sound.equipGeneral();
                         }
                     }
                     saveItems();
+                    // save new status of items
                 }
             }
         }
     }
 
+    // draw indicator arrows
     public void drawArrows(Graphics g) {
         g.drawImage(arrowLeft, Background.getWallLeftPos()+Background.getWallWidth(), AAdventure.getGameHeight()/2-11, null);
         g.drawImage(arrowRight, Background.getWallRightPos()-22, AAdventure.getGameHeight()/2-11, null);
@@ -188,6 +212,7 @@ public class Shop {
         g.drawImage(arrowRightB, Background.getWallRightPos()-22, (int) (equippedItems[selectedType]*200+offsetY+17), null);
     }
 
+    // draw all UI and graphics in shop menu
     public void draw(Graphics g, boolean[] keys, Gems gems) {
 
         // getting keyinput and new selections
@@ -202,6 +227,7 @@ public class Shop {
 
         g.drawString(type, AAdventure.getGameWidth()/2 - (type.length()*7), (int) (offsetY-100));
 
+        // drawing all items in page
         for (int i = 0; i < allItems.get(selectedType).size(); i++) {
             g.setFont(Util.fontTextSmall);
 
@@ -210,7 +236,6 @@ public class Shop {
 
             int x = (AAdventure.getGameWidth()/2)-(item.getWidth()/2), y = (i*200)+(int)offsetY;
 
-            //HINT: blit frame
             g.fillRect(x,y,item.getWidth()+4,item.getHeight()+4);
 
             if (item.getOwned()) {
@@ -220,12 +245,19 @@ public class Shop {
                 g.drawString(String.valueOf(item.getCost()),x+(item.getWidth()/2)-(String.valueOf(item.getCost()).length()*7)+8,y+item.getHeight()+40);
             }
 
+            // write item name
             g.setFont(Util.fontTextSmaller);
             g.drawString(item.getName(), AAdventure.getGameWidth()/2 - (item.getName().length()*5), (y-10));
             g.drawImage(item.getImg(),x+2,y+2,null);
         }
     }
 }
+
+/*
+Cosmetics.java
+Isaac Jiang
+Items available in the shop, can be of different forms and store different information
+ */
 
 class Cosmetics {
     private String type, name;
@@ -241,6 +273,8 @@ class Cosmetics {
 
     private boolean owned;
 
+    // 3 different types of item storage
+    // image, blaster, and file
     Cosmetics(String type, String name, ImageIcon img, Blaster blaster, int width, int height, int cost) {
         this.owned = false;
         this.type = type;
@@ -292,6 +326,7 @@ class Cosmetics {
         this.filename = null;
     }
 
+    // getters and setters
     public String getName() {
         return name;
     }

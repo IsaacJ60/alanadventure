@@ -146,11 +146,13 @@ public class Alan {
     public int getMaxCombo() {return maxCombo;}
     public void addCombo() {combo++;}
 
-    public void changeState(int MODE, int d, boolean forceChange) { // changes state
+    // changes state
+    public void changeState(int MODE, int d, boolean forceChange) {
         if (state != MODE || d != dir) {
             animFrame = 0;
         }
         state = MODE;
+        // force change resets the animation frame no matter the state
         if (forceChange) {
             animFrame = 0;
         }
@@ -160,7 +162,7 @@ public class Alan {
     public int move(boolean[] keys, Graphics g, Map map, Powerups powerups, EnemyManager enemies) {
         getEnemyCollision(enemies.getSnakes(), enemies.getCrawlers(), enemies.getTurtles(), enemies.getSnails(), enemies.getJellies(), enemies.getBats(), enemies.getSkulls()); // collision between alan and snakes
         getCollision(g,this, map); // getting collision between player and blocks
-        alanRect.setLocation(x+5,y); // setting rect location
+        alanRect.setLocation(x+5,y); // setting rect location of player
         boolean wallCollideLeft = false, wallCollideRight = false;
 
         // allow jump only if not jumping or falling and if space pressed
@@ -169,6 +171,7 @@ public class Alan {
                 changeState(JUMP, dir, false);
             }
         } else {
+            // not in intro, jump whenever
             if (keys[keyJump] && state != JUMP && state != FALL) {
                 changeState(JUMP, dir, false);
             }
@@ -252,7 +255,9 @@ public class Alan {
         }
     }
 
+    // moving player in horizontal direction
     public double accelerate(double velX, double maxVelX, double accelX, int dir) {
+        // x velocity goes negative for moving left, positive for right
         if (dir == Util.LEFT) {
             if (velX > -1*maxVelX) {
                 return velX - accelX;
@@ -263,15 +268,17 @@ public class Alan {
                 return velX + accelX;
             }
         }
+        // go to zero if not pressing movement keys
         if (dir == Util.NEUTRAL) {
             return (Math.abs(velX) < 2 ? 0 : velX/2);
         }
         return velX;
     }
 
+    // checks for a jump, and sends player up!
     public void jump() {
         if (state == JUMP) {
-            if (jumpTimer.getElapsedTime() > 0.5) {
+            if (jumpTimer.getElapsedTime() > 0.5) { // ensure jump not too much
                 Sound.alanJump();
                 velY -= 14;
                 jumpTimer.restart();
@@ -290,6 +297,7 @@ public class Alan {
         weapon.animation(g,this, map, powerups, enemies);
     }
 
+    // all knockback for colliding with enemy while not killing them
     public void knockback(Snake snake) {
         velX = (velX >= 0 ? -maxVelX*1.5 : maxVelX*1.5);
         velY = -3;
@@ -322,13 +330,18 @@ public class Alan {
         velX = (velX >= 0 ? -maxVelX*1.5 : maxVelX*1.5);
     }
 
+    // getting collision with all enemy types
     public void getEnemyCollision(ArrayList<Snake> snakes, ArrayList<Crawler> crawlers, ArrayList<Turtle> turtles, ArrayList<Snail> snails, ArrayList<Jelly> jellies, ArrayList<Bat> bats, ArrayList<Skull> skulls) {
+        // removal arrays
         ArrayList<Snake> removalSnake = new ArrayList<>();
         ArrayList<Turtle> removalTurtle = new ArrayList<>();
         ArrayList<Jelly> removalJelly = new ArrayList<>();
         ArrayList<Bat> removalBat = new ArrayList<>();
         ArrayList<Skull> removalSkull = new ArrayList<>();
 
+        // go through each type of enemy and check for collision
+
+        // going through snakes
         for (Snake s : snakes) {
             if (getRect().intersects(s.getRect())) {
                 if(getBoots().intersects(s.getRect()) && velY > 0 && y+height > s.getY(false)){
@@ -336,9 +349,11 @@ public class Alan {
                     weapon.setAmmo(weapon.getCapacity());
                     removalSnake.add(s);
                     velY = -8;
+                    //spawning gems when enemy dead
                     GameManager.getGemManager().spawnGems((int)s.getX(false),(int)s.getY(false), 3);
                 }
                 else {
+                    // taking away player health if enemy not killed by player
                     if (invulTimer.getElapsedTime() >= Util.INVULTIME) {
                         health--;
                         knockback(s);
@@ -348,6 +363,7 @@ public class Alan {
             }
         }
 
+        // going through crawlers
         for (Crawler c: crawlers) {
             if (getRect().intersects(c.getRect())) {
                 if (invulTimer.getElapsedTime() >= Util.INVULTIME) {
@@ -358,6 +374,7 @@ public class Alan {
             }
         }
 
+        // going through turtle
         for (Turtle t : turtles) {
             if (getRect().intersects(t.getRect())) {
                 if(getBoots().intersects(t.getRect()) && velY > 0 && y+height > t.getY(false)){
@@ -377,6 +394,7 @@ public class Alan {
             }
         }
 
+        // going through snail
         for (Snail s : snails) {
             if (getRect().intersects(s.getRect())) {
                 if (invulTimer.getElapsedTime() >= Util.INVULTIME) {
@@ -387,6 +405,7 @@ public class Alan {
             }
         }
 
+        // going through jellies
         for (Jelly j : jellies) {
             if (getRect().intersects(j.getRect())) {
                 if(getBoots().intersects(j.getRect()) && velY > 0 && y+height > j.getY(false)){
@@ -406,6 +425,7 @@ public class Alan {
             }
         }
 
+        // going through bats
         for (Bat b : bats) {
             if (getRect().intersects(b.getRect())) {
                 if(getBoots().intersects(b.getRect()) && velY > 0 && y+height > b.getY(false)){
@@ -425,6 +445,7 @@ public class Alan {
             }
         }
 
+        // going through skulls
         for (Skull s : skulls) {
             if (getRect().intersects(s.getRect())) {
                 if(getBoots().intersects(s.getRect()) && velY > 0 && y+height > s.getY(false) && s.getState() == Skull.CALM){
@@ -444,10 +465,12 @@ public class Alan {
             }
         }
 
-        if(health == 0){
+        // resetting player if no more health
+        if (health == 0){
             GameManager.gameOver();
         }
 
+        // removing dead enemies
         for(Snake s : removalSnake){
             snakes.remove(s);
         }
@@ -481,12 +504,12 @@ public class Alan {
         int prevRow = getY(false)/Util.BLOCKLENGTH;
         int nextRow = getY(false)/Util.BLOCKLENGTH+1;
 
-        //HINT: CHANGING LEVELS HERE
-        // USE GAMEMANAGER TO SWITCH TO NEXT LEVEL WHEN ALAN REACHES CERTAIN POINT
+        // opacity change before end of level
         if (nextRow > map.getRows()-30) {
             AAdventure.getGame().setAlpha(Util.increaseOpacity(AAdventure.getGame().getAlpha(), true));
         }
 
+        // level change
         if (nextRow == map.getRows()-15) {
             AAdventure.getLevelClear().setAlpha(255);
             Powerups.selectionTimer.restart();
@@ -523,8 +546,7 @@ public class Alan {
                 // if snapping is needed (player went too far passed top of block and is now somewhat stuck in block)
                 if (y+height > blocks[nextRow][0].getY(false, alan)) {
                     y = blocks[nextRow][0].getY(false, alan)-height;
-                    //TODO: make offset slowly reach the new value instead of instantly adding (avoid stuttering)
-                    offset -= nearestBlockY;
+                    offset -= nearestBlockY; // offset the offset by snap amount
                 }
 
                 // if the screen offset hasn't caught up yet (hasn't reached 0 and "reset")
@@ -638,6 +660,7 @@ public class Alan {
             g.drawString(Integer.toString(combo), getX(true) + 8, getY(true));
         }
 
+        // all animations and drawing
         if (weapon.isAlanShoot()) {
             if ((int) animFrame == allAnims.get(animShoot*2).size()-1) {
                 animFrame = 0;
@@ -666,7 +689,7 @@ public class Alan {
             }
         }
 
-        // drawing animation based on direction
+        // drawing animation based on direction and state
         if ((int)(invulTimer.getElapsedTime()*100%3) == 0 || invulTimer.getElapsedTime() > 1.2) {
             if (dir == Util.LEFT) {
                 if (weapon.isAlanShoot()) {

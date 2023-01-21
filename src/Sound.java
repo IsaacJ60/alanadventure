@@ -21,7 +21,7 @@ public class Sound implements ActionListener {
     SoundEffect sound;
     // all soundeffects and music
     private static SoundEffect equipBlaster, equipGeneral, purchaseItem, alanLand, alanJump,
-            noBullets, alanShoot;
+            noBullets, alanShoot, bulletCollide;
     private static ArrayList<SoundEffect> allSounds;
     public Sound() {
         allSounds = new ArrayList<>();
@@ -34,6 +34,7 @@ public class Sound implements ActionListener {
         alanJump = new SoundEffect(path + "alanJump" + ".wav");
         noBullets = new SoundEffect(path + "noBullets" + ".wav");
         alanShoot = new SoundEffect(path + "alanShoot" + ".wav");
+        bulletCollide = new SoundEffect(path + "bulletCollide" + ".wav");
         allSounds.add(equipGeneral);
         allSounds.add(equipBlaster);
         allSounds.add(purchaseItem);
@@ -41,6 +42,7 @@ public class Sound implements ActionListener {
         allSounds.add(alanJump);
         allSounds.add(noBullets);
         allSounds.add(alanShoot);
+        allSounds.add(bulletCollide);
     }
     public void actionPerformed(ActionEvent ae){
         sound.play();
@@ -59,6 +61,7 @@ public class Sound implements ActionListener {
     public static void alanJump() {alanJump.play();}
     public static void noBullets() {noBullets.play();}
     public static void alanShoot() {alanShoot.play();}
+    public static void bulletCollide() {bulletCollide.play();}
 }
 
 class SoundEffect{

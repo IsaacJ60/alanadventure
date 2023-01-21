@@ -37,6 +37,7 @@ public class ShopPanel extends JPanel implements KeyListener, ActionListener, Mo
 
         bg = new Background();
 
+        // adding all shop items
         Image clouds = new ImageIcon("src/tiles/bgB.png").getImage();
         Image cloudsbg = new ImageIcon("src/tiles/bgB.png").getImage().getScaledInstance(900, 700, Image.SCALE_DEFAULT);
         ImageIcon previewcloudsbg = new ImageIcon("src/tiles/bgB.png");

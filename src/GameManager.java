@@ -9,6 +9,7 @@ Isaac Jiang
 Utility class that contains methods that update game states, such as restarting or entering a new level
 Also contains all maps and the gem manager, which tracks gems globally.
  */
+
 public class GameManager {
 
 	// width and height of panel
@@ -17,6 +18,7 @@ public class GameManager {
 	// maplist for main mode
 	private static MapList maplist;
 
+	// getting all maps
 	public static MapList getMaplist() {
 		return maplist;
 	}
@@ -31,9 +33,11 @@ public class GameManager {
 	public static Block[][] introblocks;
 	public static Map intromap;
 
-	private static int rows = 500;
+	// rows per level and total num of levels
+	private static int rows = 250;
 	private final static int levelCount = 100;
 
+	// loading total gems from previous runs
 	public static void loadGems() {
 		int prevGems = 0;
 		try {
@@ -42,11 +46,12 @@ public class GameManager {
 				prevGems = f.nextInt();
 			}
 		} catch (FileNotFoundException ex) {
-			System.out.println(ex);
+			System.out.println(ex + "problem loading gems");
 		}
 		gemManager = new Gems(prevGems);
 	}
 
+	// save current total gems
 	public static void saveGems() {
 		try {
 			PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("src/assets/gems/gems.txt")));
@@ -57,10 +62,12 @@ public class GameManager {
 		}
 	}
 
+	// load all blasters from blaster class
 	public static void loadBlasters() {
 		Blaster.loadGuns();
 	}
 
+	// load levels, creates intro, one map and new maplist
 	public static void loadLevels() {
 		maplist = new MapList();
 
@@ -69,6 +76,7 @@ public class GameManager {
 		loadNextMap();
 	}
 
+	// creates non-random intro level 0
 	public static void createIntro() {
 		// CREATING INTRO LEVEL
 		introblocks = new Block[50][11];
@@ -102,27 +110,39 @@ public class GameManager {
 			intromap.placeBlock(i, 10, Block.WALL, Util.INDEX, Util.RIGHT);
 		}
 
+		// getting map images for the walls
 		intromap.getMapWithWallImages();
+		//adds intro map to new generated maplist
 		maplist.addMap(intromap);
 	}
 
 	// changing level
 	public static void toLevel(int l, boolean restart) {
+		// if restarting entire game
 		if (restart) {
+			// go back to intro
 			AAdventure.setCurrPanel("INTRO");
+			// reset music
+			new GameMusic("src/assets/sounds/bg/intro.mid");
 			// only add gems when dead, not after restart
 			if (AAdventure.getGame().getAlan().getHealth() == 0) {
 				gemManager.setTotalGems(gemManager.getTotalGems() + gemManager.getGems());
 				gemManager.setGems(0);
 				gemManager.setActiveGems(new ArrayList<>());
 			}
+			// new maplist for new random maps
 			ArrayList<Map> tmp = new ArrayList<>();
 			tmp.add(intromap);
 			maplist.setMaps(tmp);
+			// resetting level
 			Util.setLevel(l);
+			// resetting movement keys to prevent unwanted instant movement
 			AAdventure.getIntro().resetMovementKeys();
+			// clear enemies
 			AAdventure.getIntro().getEnemyManager().clearEnemies();
+			// clear bullets
 			AAdventure.getIntro().getAlan().getWeapon().setBullets(new ArrayList<>());
+			// reset weapon/firebullet
 			Blaster weapon = AAdventure.getGame().getAlan().getWeapon();
 			if (AAdventure.getGame().getPowerups().getPower(Powerups.FIREBULLET) == Powerups.PASSIVE) {
 				weapon.setDamage(weapon.getDamage() / 2);
@@ -130,12 +150,15 @@ public class GameManager {
 			}
 			weapon.setCapacity(weapon.getOriginalCapacity());
 			weapon.setSpeed(weapon.getOriginalSpeed());
+			// resetting alan position and other stats
 			AAdventure.getIntro().setAlan(new Alan(40, HEIGHT / 2 + 50, weapon, 4, 4, 0, AAdventure.getGame().getAlan().getKeyLeft(), AAdventure.getGame().getAlan().getKeyRight(), AAdventure.getGame().getAlan().getKeyJump())); // resetting alan
 			AAdventure.getIntro().setAlpha(0);
 			AAdventure.getGame().setAlan(new Alan(180, HEIGHT / 2 - 50, weapon, 4, 4, 0, AAdventure.getGame().getAlan().getKeyLeft(), AAdventure.getGame().getAlan().getKeyRight(), AAdventure.getGame().getAlan().getKeyJump())); // resetting alan
 			AAdventure.getGame().setAlpha(255);
+			//resetting powerups
 			AAdventure.getGame().setPowerups(new Powerups());
 		} else {
+			// normal level clear with powerup selection
 			if (l != 1) {
 				AAdventure.setCurrPanel("LEVELCLEAR"); // changing panel to level clear panel
 				int a = Util.rand.nextInt(1, Powerups.powers.length - 1);
@@ -145,28 +168,34 @@ public class GameManager {
 				LevelClear.resetSpace();
 				Powerups.selectionTimer.start();
 			} else {
-				AAdventure.setCurrPanel("GAME"); // set to game if on first intro part
+				// going into game from intro
+				AAdventure.setCurrPanel("GAME");
 			}
 
 			Util.setLevel(l); // setting level to l
 
-//            rows += rows < 400 ? 50 : 0; // increment number of rows based on level
+            rows += rows < 400 ? 50 : 0; // increment number of rows based on level
 
-			loadNextMap();
+			loadNextMap(); // lazy load next map
 
+			// resetting weapon ammo
 			AAdventure.getGame().getAlan().getWeapon().setAmmo(AAdventure.getGame().getAlan().getWeapon().getCapacity());
+			// destroy all previously created gems but add gems to total
 			gemManager.setActiveGems(new ArrayList<>());
 			gemManager.setTotalGems(gemManager.getTotalGems() + gemManager.getGems());
+			// clear all enemies and generate new oens
 			AAdventure.getGame().getEnemyManager().clearEnemies();
 			AAdventure.getGame().getEnemyManager().generateFloorEnemies(MapList.getBlocksWithoutWallImages(), AAdventure.getGame().getAlan());
 			AAdventure.getGame().getEnemyManager().generateWallEnemies(MapList.getBlocksWithoutWallImages(), AAdventure.getGame().getAlan());
 			AAdventure.getGame().getEnemyManager().generateFlyers(MapList.getBlocksWithoutWallImages(), AAdventure.getGame().getAlan());
-			//TODO: perhaps make a reset() function in alan to avoid bugs from recreating an instance each level
+			// new alan position
 			AAdventure.getGame().setAlan(new Alan(180, HEIGHT / 2 - 50, AAdventure.getGame().getAlan().getWeapon(), AAdventure.getGame().getAlan().getHealth(), AAdventure.getGame().getAlan().getMaxHealth(), AAdventure.getGame().getAlan().getHealthProgress(), AAdventure.getGame().getAlan().getKeyLeft(), AAdventure.getGame().getAlan().getKeyRight(), AAdventure.getGame().getAlan().getKeyJump()));
 		}
 
+		// save gems from run
 		saveGems();
 
+		// reset movement keys againnnnn
 		AAdventure.getGame().resetMovementKeys();
 		AAdventure.getIntro().resetMovementKeys();
 	}
@@ -211,6 +240,7 @@ public class GameManager {
 		AAdventure.setCurrPanel("GAMEOVER");
 	}
 
+	// getting help and keybinds menu
 	public static void requestSettings(boolean[] keys) {
 		if (keys[KeyEvent.VK_ESCAPE]) {
 			if (AAdventure.getCurrPanel().equals("SETTINGS")) {

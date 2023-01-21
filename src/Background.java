@@ -3,15 +3,10 @@ import java.awt.*;
 
 /*
 Background.java
-Isaac Jiang & Jayden Zhao
+Isaac Jiang
 
 Contains methods that display background of a screen, and draws all screen content
 that is found inside of map
-
-Tile.java
-Isaac Jiang & Jayden Zhao
-
-Provides methods that allow easy access to sprites for blocks
  */
 
 public class Background {
@@ -36,12 +31,15 @@ public class Background {
         g.setColor(Color.BLACK);
         setBackground(g, g.getColor());
         if (includeBG) {
+            // drawing game bg
             g.drawImage(bg,0,0,null);
         }
         g.fillRect(getWallLeftPos()+Util.BLOCKLENGTH, 0, getWallRightPos()-getWallLeftPos()-Util.BLOCKLENGTH, AAdventure.getGame().getHeight());
+        // drawing blocks
         GameManager.getMaplist().drawBlocks(g, MapList.getAllMaps().get(level), alan, includeWalls, includeBlocks);
     }
 
+    // drawing method used for drawing with alan
     public void draw(Graphics g, Map map, boolean includeWalls, boolean includeBlocks, boolean includeBG) {
         g.setColor(Color.BLACK);
         setBackground(g, g.getColor());
@@ -58,11 +56,19 @@ public class Background {
     }
 }
 
+/*
+Tile.java
+Isaac Jiang
+
+Provides methods that allow easy access to sprites for blocks
+ */
+
 class Tile {
     private String name;
     private Image img, rimg;
     private int width, height;
 
+    // creates tile with image
     Tile(String name, ImageIcon img) {
         this.name = name;
         this.img = img.getImage();
@@ -71,6 +77,7 @@ class Tile {
         this.height = img.getIconHeight();
     }
 
+    // creates tile with filename
     Tile(String name, String file) {
         this.name = name;
         ImageIcon tmp = new ImageIcon(file);

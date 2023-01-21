@@ -14,6 +14,7 @@ https://www.youtube.com/watch?v=DF19YWRo4hQ (https://www.mediafire.com/download/
 
 public class GameMusic implements ActionListener {
 
+    // game music names
     public static final String GAME0 = "Alan's Adventure", GAME1 = "Alan's Ability", GAME2 = "Alan's Ache";
     public static final String[] GAMEMUSIC = {GAME0, GAME1, GAME2};
 

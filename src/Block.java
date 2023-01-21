@@ -27,12 +27,11 @@ public class Block {
         rect = new Rectangle(x,y,Util.BLOCKLENGTH,Util.BLOCKLENGTH);
     }
 
+    // getters and setters
     public Tile getTile() {return tile;}
     public void setTile(Tile tile) {this.tile = tile;}
     public boolean collide(Rectangle otherRect) {return rect.intersects(otherRect);}
-    public boolean collide(int x, int y, int width, int height) {return rect.intersects(new Rectangle(x,y,width,height));}
     public int getSide() {return side;}
-    public void setSide(int side) {this.side = side;}
     public void setX(int x) {this.x = x;}
     public void setY(int y) {this.y = y;}
     public int getWidth() {return width;}

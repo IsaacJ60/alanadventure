@@ -6,10 +6,6 @@ import java.util.ArrayList;
 Gems.java
 Isaac Jiang
 Contains methods that increment gem counters, track gems, and display gems on the UI.
-
-Gem.java
-Isaac Jiang
-Contains methods that draw and check collision for individual gems
  */
 
 public class Gems {
@@ -31,15 +27,12 @@ public class Gems {
 
         for (int i = 0; i < 4; i++) {
             gemS.add(new ImageIcon("src/assets/gems/gemS"+i+"B.png").getImage());
-//            gemS.set(i, gemS.get(i).getScaledInstance((gemS.get(i).getWidth(null)*2), (gemS.get(i).getHeight(null)*2), Image.SCALE_DEFAULT));
         }
         for (int i = 0; i < 4; i++) {
             gemM.add(new ImageIcon("src/assets/gems/gemM"+i+"B.png").getImage());
-//            gemM.set(i, gemM.get(i).getScaledInstance((gemM.get(i).getWidth(null)*2), (gemM.get(i).getHeight(null)*2), Image.SCALE_DEFAULT));
         }
         for (int i = 0; i < 4; i++) {
             gemL.add(new ImageIcon("src/assets/gems/gemL"+i+"B.png").getImage());
-//            gemL.set(i, gemL.get(i).getScaledInstance((gemL.get(i).getWidth(null)*2), (gemL.get(i).getHeight(null)*2), Image.SCALE_DEFAULT));
         }
         gemL0 = new ImageIcon("src/assets/gems/gemL0BB.png").getImage().getScaledInstance(30,30,Image.SCALE_DEFAULT);
     }
@@ -90,15 +83,20 @@ public class Gems {
                 gems += activeGem.getSize();
                 activeGems.remove(i);
             }
-            //TODO: "500*Util.BLOCKLENGTH" -> ASCAP
             if (activeGem.getGemTimer().getElapsedTime() > 10 || activeGem.getY(false, alan) > map.getRows()*Util.BLOCKLENGTH-200) {
                 activeGems.remove(i);
             }
-            // drawer gem
+            // drawing gem
             activeGem.draw(g, alan, map);
         }
     }
 }
+
+/*
+Gem.java
+Isaac Jiang
+Contains methods that draw and check collision for individual gems
+ */
 
 // GEM CLASS
 class Gem {

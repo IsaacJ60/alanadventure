@@ -122,7 +122,6 @@ public class SettingsPanel extends JPanel implements KeyListener, ActionListener
     public void paint(Graphics g) {
         alpha = Util.increaseOpacity(alpha, true);
         Util.overlay(g,0,0,0,alpha);
-        //TODO: key binding & control help display
         settings.draw(g, keys, clicked, AAdventure.getGame().getAlan(), AAdventure.getIntro().getAlan(), tarX, tarY);
     }
 }

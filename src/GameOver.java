@@ -92,18 +92,20 @@ public class GameOver extends JPanel implements KeyListener, ActionListener, Mou
 		// UI ELEMENTS
 		g.setColor(Color.WHITE);
 		g.setFont(Util.fontText);
-		g.drawString("GAME OVER", 355, 100);
+		g.drawString("GAME OVER", 335, 100);
 
 		g.setFont(Util.fontTextSmall);
-		g.drawString("Max Combo: " + AAdventure.getGame().getAlan().getMaxCombo(), 255, 200);
+		g.drawString("MAX COMBO: " + AAdventure.getGame().getAlan().getMaxCombo(), 357, 195);
 
-		g.drawString("Gems Gained:", 355, 250);
-		GameManager.getGemManager().displayGemUI(g,false,true, AAdventure.getGame().getAlan(), 390, 260);
-		g.drawString("Total Gems:", 355, 340);
-		GameManager.getGemManager().displayGemUI(g,true,false, AAdventure.getGame().getAlan(), 390, 365);
+		g.drawString("GEMS GAINED:", 357, 260);
+		GameManager.getGemManager().displayGemUI(g,false,true, AAdventure.getGame().getAlan(), 398, 270);
+		g.drawString("TOTAL GEMS:", 362, 346);
+		GameManager.getGemManager().displayGemUI(g,true,false, AAdventure.getGame().getAlan(), 398, 365);
+
+		g.setFont(Util.fontTextSmaller);
+		g.drawString("CLICK ANYWHERE TO RESTART", 328, 500);
 
 		alpha = Util.increaseOpacity(alpha, false);
 		Util.overlay(g,0,0,0,alpha);
 	}
 }
-

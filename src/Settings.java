@@ -54,6 +54,7 @@ public class Settings {
             saveSettings();
             Scanner f = new Scanner(new BufferedReader(new FileReader("src/assets/settings/settings.txt")));
             if (f.hasNext()) {
+                // going through all properties to get keybind settings
                 for (ArrayList<Property> props : this.properties) {
                     for (Property p : props) {
                         // only apply keybind settings if property type is keybinds
@@ -70,19 +71,23 @@ public class Settings {
                             // setting move keybinds
                             switch (p.getName()) {
                                 case "MOVE LEFT" -> {
+                                    //setting left movement
                                     AAdventure.getGame().getAlan().setKeyLeft(c);
                                     AAdventure.getIntro().getAlan().setKeyLeft(c);
                                 }
                                 case "MOVE RIGHT" -> {
+                                    //setting right movement
                                     AAdventure.getGame().getAlan().setKeyRight(c);
                                     AAdventure.getIntro().getAlan().setKeyRight(c);
                                 }
                                 case "JUMP" -> {
+                                    //setting jump key
                                     AAdventure.getGame().getAlan().setKeyJump(c);
                                     AAdventure.getIntro().getAlan().setKeyJump(c);
                                 }
                             }
                         } else if (p.getType().equals("HELP")) {
+                            // skip line when its help
                             String tmp = f.nextLine();
                         }
                     }
@@ -119,7 +124,7 @@ public class Settings {
         if (clicked) {
             SettingsPanel.setClicked(false);
             if (properties.get(settingType).get(settingItem).getType().equals("KEYBINDS")) {
-                changeReady = !changeReady;
+                changeReady = !changeReady; // switch change ready when click
             }
         }
     }
@@ -138,12 +143,14 @@ public class Settings {
         for (int i = 0; i < KeyEvent.KEY_LAST; i++) {
             char c;
             if (keys[i]) {
+                // manually set value for space
                 c = (char) (i);
                 if (i == 32) {
                     p.setValue("SPACE");
                 } else {
                     p.setValue(String.valueOf(c));
                 }
+                // setting movement keys
                 switch (p.getName()) {
                     case "MOVE LEFT" -> {
                         a1.setKeyLeft(c);
@@ -182,6 +189,9 @@ public class Settings {
                 settingsTimer.restart();
                 if (settingType > 0) {
                     settingType--;
+                    // in the case that you are going from a menu with a lot of items to one with less
+                    // you might not have a same indexed value to switch to
+                    // in which case you set index to last index of the properties on that screen
                     if (settingItem > (properties.get(settingType).size()-1)) {
                         wantedOffsetY += (property.getHeight()*2) * (settingItem-(properties.get(settingType).size()-1));
                         settingItem = properties.get(settingType).size()-1;
@@ -193,6 +203,9 @@ public class Settings {
                 settingsTimer.restart();
                 if (settingType < properties.size() - 1) {
                     settingType++;
+                    // in the case that you are going from a menu with a lot of items to one with less
+                    // you might not have a same indexed value to switch to
+                    // in which case you set index to last index of the properties on that screen
                     if (settingItem > properties.get(settingType).size()-1) {
                         wantedOffsetY += (property.getHeight()*2) * (settingItem-(properties.get(settingType).size()-1));
                         settingItem = properties.get(settingType).size()-1;
@@ -200,14 +213,14 @@ public class Settings {
                 } else {
                     settingType = 0;
                 }
-            } else if (keys[Util.w]) {
+            } else if (keys[Util.w]) { // going up a list of properties
                 settingsTimer.restart();
                 if (settingItem > 0) {
                     offsetVel = 20;
                     settingItem--;
                     wantedOffsetY += property.getHeight()*2;
                 }
-            } else if (keys[Util.s]) {
+            } else if (keys[Util.s]) { // going down list of properties
                 settingsTimer.restart();
                 if (settingItem < properties.get(settingType).size() - 1) {
                     offsetVel = 20;
@@ -221,7 +234,7 @@ public class Settings {
         readyToChange(clicked);
     }
 
-    // drawing selection arrows
+    // drawing selection arrows on the sides of the screen
     public void drawArrows(Graphics g) {
         g.drawImage(arrowLeft, 0, AAdventure.getGameHeight()/2-22, null);
         g.drawImage(arrowRight, AAdventure.getGameWidth()-22, AAdventure.getGameHeight()/2-22, null);
@@ -239,6 +252,7 @@ public class Settings {
         g.setFont(Util.fontText);
         g.drawString("RESET", (int) resetRect.getX()+35, (int) resetRect.getY()+40);
 
+        // check for reset clicked
         checkReset(g, mx, my, a1, a2, clicked);
     }
 
@@ -246,6 +260,7 @@ public class Settings {
     public void checkReset(Graphics g, int mx, int my, Alan a1, Alan a2, boolean clicked) {
         if (resetRect.contains(mx, my)) {
             if (clicked) {
+                // reset movement keybinds to defaults
                 a1.setKeyJump(Util.space);
                 a1.setKeyLeft(Util.a);
                 a1.setKeyRight(Util.d);
@@ -284,6 +299,7 @@ public class Settings {
         g.setFont(Util.fontText);
         g.drawString("RESTART", (int) restartRect.getX()+30, (int) restartRect.getY()+40);
 
+        // check for restart button clicked
         checkRestart(g, mx, my, a1, a2, clicked);
     }
 
@@ -291,6 +307,7 @@ public class Settings {
     public void checkRestart(Graphics g, int mx, int my, Alan a1, Alan a2, boolean clicked) {
         if (restartRect.contains(mx, my)) {
             if (clicked) {
+                // use to level to restart, but this won't add gems to total
                 GameManager.toLevel(0, true);
             }
         }
@@ -304,6 +321,7 @@ public class Settings {
 
         drawDescription(g);
 
+        // drawing all props on selected page
         for (int i = 0; i < properties.get(settingType).size(); i++) {
 
             Property property = properties.get(settingType).get(i);
@@ -313,6 +331,7 @@ public class Settings {
             drawSetting(g, x, y, properties.get(settingType).get(i), properties.get(settingType).get(settingItem));
         }
 
+        // drawing buttons as needed
         if (properties.get(settingType).get(settingItem).getType().equals("KEYBINDS")) {
             resetButton(g, mx, my, a1, a2, clicked);
         } else if (properties.get(settingType).get(settingItem).getType().equals("HELP")) {
@@ -356,6 +375,7 @@ class Property {
         this.height = 50;
     }
 
+    //getters and setters
     public String getType() {
         return type;
     }

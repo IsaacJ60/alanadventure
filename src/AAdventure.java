@@ -15,6 +15,7 @@ and change keybinds and get help in the settings menu.
 public class AAdventure extends JFrame { // frame
     CardLayout card;
 
+    // all screens
     private static GamePanel game;
     private static Intro intro;
     private static LevelClear levelClear;
@@ -28,10 +29,12 @@ public class AAdventure extends JFrame { // frame
     private GameMusic gameMusic;
     private static String currMusic;
 
+    // game dimensions
     private static final int WIDTH = 900, HEIGHT = 700;
     public static int getGameWidth() {return WIDTH;}
     public static int getGameHeight() {return HEIGHT;}
 
+    // panel management
     private static String currPanel = "INTRO";
     public static String getCurrPanel() {return currPanel;}
     public static void setCurrPanel(String curr) {currPanel = curr;}
@@ -42,6 +45,7 @@ public class AAdventure extends JFrame { // frame
     public static String getSwitchPanel() {return switchPanel;}
     public static void setSwitchPanel(String curr) {switchPanel = curr;}
 
+    // getting panels
     public static GamePanel getGame() {return game;}
     public static Intro getIntro() {return intro;}
     public static LevelClear getLevelClear() {return levelClear;}
@@ -54,6 +58,7 @@ public class AAdventure extends JFrame { // frame
     public AAdventure() {
         super("Alan's Adventure");
 
+        // loading game contents
         GameManager.loadLevels();
         GameManager.loadGems();
         GameManager.loadBlasters();
@@ -62,6 +67,7 @@ public class AAdventure extends JFrame { // frame
 
         sound = new Sound();
 
+        // adding panels to card layout
         card = new CardLayout();
         setLayout(card);
 
@@ -90,8 +96,8 @@ public class AAdventure extends JFrame { // frame
         setVisible(true); // make panel visible
     }
 
-    public void start(){
-        //TODO: request focus only when currpanel changes to avoid constantly requesting
+    public void start() {
+        // playing music
         if (!switchPanel.equals(currPanel)) {
             switch (currPanel) {
                 case "INTRO" -> {
@@ -107,6 +113,7 @@ public class AAdventure extends JFrame { // frame
             }
             switchPanel = currPanel;
         }
+        // display current panel
         card.show(getContentPane(), currPanel);
     }
 

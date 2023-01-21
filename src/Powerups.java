@@ -65,45 +65,12 @@ public class Powerups{
     }
 
     // getters and setters
-    public Image[] getSmallPowerupIcons() {
-        return smallPowerupIcons;
-    }
-
-    public void setSmallPowerupIcons(Image[] smallPowerupIcons) {
-        this.smallPowerupIcons = smallPowerupIcons;
-    }
-
-    public Image[] getPowerupIcons() {
-        return powerupIcons;
-    }
-
-    public void setPowerupIcons(Image[] powerupIcons) {
-        this.powerupIcons = powerupIcons;
-    }
-
-    public int[] getActivepowers() {
-        return activepowers;
-    }
-
-    public void setActivepowers(int[] activepowers) {
-        this.activepowers = activepowers;
-    }
-
-    public int getPower(int power) {
-        return activepowers[power];
-    }
-
+    public Image[] getSmallPowerupIcons() {return smallPowerupIcons;}
+    public int[] getActivepowers() {return activepowers;}
+    public int getPower(int power) {return activepowers[power];}
     public void activatePower(int power) {activepowers[power] = ACTIVE;}
-
     public void activatePowerOnce(int power) {activepowers[power] = ONCE;}
-
-    public void deactivatePower(int power) {
-        activepowers[power] = NONACTIVE;
-    }
-
-    public void deactivateAll() {
-        activepowers = new int[powers.length];
-    }
+    public void deactivatePower(int power) {activepowers[power] = NONACTIVE;}
 
     // goes through states array and if state requires activation, activate the power
     // deactivates if powerup state is to use once

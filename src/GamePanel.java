@@ -4,7 +4,7 @@ import java.awt.event.*;
 
 /*
 GamePanel.java
-Isaac Jiang
+Isaac Jiang & Jayden Zhao
 Panel that is shown when falling down the well of the game.
 Draws Alan, the background, UI elements, and level text.
  */
@@ -14,17 +14,21 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener, Mo
 
     AAdventure mainFrame;
 
-    // HINT: static so that we can reset the keys after a level
     private static boolean[] keys;
 
+    // width and height of panel
     private final int WIDTH = AAdventure.getGameWidth(), HEIGHT = AAdventure.getGameHeight();
     private int tarX, tarY, alpha = 255;
     private boolean spaced = false, prevSpaced = false;
 
-    private Background bg;
+    // background
+    private final Background bg;
 
+    // entities
     private Alan alan;
-    private EnemyManager enemyManager;
+    private final EnemyManager enemyManager;
+
+    // powerups
     private Powerups powers;
 
     public GamePanel(AAdventure a) {
@@ -49,7 +53,7 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener, Mo
         timer.start();
     }
 
-    // getter and setter for mouse pos, lives, and level
+    // getters and setters
     public boolean getPrevSpaced() {return prevSpaced;}
     public int getHEIGHT() {return HEIGHT;}
     public Alan getAlan() {return alan;}
@@ -79,6 +83,7 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener, Mo
     public void keyPressed(KeyEvent e) {
         int key = e.getKeyCode();
         keys[key] = true;
+        // ensure no jump while holding down space, doesn't happen in intro
         if (key == Util.space) {
             prevSpaced = spaced;
             spaced = true;

@@ -1308,8 +1308,5 @@ class Skull {
 				g.drawImage(angryR.get((int) animFrame), (int) getX(true) - 3, (int) getY(true), null);
 			}
 		}
-
-//        g.setColor(Color.YELLOW);
-//        g.drawRect((int)getX(true), (int)getY(true), width, height);
 	}
 }

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 /*
 Blaster.java
-Isaac Jiang
+Isaac Jiang & Jayden Zhao
 Contains methods that initialize basic weapons, create bullets, draw bullets on screen,
 and check for bullet collision. Also contains support for gunpowder powerup.
 
@@ -15,9 +15,13 @@ stores positional and movement information about bullets fired from weapons
 
 public class Blaster {
     String name;
+
+    // blaster properties
     private int damage;
-    private int capacity, originalCapacity;
-    private int speed, originalSpeed;
+    private int capacity;
+    private final int originalCapacity;
+    private int speed;
+    private final int originalSpeed;
     private int lastX;
     private int lastY;
     private int ammo;
@@ -68,15 +72,8 @@ public class Blaster {
         shootTimer.start();
     }
 
-    public void setLastX(int x) {
-        lastX = x;
-    }
-    public void setLastY(int y) {
-        lastY = y;
-    }
-    public boolean isAlanShoot() {
-        return alanShoot;
-    }
+    // getters and setters
+    public boolean isAlanShoot() {return alanShoot;}
     public int getAmmo() {return ammo;}
     public void setAmmo(int a) {this.ammo = a;}
     public void setAlanShoot(boolean alanShoot) {this.alanShoot = alanShoot;}
@@ -86,6 +83,7 @@ public class Blaster {
     public int getOriginalCapacity() {return originalCapacity;}
     public int getOriginalSpeed() {return originalSpeed;}
 
+    // loading base guns
     public static void loadGuns() {
         blasters = new ArrayList<>();
         machinegun = new Blaster("Machine Gun", 10,8,13, 2,0.12,1,"bulletMachine GunB");
@@ -96,6 +94,7 @@ public class Blaster {
         blasters.add(riflegun);
     }
 
+    // checking and using ammo
     public boolean useAmmo(int a) {
         if (ammo >= a) {
             if (capacity != Util.UNLIMITED) {
@@ -115,14 +114,15 @@ public class Blaster {
                 if (useAmmo(amount)) {
                     Sound.alanShoot();
                     shootTimer.restart();
-                    // add bullet
                     for (int i = 0; i < amount; i++) {
                         int newBloom;
+                        // changes bloom based on powerup
                         if (powerups.getPower(Powerups.LASERSIGHT) == 1) {
                             newBloom = bloom/2;
                         } else {
                             newBloom = bloom;
                         }
+                        // creating new bullet and adding to bullet array
                         bullets.add(new Bullet(alan.getX(false) + (alan.getDir() == Util.LEFT ? 2 : 8), alan.getY(false) + alan.getVelY() + 10,
                                 alan.getY(false) + alan.getVelY() + 10,
                                 equippedBullet, Util.rand.nextDouble(newBloom*-1,newBloom)));
@@ -143,14 +143,18 @@ public class Blaster {
         for (Bullet b : bullets) { // go through all bullets
             // enemy collisions
             if (getEnemyCollision(b, enemies.getSnakes(), enemies.getCrawlers(), enemies.getTurtles(), enemies.getSnails(), enemies.getJellies(), enemies.getBats(), enemies.getSkulls())) {
+                Sound.bulletCollide();
                 rm.add(b);
             }
             // block collisions
             if (getCollision(b, alan, map, powerups)) {
+                Sound.bulletCollide();
                 rm.add(b);
             } else if (b.getY(false,alan) > b.getStartY() + (powerups.getPower(Powerups.LASERSIGHT) == 1 ? Util.EXTENDEDBULLETRANGE : Util.BULLETRANGE)) { // powerup for laser
+                // eliminate bullet if out of range (travelled too far and now sucks as a bullet cuz too slow lol)
                 rm.add(b);
             } else {
+                // drawing bullet if not removed
                 g.drawImage(b.getImg(), (int)b.getX(true), b.getY(true,alan), null);
                 b.setY(b.getY(false,alan) + speed);
                 b.setX((int) (b.getX(false)+b.getVelX()));
@@ -161,6 +165,7 @@ public class Blaster {
         }
     }
 
+    // getting bullet - enemy collisions
     public boolean getEnemyCollision(Bullet bu, ArrayList<Snake> snakes, ArrayList<Crawler> crawlers, ArrayList<Turtle> turtles, ArrayList<Snail> snails, ArrayList<Jelly> jellies, ArrayList<Bat> bats, ArrayList<Skull> skulls) {
         ArrayList<Snake> removalSnake = new ArrayList<>();
         ArrayList<Crawler> removalCrawler = new ArrayList<>();
@@ -170,15 +175,18 @@ public class Blaster {
         ArrayList<Bat> removalBat = new ArrayList<>();
         ArrayList<Skull> removalSkull = new ArrayList<>();
 
+        // check snake bullet collision
         for (Snake s:snakes) {
             if (s.getRect().intersects(bu.getRect())) {
-                s.setHealth(s.getHealth()-damage);
+                s.setHealth(s.getHealth()-damage); // take away from health
                 if (s.getHealth() <= 0) {
                     AAdventure.getGame().getAlan().addCombo();
                     removalSnake.add(s);
+                    // spawn gems
                     GameManager.getGemManager().spawnGems((int) s.getX(false), (int) s.getY(false), 3);
                 }
 
+                //remove dead snakes
                 for(Snake r:removalSnake){
                     snakes.remove(r);
                 }
@@ -186,6 +194,7 @@ public class Blaster {
             }
         }
 
+        // crawler bullet collision
         for (Crawler c:crawlers) {
             if (c.getRect().intersects(bu.getRect())) {
                 c.setHealth(c.getHealth()-damage);
@@ -202,12 +211,15 @@ public class Blaster {
             }
         }
 
+        // turtle bullet collision
         for (Turtle t:turtles) {
+            // not hurt by bullets
             if (t.getRect().intersects(bu.getRect())) {
                 return true;
             }
         }
 
+        // check snail bullet collision
         for (Snail s:snails) {
             if (s.getRect().intersects(bu.getRect())) {
                 s.setHealth(s.getHealth()-damage);
@@ -224,6 +236,7 @@ public class Blaster {
             }
         }
 
+        // check jelly bullet collision
         for (Jelly j:jellies) {
             if (j.getRect().intersects(bu.getRect())) {
                 j.isHit();
@@ -231,6 +244,7 @@ public class Blaster {
                 if (j.getHealth() <= 0) {
                     AAdventure.getGame().getAlan().addCombo();
                     removalJelly.add(j);
+                    // adding gems
                     GameManager.getGemManager().spawnGems((int)j.getX(false),(int)j.getY(false), 3);
                 }
 
@@ -241,12 +255,14 @@ public class Blaster {
             }
         }
 
+        // going through bats to check for damage and spawn gems
         for (Bat b: bats) {
             if (b.getRect().intersects(bu.getRect())) {
                 b.setHealth(b.getHealth()-damage);
                 if (b.getHealth() <= 0) {
                     AAdventure.getGame().getAlan().addCombo();
                     removalBat.add(b);
+                    // adding gems
                     GameManager.getGemManager().spawnGems((int)b.getX(false),(int)b.getY(false), 3);
                 }
 
@@ -257,6 +273,7 @@ public class Blaster {
             }
         }
 
+        // checking for skull taking damage
         for (Skull s: skulls) {
             if (s.getRect().intersects(bu.getRect())) {
                 s.setHealth(s.getHealth()-damage);
@@ -264,6 +281,7 @@ public class Blaster {
                 if (s.getHealth() <= 0) {
                     AAdventure.getGame().getAlan().addCombo();
                     removalSkull.add(s);
+                    // adding gems
                     GameManager.getGemManager().spawnGems((int)s.getX(false),(int)s.getY(false), 3);
                 }
 
@@ -277,6 +295,7 @@ public class Blaster {
         return false;
     }
 
+    // getting bullet-block collision, accounts for gunpowder effects
     public boolean getCollision(Bullet b, Alan alan, Map map, Powerups powerups) {
         // blocks
         Block[][] blocks = map.getMap();
@@ -284,19 +303,19 @@ public class Blaster {
         for (int r = nextRow-1; r < nextRow+2; r++) {
             for (int i = 0; i < map.getColumns(); i++) {
                 int blockType = blocks[r][i].getType();
-                if (blockType != Block.AIR) {
-                    if ((blockType == Block.WALL || blockType == Block.BOX)) {
-                        if (blocks[r][i].collide(b.getRect())) {
-                            if (blockType == Block.BOX) {
-                                blocks[r][i].setType(Block.AIR);
-                                blastPlaces.add(0);
-                                blastBlocks.add(blocks[r][i]);
-                                if (powerups.getPower(Powerups.GUNPOWDER) == 1) {
-                                    gunpowderEffect(blocks, r, i);
-                                }
+                // checking if block is shootable
+                if ((blockType == Block.WALL || blockType == Block.BOX)) {
+                    if (blocks[r][i].collide(b.getRect())) {
+                        if (blockType == Block.BOX) {
+                            blocks[r][i].setType(Block.AIR);
+                            blastPlaces.add(0);
+                            blastBlocks.add(blocks[r][i]);
+                            if (powerups.getPower(Powerups.GUNPOWDER) == 1) {
+                                // recursive method to find all nearest blocks to eliminate
+                                gunpowderEffect(blocks, r, i);
                             }
-                            return true;
                         }
+                        return true;
                     }
                 }
             }
@@ -304,12 +323,13 @@ public class Blaster {
         return false;
     }
 
-    // recursively find all blocks that are touching the one shot
+    // recursively find all blocks that are touching the one block that was shot at
     private void gunpowderEffect(Block[][] blocks, int row, int col) {
         blocks[row][col].setType(Block.AIR);
         blastPlaces.add(0);
         blastBlocks.add(blocks[row][col]);
         if (row > 0 && col < 8 && col > 0) {
+            // finding all nearest blocks that are connected
             if (blocks[row+1][col].getType() == Block.BOX) {
                 gunpowderEffect(blocks, row+1, col);
             }
@@ -331,35 +351,20 @@ public class Blaster {
             g.drawImage(explosion.get(blastPlaces.get(i)),blastBlocks.get(i).getX(true),blastBlocks.get(i).getY(true, alan), null);
             blastPlaces.set(i, blastPlaces.get(i)+1);
             if (blastPlaces.get(i) == explosion.size()) {
+                // animation complete
                 blastBlocks.remove(i);
                 blastPlaces.remove(i);
             }
         }
     }
 
+    // getters and setters
     public String getName() {return name;}
-    public void setName(String name) {
-        this.name = name;
-    }
-    public int getDamage() {
-        return damage;
-    }
-    public void setDamage(int damage) {
-        this.damage = damage;
-    }
-    public int getCapacity() {
-        return capacity;
-    }
-    public void setCapacity(int capacity) {
-        this.capacity = capacity;
-    }
-    public int getSpeed() {
-        return speed;
-    }
-    public void setSpeed(int speed) {
-        this.speed = speed;
-    }
-    public ArrayList<Bullet> getBullets(){ return bullets;}
+    public int getDamage() {return damage;}
+    public void setDamage(int damage) {this.damage = damage;}
+    public int getCapacity() {return capacity;}
+    public void setCapacity(int capacity) {this.capacity = capacity;}
+    public void setSpeed(int speed) {this.speed = speed;}
 }
 
 // BULLET CLASS
@@ -371,6 +376,7 @@ class Bullet {
     private Image img;
     private final Rectangle rect;
 
+    // contains velocity and positional data
     Bullet(int x, int y, int startY, Image img, double velX) {
         this.velX = velX;
         this.startY = startY;
@@ -382,16 +388,17 @@ class Bullet {
         this.rect = new Rectangle(x,y,width, height);
     }
 
+    // getters and setters
     public double getX(boolean adjusted) {return (adjusted ? x + Background.getWallLeftPos() : x);}
     public int getY(boolean adjusted, Alan alan) {return (adjusted ? y-alan.getOffset()+alan.getScreenOffset() : y);}
     public Rectangle getRect(){return rect;}
     public void setX(int x) {this.x = x; this.rect.setLocation((int)this.x, this.y);}
     public void setY(int y) {this.y = y; this.rect.setLocation((int)this.x, this.y);}
     public Image getImg() {return img;}
-    public void setImg(Image img) {this.img = img;}
     public int getStartY() {return startY;}
     public double getVelX() {return velX;}
 
+    // draws bullet
     public void draw(Graphics g) {
         g.drawImage(img, (int) x, y, null);
     }
