@@ -44,6 +44,7 @@ public class SettingsPanel extends JPanel implements KeyListener, ActionListener
         properties.get(Settings.HELP).add(new Property("ALAN SHOOT:", "PRESS SPACE AFTER JUMPING TO SHOOT", "HELP"));
         properties.get(Settings.HELP).add(new Property("NON-RED ENEMIES:", "DIE FROM BULLETS OR BEING JUMPED ON", "HELP"));
         properties.get(Settings.HELP).add(new Property("RED ENEMIES:", "DIE ONLY FROM BULLETS", "HELP"));
+        properties.get(Settings.HELP).add(new Property("COMBO'S:", "RESET AFTER HITTING GROUND", "HELP"));
 
         properties.add(new ArrayList<>());
         properties.get(Settings.KEYBINDS).add(new Property("MOVE LEFT", "A", "KEYBINDS"));

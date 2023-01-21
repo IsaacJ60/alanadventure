@@ -36,7 +36,6 @@ public class Shop {
         this.equippedItems = new int[allItems.size()];
 
         try {
-            saveItems();
             Scanner f = new Scanner(new BufferedReader(new FileReader("src/assets/shop/items.txt")));
             if (f.hasNext()) {
                 ArrayList<ArrayList<Cosmetics>> items = this.allItems;
@@ -150,6 +149,7 @@ public class Shop {
                 //HINT: BUY STUFF
                 if (!item.getOwned()) {
                     if (item.purchase(gems)) {
+                        Sound.purchaseItem();
                         gems.setTotalGems(gems.getTotalGems() - item.getCost());
                         GameManager.saveGems();
                         item.setOwned(true);
@@ -160,15 +160,18 @@ public class Shop {
                         case "BACKGROUNDS" -> {
                             equippedItems[selectedType] = selectedItem;
                             Background.setBg(allItems.get(selectedType).get(selectedItem).getEnlargedImg());
+                            Sound.equipGeneral();
                         }
                         case "BLASTERS" -> {
                             equippedItems[selectedType] = selectedItem;
                             AAdventure.getIntro().getAlan().setWeapon(item.getBlaster());
                             AAdventure.getGame().getAlan().setWeapon(item.getBlaster());
+                            Sound.equipBlaster();
                         }
                         case "MUSIC" -> {
                             equippedItems[selectedType] = selectedItem;
                             AAdventure.setCurrMusic(GameMusic.GAMEMUSIC[selectedItem]);
+                            Sound.equipGeneral();
                         }
                     }
                     saveItems();

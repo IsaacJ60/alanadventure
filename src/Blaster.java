@@ -113,6 +113,7 @@ public class Blaster {
         if (keys[alan.getKeyJump()]) {
             if (alan.getState() == Alan.FALL && shootTimer.getElapsedTime() > firerate && velY > 0) {
                 if (useAmmo(amount)) {
+                    Sound.alanShoot();
                     shootTimer.restart();
                     // add bullet
                     for (int i = 0; i < amount; i++) {
@@ -128,6 +129,8 @@ public class Blaster {
                     }
                     alanShoot = true;
                     return true;
+                } else {
+                    Sound.noBullets();
                 }
             }
         }

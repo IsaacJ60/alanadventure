@@ -2,6 +2,12 @@
 Sound.java
 Isaac Jiang
 Sound loads and contains methods to play music and sound effects
+
+equip gun
+https://www.videvo.net/sound-effect/gun-cock-single-pe1096303/246057/
+
+// land
+Sound Effect from <a href="https://pixabay.com/?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=music&amp;utm_content=43790">Pixabay</a>
  */
 
 import javax.sound.sampled.AudioSystem;
@@ -14,13 +20,27 @@ import java.util.ArrayList;
 public class Sound implements ActionListener {
     SoundEffect sound;
     // all soundeffects and music
-    private static SoundEffect intromusic;
+    private static SoundEffect equipBlaster, equipGeneral, purchaseItem, alanLand, alanJump,
+            noBullets, alanShoot;
     private static ArrayList<SoundEffect> allSounds;
     public Sound() {
         allSounds = new ArrayList<>();
         // loading all music and sounds
-        intromusic = new SoundEffect("src/assets/sounds/bg/intro.wav");
-        allSounds.add(intromusic);
+        String path = "src/assets/sounds/effects/";
+        equipGeneral = new SoundEffect(path + "equipBg" + ".wav");
+        equipBlaster = new SoundEffect(path + "equipBlaster" + ".wav");
+        purchaseItem = new SoundEffect(path + "purchase" + ".wav");
+        alanLand = new SoundEffect(path + "alanLand" + ".wav");
+        alanJump = new SoundEffect(path + "alanJump" + ".wav");
+        noBullets = new SoundEffect(path + "noBullets" + ".wav");
+        alanShoot = new SoundEffect(path + "alanShoot" + ".wav");
+        allSounds.add(equipGeneral);
+        allSounds.add(equipBlaster);
+        allSounds.add(purchaseItem);
+        allSounds.add(alanLand);
+        allSounds.add(alanJump);
+        allSounds.add(noBullets);
+        allSounds.add(alanShoot);
     }
     public void actionPerformed(ActionEvent ae){
         sound.play();
@@ -32,15 +52,13 @@ public class Sound implements ActionListener {
         }
     }
 
-    // looping or stopping game music
-    public static void introMusic(String s) {
-        if (s.equals("STOP")) {
-            intromusic.stop();
-        } else {
-            stopAll();
-            intromusic.loop();
-        }
-    }
+    public static void equipBlaster() {equipBlaster.play();}
+    public static void equipGeneral() {equipGeneral.play();}
+    public static void purchaseItem() {purchaseItem.play();}
+    public static void alanLand() {alanLand.play();}
+    public static void alanJump() {alanJump.play();}
+    public static void noBullets() {noBullets.play();}
+    public static void alanShoot() {alanShoot.play();}
 }
 
 class SoundEffect{

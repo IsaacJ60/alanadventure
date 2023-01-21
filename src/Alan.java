@@ -274,6 +274,7 @@ public class Alan {
     public void jump() {
         if (state == JUMP) {
             if (jumpTimer.getElapsedTime() > 0.5) {
+                Sound.alanJump();
                 velY -= 14;
                 jumpTimer.restart();
             } else {
@@ -319,6 +320,10 @@ public class Alan {
         velX = (velX >= 0 ? -maxVelX*1.5 : maxVelX*1.5);
     }
 
+    public void knockback(Skull skull) {
+        velX = (velX >= 0 ? -maxVelX*1.5 : maxVelX*1.5);
+    }
+
     public void getEnemyCollision(ArrayList<Snake> snakes, ArrayList<Crawler> crawlers, ArrayList<Turtle> turtles, ArrayList<Snail> snails, ArrayList<Jelly> jellies, ArrayList<Bat> bats, ArrayList<Skull> skulls) {
         ArrayList<Snake> removalSnake = new ArrayList<>();
         ArrayList<Turtle> removalTurtle = new ArrayList<>();
@@ -336,7 +341,7 @@ public class Alan {
                     GameManager.getGemManager().spawnGems((int)s.getX(false),(int)s.getY(false), 3);
                 }
                 else {
-                    if (invulTimer.getElapsedTime() >= 1.5) {
+                    if (invulTimer.getElapsedTime() >= Util.INVULTIME) {
                         health--;
                         knockback(s);
                         invulTimer.restart();
@@ -347,7 +352,7 @@ public class Alan {
 
         for (Crawler c: crawlers) {
             if (getRect().intersects(c.getRect())) {
-                if (invulTimer.getElapsedTime() >= 2) {
+                if (invulTimer.getElapsedTime() >= Util.INVULTIME) {
                     health--;
                     knockback(c);
                     invulTimer.restart();
@@ -365,9 +370,9 @@ public class Alan {
                     GameManager.getGemManager().spawnGems((int)t.getX(false),(int)t.getY(false), 3);
                 }
                 else {
-                    if (invulTimer.getElapsedTime() >= 1.5) {
+                    if (invulTimer.getElapsedTime() >= Util.INVULTIME) {
                         health--;
-//                        knockback(t);
+                        knockback(t);
                         invulTimer.restart();
                     }
                 }
@@ -376,7 +381,7 @@ public class Alan {
 
         for (Snail s : snails) {
             if (getRect().intersects(s.getRect())) {
-                if (invulTimer.getElapsedTime() >= 2) {
+                if (invulTimer.getElapsedTime() >= Util.INVULTIME) {
                     health--;
                     knockback(s);
                     invulTimer.restart();
@@ -394,7 +399,7 @@ public class Alan {
                     GameManager.getGemManager().spawnGems((int)j.getX(false),(int)j.getY(false), 3);
                 }
                 else{
-                    if (invulTimer.getElapsedTime() >= 2) {
+                    if (invulTimer.getElapsedTime() >= Util.INVULTIME) {
                         health--;
                         knockback(j);
                         invulTimer.restart();
@@ -413,9 +418,9 @@ public class Alan {
                     GameManager.getGemManager().spawnGems((int)b.getX(false),(int)b.getY(false), 3);
                 }
                 else{
-                    if (invulTimer.getElapsedTime() >= 2) {
+                    if (invulTimer.getElapsedTime() >= Util.INVULTIME) {
                         health--;
-//                        knockback(b);
+                        knockback(b);
                         invulTimer.restart();
                     }
                 }
@@ -432,9 +437,9 @@ public class Alan {
                     GameManager.getGemManager().spawnGems((int)s.getX(false),(int)s.getY(false), 3);
                 }
                 else{
-                    if (invulTimer.getElapsedTime() >= 2) {
+                    if (invulTimer.getElapsedTime() >= Util.INVULTIME) {
                         health--;
-//                        knockback(b);
+                        knockback(s);
                         invulTimer.restart();
                     }
                 }
@@ -537,6 +542,7 @@ public class Alan {
 
                 // if originally falling, change state to idle now that player is grounded
                 if (state == FALL) {
+                    Sound.alanLand();
                     weapon.setAmmo(weapon.getCapacity());
                     changeState(IDLE, dir, false);
                 }
@@ -658,17 +664,19 @@ public class Alan {
         }
 
         // drawing animation based on direction
-        if (dir == Util.LEFT) {
-            if (weapon.isAlanShoot()) {
-                g.drawImage(allAnims.get(animShoot * 2).get((int) animFrame), getX(true) - 5, getY(true)+3, null);
+        if ((int)(invulTimer.getElapsedTime()*100%3) == 0 || invulTimer.getElapsedTime() > 1.2) {
+            if (dir == Util.LEFT) {
+                if (weapon.isAlanShoot()) {
+                    g.drawImage(allAnims.get(animShoot * 2).get((int) animFrame), getX(true) - 5, getY(true)+3, null);
+                } else {
+                    g.drawImage(allAnims.get(state * 2).get((int) animFrame), getX(true) - 5, getY(true)+3, null);
+                }
             } else {
-                g.drawImage(allAnims.get(state * 2).get((int) animFrame), getX(true) - 5, getY(true)+3, null);
-            }
-        } else {
-            if (weapon.isAlanShoot()) {
-                g.drawImage(allAnims.get(animShoot * 2 + 1).get((int) animFrame), getX(true) - 5, getY(true)+3, null);
-            } else {
-                g.drawImage(allAnims.get(state * 2 + 1).get((int) animFrame), getX(true) - 5, getY(true)+3, null);
+                if (weapon.isAlanShoot()) {
+                    g.drawImage(allAnims.get(animShoot * 2 + 1).get((int) animFrame), getX(true) - 5, getY(true)+3, null);
+                } else {
+                    g.drawImage(allAnims.get(state * 2 + 1).get((int) animFrame), getX(true) - 5, getY(true)+3, null);
+                }
             }
         }
         return collisionWall;

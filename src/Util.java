@@ -19,6 +19,7 @@ public class Util {
     public static void setLevel(int level) {Util.level = level;}
 
     // GAME CONSTANTS
+    public static final double INVULTIME = 1.2;
     public static final double SHOOTCOOLDOWN = 0.12;
     public static final int MAGINCREASE = 3;
     public static final int BULLETRANGE = 300;
