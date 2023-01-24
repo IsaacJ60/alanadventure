@@ -3,9 +3,9 @@ import java.awt.*;
 import java.awt.event.*;
 
 /*
-GameOver.java
+GameWin.java
 Isaac Jiang
-
+shows screenw hen win game
  */
 
 public class GameWin extends JPanel implements KeyListener, ActionListener, MouseListener {

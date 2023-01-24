@@ -4,7 +4,7 @@ import java.awt.event.*;
 
 /*
 GamePanel.java
-Isaac Jiang & Jayden Zhao
+Isaac Jiang
 Panel that is shown when falling down the well of the game.
 Draws Alan, the background, UI elements, and level text.
  */
@@ -14,21 +14,17 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener, Mo
 
     AAdventure mainFrame;
 
+    // HINT: static so that we can reset the keys after a level
     private static boolean[] keys;
 
-    // width and height of panel
     private final int WIDTH = AAdventure.getGameWidth(), HEIGHT = AAdventure.getGameHeight();
     private int tarX, tarY, alpha = 255;
     private boolean spaced = false, prevSpaced = false;
 
-    // background
-    private final Background bg;
+    private Background bg;
 
-    // entities
     private Alan alan;
-    private final EnemyManager enemyManager;
-
-    // powerups
+    private EnemyManager enemyManager;
     private Powerups powers;
 
     public GamePanel(AAdventure a) {
@@ -53,7 +49,7 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener, Mo
         timer.start();
     }
 
-    // getters and setters
+    // getter and setter for mouse pos, lives, and level
     public boolean getPrevSpaced() {return prevSpaced;}
     public int getHEIGHT() {return HEIGHT;}
     public Alan getAlan() {return alan;}
@@ -83,7 +79,6 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener, Mo
     public void keyPressed(KeyEvent e) {
         int key = e.getKeyCode();
         keys[key] = true;
-        // ensure no jump while holding down space, doesn't happen in intro
         if (key == Util.space) {
             prevSpaced = spaced;
             spaced = true;
@@ -114,10 +109,14 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener, Mo
         // BLOCKS
         bg.draw(g, Util.getLevel(), alan, true, true, true);
 
-
+        // GAMEPLAY ELEMENTS
         enemyManager.drawEnemies(g, alan, MapList.getAllMaps().get(Util.getLevel()));
         GameManager.getGemManager().drawGems(g, alan, MapList.getAllMaps().get(Util.getLevel()));
         powers.usePowers(alan, g);
+
+        g.setColor(Color.WHITE);
+        g.setFont(Util.fontTextSmall);
+        g.drawString("LEVEL " + Util.getLevel(), AAdventure.getGameWidth()/2-(("LEVEL " + Util.getLevel()).length()*8), 370 - alan.getOffset() + alan.getScreenOffset());
 
         alan.draw(g, keys, MapList.getAllMaps().get(Util.getLevel()), powers, enemyManager);
 

@@ -4,6 +4,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Random;
 
+/*
+contains utility variables for game and constants
+ */
+
 public class Util {
     // GAME FONTS
     static Font fontTitle6, fontText, fontTextSmall, fontTextSmaller;
